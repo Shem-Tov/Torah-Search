@@ -28,7 +28,6 @@ public class ToraApp {
 		PropStore.load();
 		Methods.arrayMethodCreator();
 		tablePerekBooks = ExcelFunctions.readXLS("./src/TorahTables2.xls", 0, 0, 1, 6, 53);
-		int i = 0;
 	}
 	
 	public static byte getGuiMode() {
