@@ -139,6 +139,7 @@ public class frame {
 	private void initialize() throws IOException, BadLocationException {
 		ToraApp.setGuiMode((byte) 1);
 		frame = new JFrame();
+		frame.setTitle("חיפוש בתורה");
 		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, 16));
 		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, 16));
 		frame.setBounds(100, 100, 1600, 887);

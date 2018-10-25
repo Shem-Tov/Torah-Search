@@ -2,21 +2,72 @@ package ToraApp;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 public class ExcelFunctions {
+
+	public static String[][] readXLS(String inputFile, int sheetNUM, int X, int Y, int posX, int posY)
+			throws IOException {
+		String[][] data = null;
+		Workbook workbook = null;
+		DataFormatter dataFormatter = new DataFormatter();
+		try {
+			workbook = WorkbookFactory.create(new File(inputFile));
+			Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
+			Iterator<Row> iterator = datatypeSheet.iterator();
+			data = new String[posX-X][posY-Y];
+			int i = 0;
+			int j = 0;
+			Row currentRow;
+			while (j<Y) {
+				  currentRow = iterator.next();
+				  j++;
+			} 
+			while (iterator.hasNext()) {
+				currentRow = iterator.next();
+				Iterator<Cell> cellIterator = currentRow.iterator();
+				i=X;
+				while (cellIterator.hasNext()) {
+					Cell currentCell = cellIterator.next();
+					data[i++-X][(j)-Y] = dataFormatter.formatCellValue(currentCell);
+					if (i >= (posX)) { break;}
+				}
+				j++;
+				if (j >= (posY)) { break;}
+			}
+			Output.printText("Imported XLS", 1);
+		} catch (FileNotFoundException e) {
+			Output.printText("Error importing from EXCEL Sheet", 1);
+			e.printStackTrace();
+		} catch (IOException e) {
+			Output.printText("Error importing from EXCEL Sheet", 1);
+			e.printStackTrace();
+		} finally {
+			if (workbook != null) {
+				workbook.close();
+			}
+		}
+		return data;
+	}
+// End Excel Tables
 
 	// private static final String FILE_NAME = "./src/MyFirstExcel.xlsx";
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
@@ -50,7 +101,7 @@ public class ExcelFunctions {
 		cTCol.setStyle(style.getIndex());
 
 		sheet.setDefaultRowHeightInPoints(36);
-		
+
 		// CellStyle fontStyle = workbook.createCellStyle();
 		// fontStyle.setFont(txtFont);
 		sheet.getCTWorksheet().getSheetViews().getSheetViewArray(0).setRightToLeft(true);
@@ -60,8 +111,7 @@ public class ExcelFunctions {
 		CellStyle styleHeader = workbook.createCellStyle(); // Create new style
 		styleHeader.setFont(txtFontHeader);
 
-
-		String[] header = { "אינדקס","נמצא", "ספר", "פרק", "פסוק", "תורה" };
+		String[] header = { "אינדקס", "נמצא", "ספר", "פרק", "פסוק", "תורה" };
 
 		int rowNum = 0;
 		System.out.println("Creating excel");
@@ -81,13 +131,13 @@ public class ExcelFunctions {
 			cell.setCellValue(field);
 		}
 		row = sheet.createRow(rowNum++);
-		int index=1;
+		int index = 1;
 		for (String[] res : results) {
 			cell = row.createCell(0);
-			cell.setCellValue(index++);			
+			cell.setCellValue(index++);
 			for (int i = 1; i <= res.length; i++) {
 				cell = row.createCell(i);
-				cell.setCellValue(res[i-1]);
+				cell.setCellValue(res[i - 1]);
 			}
 			row = sheet.createRow(rowNum++);
 		}

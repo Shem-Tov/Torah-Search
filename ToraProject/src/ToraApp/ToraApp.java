@@ -27,7 +27,8 @@ public class ToraApp {
 	public static void starter() throws IOException{
 		PropStore.load();
 		Methods.arrayMethodCreator();
-		tablePerekBooks = ExcelTables.readXLS("./src/TorahTables2.xls", 0, 0, 1, 6, 52);
+		tablePerekBooks = ExcelFunctions.readXLS("./src/TorahTables2.xls", 0, 0, 1, 6, 53);
+		int i = 0;
 	}
 	
 	public static byte getGuiMode() {
@@ -78,12 +79,12 @@ public class ToraApp {
 	public static perekBookInfo findPerekBook(int lineNum) {
 		int oldI, oldJ;
 		oldI = 1;
-		oldJ = 1;
+		oldJ = 0;
 		for (int i = 1; i < tablePerekBooks.length; i++) {
 			// second:
 			oldI = i;
 			oldJ = 1;
-			for (int j = 1; j < tablePerekBooks[i].length; j++) {
+			for (int j = 0; j < tablePerekBooks[i].length; j++) {
 				if (Integer.parseInt(tablePerekBooks[i][j]) >= lineNum) {
 					return new perekBookInfo(oldI, tablePerekBooks[0][oldJ],
 							(lineNum - Integer.parseInt(tablePerekBooks[oldI][oldJ])));

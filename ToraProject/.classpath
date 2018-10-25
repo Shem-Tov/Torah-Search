@@ -20,6 +20,5 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
 	<classpathentry kind="lib" path="/mnt/Mochin/eclipse-work-space/JARS/commons-lang3-3.8.1.jar"/>
-	<classpathentry kind="lib" path="/mnt/Mochin/eclipse-work-space/JARS/jxl.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
