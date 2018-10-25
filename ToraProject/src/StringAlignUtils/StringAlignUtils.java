@@ -9,6 +9,10 @@ import java.util.ListIterator;
 
 public class StringAlignUtils extends Format {
 
+	public static String padRight(String str, int num) {
+		return String.format("%1$-" + num + "s", str);
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	public enum Alignment {

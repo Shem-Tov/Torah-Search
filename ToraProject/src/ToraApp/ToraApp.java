@@ -52,7 +52,7 @@ public class ToraApp {
 			case 16:
 				return "טז";
 			default:
-				return Character.toString(letters[1][num / 10]) + Character.toString(letters[0][num % 10]);
+				return (Character.toString(letters[1][num / 10]) + Character.toString(letters[0][num % 10])).replaceAll("\\s+","");
 			}
 		}
 

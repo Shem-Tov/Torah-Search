@@ -1,4 +1,5 @@
 package ToraApp;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,10 +8,12 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 
+import StringAlignUtils.StringAlignUtils;
+
 public class ToraSearch {
 	public static void searchWords(Object[] args) throws IOException {
-		ArrayList<String[]> results=new ArrayList<String[]>();
-		//String[][] results=null;
+		ArrayList<String[]> results = new ArrayList<String[]>();
+		// String[][] results=null;
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
 		String searchSTR;
@@ -41,14 +44,10 @@ public class ToraSearch {
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
 			Output.printText(str);
-			if (bool_wholeWords) {
-				Output.printText("\u202B" + "חיפוש מילים שלמות");
-			}	else
-			{
-				Output.printText("\u202B" + "חיפוש צירופי אותיות");
-			}
-			Output.printText(String.format("%1$-" + (str.length() - 1) + "s", "").replace(' ', '-'));
-			//System.out.println(formatter.locale());
+			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות":"חיפוש צירופי אותיות");
+			Output.printText(str);
+			Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
+			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
 				if (bool_wholeWords) {
@@ -58,33 +57,36 @@ public class ToraSearch {
 						if (s.equals(searchSTR)) {
 							count++;
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + 
-									"\"" + searchSTR + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters() + "  =  ";
-							Output.printText(tempStr1 + line);
-							results.add(new String[] {searchSTR,pBookInstance.getBookName(),pBookInstance.getPerekLetters(),pBookInstance.getPasukLetters(),line});
+							String tempStr1 = "\u202B" + "\"" + searchSTR + "\" " + "נמצא ב"
+									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
+							results.add(new String[] { searchSTR, pBookInstance.getBookName(),
+									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line });
 						}
 					}
 				} else {
 					if (line.contains(searchSTR)) {
 						int countMatch = StringUtils.countMatches(line, searchSTR);
-						count=count+countMatch;
+						count = count + countMatch;
 						countPsukim++;
 						ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-						String tempStr1 = "\u202B" + 
-								"\"" + searchSTR + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
-								+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters() + "  =  ";
-						Output.printText(tempStr1 + line);
-						results.add(new String[] {searchSTR,pBookInstance.getBookName(),pBookInstance.getPerekLetters(),pBookInstance.getPasukLetters(),line});
+						String tempStr1 = "\u202B" + "\"" + searchSTR + "\" " + "נמצא ב"
+								+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+								+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+						Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
+						results.add(new String[] { searchSTR, pBookInstance.getBookName(),
+								pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line });
 					}
 				}
 			}
-			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה":"חיפוש צירוף אותיות בתורה");
-			String fileName = searchSTR + "_" + ((bool_wholeWords) ? "מילים":"אותיות");
-			ExcelFunctions.writeXLS(fileName,Title, searchSTR, results);
-			Output.printText("\u202B" + " נמצא " + "\"" + searchSTR + "\" " + count + " פעמים ב" + countPsukim + " פסוקים.");
-		} catch(Exception e) {
-			Output.printText("Found Error at Line: " + countLines );
+			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
+			String fileName = searchSTR + "_" + ((bool_wholeWords) ? "מילים" : "אותיות");
+			ExcelFunctions.writeXLS(fileName, Title, searchSTR, results);
+			Output.printText(
+					"\u202B" + " נמצא " + "\"" + searchSTR + "\" " + count + " פעמים ב" + countPsukim + " פסוקים.");
+		} catch (Exception e) {
+			Output.printText("Found Error at Line: " + countLines);
 		} finally {
 			Output.printText("\u202B" + "סיים חיפוש");
 			if (inputStream != null) {
