@@ -19,7 +19,8 @@ public class PropStore {
 	public static final String bool_countPsukim = "count_psukim";
 	public static final String minDilug = "minDilug";
 	public static final String maxDilug = "maxDikug";
-
+	public static final String offsetDilug = "offsetDilug";
+	
 	public static void store() {
 
 		Properties prop = new Properties();
