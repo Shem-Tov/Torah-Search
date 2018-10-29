@@ -12,6 +12,7 @@ public class WordCounter {
 	public WordCounter() {
 		//Hashtable<String, Integer> map = new Hashtable<String, Integer>();
 	}
+	
 	public void printWords() throws IOException {
 		Enumeration<String> e = map.keys();
 		while (e.hasMoreElements()) {
@@ -21,12 +22,13 @@ public class WordCounter {
 	}
 
 	public void addWord(String word) {
-		Object obj = this.map.get(word);
+		String wordTrim = word.trim();
+		Object obj = this.map.get(wordTrim);
 		if (obj == null) {
-			map.put(word, ONE);
+			map.put(wordTrim, ONE);
 		} else {
 			int i = ((Integer) obj).intValue() + 1;
-			map.put(word, i);
+			map.put(wordTrim, i);
 		}
 	}
 }

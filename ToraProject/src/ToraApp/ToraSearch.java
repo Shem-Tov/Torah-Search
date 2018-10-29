@@ -5,13 +5,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-
 import org.apache.commons.lang3.StringUtils;
-
 import StringAlignUtils.StringAlignUtils;
 
 public class ToraSearch {
-	public static void searchWords(Object[] args) throws IOException {
+	private static ToraSearch instance;
+	
+	public static ToraSearch getInstance() {
+		if (instance == null) {
+			instance = new ToraSearch();
+		}
+		return instance;
+	}
+	
+	public void searchWords(Object[] args) throws IOException {
 		ArrayList<String[]> results = new ArrayList<String[]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
@@ -44,13 +51,27 @@ public class ToraSearch {
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
 			Output.printText(str);
-			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות":"חיפוש צירופי אותיות");
+			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(str);
 			Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
 			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
+				if (countLines % 25 == 0) {
+					frame.SwingActivity.getInstance().callProcess(countLines);
+				}
 				if (bool_wholeWords) {
+					if (searchSTR.contains(" ")) {
+						frame.frame.clearText();
+						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות",false);
+						if (inputStream != null) {
+							inputStream.close();
+						}
+						if (outputStream != null) {
+							outputStream.close();
+						}
+						return;
+					}
 					String[] splitStr = line.trim().split("\\s+");
 					for (String s : splitStr) {
 						// Do your stuff here
@@ -82,12 +103,16 @@ public class ToraSearch {
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
 			String fileName = searchSTR + "_" + ((bool_wholeWords) ? "מילים" : "אותיות");
-			ExcelFunctions.writeXLS(fileName, Title, searchSTR, results);
-			Output.printText(
-					"\u202B" + " נמצא " + "\"" + searchSTR + "\" " + count + " פעמים ב" + countPsukim + " פסוקים.");
+			if (count > 0) {
+				ExcelFunctions.writeXLS(fileName, Title, searchSTR, results);
+			}
+			Output.printText("");
+			Output.printText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
+					+ ((bool_wholeWords) ? "." : (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")));
 		} catch (Exception e) {
 			Output.printText("Found Error at Line: " + countLines);
 		} finally {
+			Output.printText("");
 			Output.printText("\u202B" + "סיים חיפוש");
 			if (inputStream != null) {
 				inputStream.close();

@@ -23,7 +23,9 @@ public class ToraApp {
 	static String[][] tablePerekBooks;
 	static String[][] tablePerekParashot;
 
-
+	public static char cSpace() {
+		return '\u00A0';
+	}
 	public static void starter() throws IOException{
 		PropStore.load();
 		Methods.arrayMethodCreator();

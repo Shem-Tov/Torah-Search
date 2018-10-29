@@ -54,12 +54,12 @@ public class ExcelFunctions {
 				j++;
 				if (j >= (posY)) { break;}
 			}
-			Output.printText("Imported XLS", 1);
+			Output.printText("Imported XLS", false);
 		} catch (FileNotFoundException e) {
-			Output.printText("Error importing from EXCEL Sheet", 1);
+			Output.printText("Error importing from EXCEL Sheet", false);
 			e.printStackTrace();
 		} catch (IOException e) {
-			Output.printText("Error importing from EXCEL Sheet", 1);
+			Output.printText("Error importing from EXCEL Sheet", false);
 			e.printStackTrace();
 		} finally {
 			if (workbook != null) {

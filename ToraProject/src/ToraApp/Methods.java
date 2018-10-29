@@ -18,7 +18,8 @@ public class Methods {
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				ToraSearch.searchWords(args);
+				ToraSearch tora = ToraSearch.getInstance();
+				tora.searchWords(args);
 			}
 		});
 		arrayMethodID.add(2);
@@ -26,7 +27,8 @@ public class Methods {
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				Gimatria.searchGimatria(args);
+				Gimatria gim = Gimatria.getInstance();
+				gim.searchGimatria(args);
 			}
 		});
 		arrayMethodID.add(3);

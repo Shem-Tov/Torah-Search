@@ -1,13 +1,23 @@
 package ToraApp;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-
-
 import org.apache.commons.lang3.StringUtils;
+import StringAlignUtils.StringAlignUtils;
+
 
 public class Gimatria {
+	private static Gimatria instance;
+
+	public static Gimatria getInstance() {
+		if (instance == null) {
+			instance = new Gimatria();
+		}
+		return instance;
+	}
+
 	private static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע',
 			'פ', 'צ', 'ק', 'ר', 'ש', 'ת' };
 	private static char[] endLetters = { 'ך', 'ם', 'ן', 'ף', 'ץ' };
@@ -21,9 +31,9 @@ public class Gimatria {
 			index = new String(endLetters).indexOf(c);
 			if (index > -1) {
 				if (boolSofiot) {
-					return (int)((index) * 100 + 500);
+					return (int) ((index) * 100 + 500);
 				} else {
-					int sum=0;
+					int sum = 0;
 					switch (index) {
 					case 0:
 						sum = 20;
@@ -46,27 +56,27 @@ public class Gimatria {
 		}
 		return 0;
 	}
-	
+
 	public static int calculateGimatria(String str) {
 		return calculateGimatria(str, false);
 	}
 
 	public static int calculateGimatria(String str, Boolean boolSofiot) {
-		// boolSofiot=false     לא מתחשב בסופיות
-		// boolSofiot=true      גימטריה מיוחדת לסופיות
+		// boolSofiot=false לא מתחשב בסופיות
+		// boolSofiot=true גימטריה מיוחדת לסופיות
 		int sumGimatria = 0;
 		for (char c : str.toCharArray()) {
-			sumGimatria += calculateGimatriaLetter(c,boolSofiot);
+			sumGimatria += calculateGimatriaLetter(c, boolSofiot);
 		}
 		return sumGimatria;
 	}
-	
+
 	public static void callCalculateGimatria(String str) {
 		Output.printText(String.valueOf(Gimatria.calculateGimatria(str)));
 	}
-	
-	public static void searchGimatria(Object[] args) throws IOException{
-		WordCounter wCounter =  new WordCounter();
+
+	public void searchGimatria(Object[] args) throws IOException {
+		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
 		String searchSTR;
@@ -81,16 +91,17 @@ public class Gimatria {
 			bool_countPsukim = (Boolean) args[3];
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
+			e.printStackTrace();
 			return;
 		}
 		int searchGmt;
-		int sumGimatria=0;
+		int sumGimatria = 0;
 		if (StringUtils.isNumeric(searchSTR)) {
 			searchGmt = Integer.parseInt(searchSTR);
 		} else {
-	      searchGmt = calculateGimatria(searchSTR,bool_gimatriaSofiot);
+			searchGmt = calculateGimatria(searchSTR, bool_gimatriaSofiot);
 		}
-		if (searchGmt==0) {
+		if (searchGmt == 0) {
 			Output.printText("Can not search for a Gimatria of 0");
 			return;
 		}
@@ -113,50 +124,53 @@ public class Gimatria {
 			Output.printText(str);
 			if (bool_wholeWords) {
 				Output.printText("\u202B" + "חיפוש מילים שלמות");
-			}	else
-			{
+			} else {
 				Output.printText("\u202B" + "חיפוש צירופי אותיות");
 			}
 			Output.printText(String.format("%1$-" + (str.length() - 1) + "s", "").replace(' ', '-'));
-			//System.out.println(formatter.locale());
+			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
+				if (countLines % 25 == 0) {
+					frame.SwingActivity.getInstance().callProcess(countLines);
+				}
 				if (bool_wholeWords) {
 					String[] splitStr = line.trim().split("\\s+");
 					for (String s : splitStr) {
 						// Do your stuff here
-						if (searchGmt == calculateGimatria(s,bool_gimatriaSofiot)) {
+						if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
 							count++;
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + 
-									"\"" + s + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters() + "  =  ";
+							String tempStr1 = "\u202B" + "\"" + s + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
+									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							wCounter.addWord(s);
-							Output.printText(tempStr1 + line);
+							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + line);
 						}
 					}
 				} else {
-					sumGimatria=0;
-					int lineCountEnd=0;
-					int lineCountStart=0;
-					for (char ch:line.toCharArray()) {
+					sumGimatria = 0;
+					int lineCountEnd = 0;
+					int lineCountStart = 0;
+					for (char ch : line.toCharArray()) {
 						lineCountEnd += 1;
 						sumGimatria += calculateGimatriaLetter(ch, bool_gimatriaSofiot);
 						if (sumGimatria > searchGmt) {
-							while (sumGimatria > searchGmt) {
-								sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart), bool_gimatriaSofiot);
+							while ((sumGimatria > searchGmt)
+									|| ((line.length() > lineCountStart) && (line.charAt(lineCountStart) == ' '))) {
+								sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart),
+										bool_gimatriaSofiot);
 								lineCountStart += 1;
 							}
 						}
-						if (sumGimatria == searchGmt) {
+						if ((sumGimatria == searchGmt)
+								&& ((line.length() > lineCountEnd) && (line.charAt(lineCountEnd) != ' '))) {
 							count += 1;
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 							String s = line.substring(lineCountStart, lineCountEnd);
-							String tempStr1 = "\u202B" + 
-									"\"" + s + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters() + "  =  ";
+							String tempStr1 = "\u202B" + "\"" + s + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
+									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							wCounter.addWord(s);
-							Output.printText(tempStr1 + line);
+							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + line);
 							if (bool_countPsukim) {
 								break;
 							}
@@ -164,11 +178,16 @@ public class Gimatria {
 					}
 				}
 			}
+			Output.printText("");
 			wCounter.printWords();
-			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\" " + count + " פעמים.");
-		} catch(Exception e) {
-			Output.printText("Found Error at Line: " + countLines );
+			Output.printText("");
+			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
+		} catch (Exception e) {
+			Output.printText("");
+			Output.printText("Found Error at Line: " + countLines);
+			e.printStackTrace();
 		} finally {
+			Output.printText("");
 			Output.printText("\u202B" + "סיים חיפוש");
 			if (inputStream != null) {
 				inputStream.close();
@@ -183,4 +202,3 @@ public class Gimatria {
 		}
 	}
 }
-

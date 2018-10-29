@@ -1,10 +1,10 @@
 package frame;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import java.awt.ComponentOrientation;
 import javax.swing.JButton;
@@ -13,12 +13,12 @@ import javax.swing.JInternalFrame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Point;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.border.BevelBorder;
@@ -26,15 +26,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-
-import ToraApp.Methods;
 import ToraApp.ToraApp;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
-import java.util.Arrays;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 import java.awt.Font;
@@ -43,17 +39,109 @@ import ToraApp.PropStore;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.BoxLayout;
+import javax.swing.JPopupMenu;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JProgressBar;
 
 public class frame {
 
+	class PopUpTextPane extends JPopupMenu {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		JMenuItem anItem;
+
+		public PopUpTextPane() {
+			anItem = new JMenuItem("חפש...");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					dialogFrame dFrame = dialogFrame.getInstance();
+					Point p = frame.getLocation();
+					dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
+							(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
+					dFrame.setVisible(true);
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("הסר הארות");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					dialogFrame.clearLastSearch();
+					HighLighter.removeHighlights(textPane);
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("לעבור על המציאות");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					HighLighter.scrollWords(textPane);
+					frame.repaint();
+				}
+			});
+			add(anItem);
+		}
+	}
+
+	class PopClickListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		private void doPop(MouseEvent e) {
+			PopUpTextPane menu = new PopUpTextPane();
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
 	private JFrame frame;
+	private static JButton button;
 	private static JTextField textField_Search;
 	private static JTextField textField_dilugMin;
 	private static JTextField textField_dilugMax;
-	private static JTextPane textPane;
+	private static JComboBox<?> comboBox_main;
+	
+	public static String getTextField_Search() {
+		return textField_Search.getText();
+	}
+	public static String getTextField_dilugMin() {
+		return textField_dilugMin.getText();
+	}
+	public static String getTextField_dilugMax() {
+		return textField_dilugMax.getText();
+	}
+	public static Boolean getCheckBox_gimatriaSofiot() {
+		return checkBox_gimatriaSofiot.isSelected();
+	}
+	public static Boolean getCheckBox_wholeWord() {
+		return checkBox_wholeWord.isSelected();
+	}	
+	public static Boolean getCheckBox_countPsukim() {
+		return checkBox_countPsukim.isSelected();
+	}
+	public static int getComboBox_main() {
+		return comboBox_main.getSelectedIndex();
+	}
+	public static void setButtonEnabled() 
+	{
+		button.setEnabled(true);
+	}
+	static JTextPane textPane;
+	private SwingActivity activity;
 	private static JScrollPane scrollPane;
 	private static StyledDocument doc;
-	private static SimpleAttributeSet keyWord;
+	private static SimpleAttributeSet mainStyle;
+	private static SimpleAttributeSet attentionStyle;
 	private static JCheckBox checkBox_gimatriaSofiot;
 	private static JCheckBox checkBox_wholeWord;
 	private static JCheckBox checkBox_countPsukim;
@@ -64,6 +152,17 @@ public class frame {
 	private static final String checkBox_countPsukim_true = "<html>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 	private JPanel panel_1;
+	private JPopupMenu popupMenu;
+	private static JProgressBar progressBar;
+	
+	public static void showProgressBar(Boolean bool)
+	{
+		progressBar.setVisible(bool);
+	}
+	public static void setProgressBar(int num) 
+	{
+		progressBar.setValue(num);
+	}
 
 	public static void initValues() {
 		textField_Search.setText(PropStore.map.get(PropStore.searchWord));
@@ -72,7 +171,8 @@ public class frame {
 		checkBox_gimatriaSofiot.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_gimatriaSofiot)));
 		checkBox_wholeWord.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_wholeWord)));
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
-		checkBox_countPsukim.setText(((checkBox_countPsukim.isSelected()) ? checkBox_countPsukim_true:checkBox_countPsukim_false));
+		checkBox_countPsukim.setText(
+				((checkBox_countPsukim.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
 	}
 
 	public static void saveValues() {
@@ -86,15 +186,23 @@ public class frame {
 	}
 
 	public static void appendText(String str) throws BadLocationException {
+		appendText(str, true);
+	}
+
+	public static void appendText(String str, boolean mode) throws BadLocationException {
 		try {
 			// doc.insertString(0, "\n"+str, null );
-			doc.insertString(doc.getLength(), "\n" + str, keyWord);
+			doc.insertString(doc.getLength(), "\n" + str, ((mode) ? mainStyle : attentionStyle));
 			scrollPane.getHorizontalScrollBar().setValue(0);
 			// scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
 
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+
+	public static void clearText() {
+		textPane.setText("");
 	}
 
 	/**
@@ -149,29 +257,29 @@ public class frame {
 
 		JInternalFrame internalFrame = new JInternalFrame("חיפוש בתורה");
 		frame.getContentPane().add(internalFrame, BorderLayout.NORTH);
-		
+
 		panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
-				panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
-		
-				btnNewButton = new JButton("קבע ברירת מחדל");
-				panel_1.add(btnNewButton);
-				btnNewButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						saveValues();
-					}
-				});
-				btnNewButton.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
-				
-						JComboBox comboBox_main = new JComboBox();
-						panel_1.add(comboBox_main);
-						comboBox_main.setMaximumSize(new Dimension(200, 32767));
-						comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
-						comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-						comboBox_main.setModel(
-								new DefaultComboBoxModel(new String[] { "חיפוש רגיל", "חיפוש גימטריה", "חישוב גימטריה", "דילוגים" }));
-						
-								comboBox_main.setBackground(new java.awt.Color(255, 240, 240));
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+
+		btnNewButton = new JButton("קבע ברירת מחדל");
+		panel_1.add(btnNewButton);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				saveValues();
+			}
+		});
+		btnNewButton.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
+
+		comboBox_main = new JComboBox();
+		panel_1.add(comboBox_main);
+		comboBox_main.setMaximumSize(new Dimension(200, 32767));
+		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
+		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		comboBox_main.setModel(
+				new DefaultComboBoxModel(new String[] { "חיפוש רגיל", "חיפוש גימטריה", "חישוב גימטריה", "דילוגים" }));
+
+		comboBox_main.setBackground(new java.awt.Color(255, 240, 240));
 
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(300, 10));
@@ -180,10 +288,11 @@ public class frame {
 		frame.getContentPane().add(panel, BorderLayout.EAST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 124, 42, 0 };
-		gbl_panel.rowHeights = new int[] { 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0 };
 		gbl_panel.columnWeights = new double[] { 1.0, 1.0, Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, Double.MIN_VALUE };
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
 		JLabel label = new JLabel("חיפוש: ");
@@ -299,18 +408,22 @@ public class frame {
 
 		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
 		GridBagConstraints gbc_button = new GridBagConstraints();
+		gbc_button.insets = new Insets(0, 0, 5, 0);
 		gbc_button.gridx = 1;
 		gbc_button.gridy = 16;
+
+		popupMenu = new JPopupMenu();
+		popupMenu.setLabel("");
+		// Then on your component(s)
 
 		textPane = new JTextPane();
 		textPane.setFont(new Font("Miriam CLM", Font.BOLD, 18));
 		textPane.setEditable(false);
 		scrollPane = new JScrollPane(textPane);
-		doc = textPane.getStyledDocument();
-		keyWord = new SimpleAttributeSet();
 		panelWidth = scrollPane.getWidth();
 		textPane.setBackground(new java.awt.Color(251, 255, 243));
-		StyleConstants.setForeground(keyWord, new java.awt.Color(128, 88, 255));
+		textPane.addMouseListener(new PopClickListener());
+
 		Color color1 = new java.awt.Color(240, 240, 255);
 		panel.setBackground(color1);
 		checkBox_gimatriaSofiot.setBackground(color1);
@@ -319,66 +432,52 @@ public class frame {
 		comboBox_sub.setBackground(color1);
 		GroupLayout groupLayout = new GroupLayout(internalFrame.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 1598, Short.MAX_VALUE)
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 38, Short.MAX_VALUE)
-		);
+				groupLayout.createParallelGroup(Alignment.LEADING).addGap(0, 1598, Short.MAX_VALUE));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGap(0, 38, Short.MAX_VALUE));
 		internalFrame.getContentPane().setLayout(groupLayout);
 		;
 
-		StyleConstants.setBold(keyWord, true);
-		StyleConstants.setAlignment(keyWord, StyleConstants.ALIGN_RIGHT);
-		doc.setParagraphAttributes(0, doc.getLength(), keyWord, false);
+		doc = textPane.getStyledDocument();
+		mainStyle = new SimpleAttributeSet();
+		StyleConstants.setForeground(mainStyle, new java.awt.Color(128, 88, 255));
+		attentionStyle = new SimpleAttributeSet();
+		StyleConstants.setForeground(attentionStyle, new java.awt.Color(250, 40, 40));
+		StyleConstants.setBold(mainStyle, true);
+		StyleConstants.setBold(attentionStyle, true);
+		StyleConstants.setAlignment(mainStyle, StyleConstants.ALIGN_RIGHT);
+		StyleConstants.setAlignment(attentionStyle, StyleConstants.ALIGN_RIGHT);
+
+		doc.setParagraphAttributes(0, doc.getLength(), mainStyle, false);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
 		ToraApp.starter();
 
-		JButton button = new JButton("חפש");
+		button = new JButton("חפש");
 		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				button.setEnabled(false);
+				progressBar.setVisible(true);
 				textPane.setText("");
-				Object[] args = { null };
-				int selection = 0;
-				switch (comboBox_main.getSelectedIndex()) {
-				case 0:
-					args = Arrays.copyOf(args, 2);
-					args[0] = textField_Search.getText();
-					args[1] = checkBox_wholeWord.isSelected();
-					selection = 1;
-					break;
-				case 1:
-					args = Arrays.copyOf(args, 4);
-					args[0] = textField_Search.getText();
-					args[1] = checkBox_wholeWord.isSelected();
-					args[2] = checkBox_gimatriaSofiot.isSelected();
-					args[3] = checkBox_countPsukim.isSelected();
-					selection = 2;
-					break;
-				case 2:
-					args = Arrays.copyOf(args, 2);
-					args[0] = textField_Search.getText();
-					args[1] = checkBox_gimatriaSofiot.isSelected();
-					selection = 3;
-					break;
-				}
-				try {
-					if (selection > 0) {
-						Methods.arrayMethods.get(selection - 1).run(args);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				activity = SwingActivity.getInstance();
+				activity.execute();
 			}
 		});
 
 		panel.add(button, gbc_button);
-		initValues();
 
+		progressBar = new JProgressBar();
+		progressBar.setMinimum(0);
+		progressBar.setMaximum(100);
+		progressBar.setVisible(true);
+		GridBagConstraints gbc_progressBar = new GridBagConstraints();
+		gbc_progressBar.gridheight = 2;
+		gbc_progressBar.insets = new Insets(0, 0, 0, 5);
+		gbc_progressBar.gridx = 0;
+		gbc_progressBar.gridy = 24;
+		panel.add(progressBar, gbc_progressBar);
+
+		initValues();
 	}
 }
