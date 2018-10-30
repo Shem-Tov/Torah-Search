@@ -50,7 +50,7 @@ public class Dilugim {
 	private static Boolean compareChar(char chSearch, char ch2, boolean sofiot) {
 		// chSearch must first be without sofiot;
 		// use switchSofiotStr()
-		if (sofiot) {
+		if (!sofiot) {
 			return (chSearch == switchSofiot(ch2));
 		} else {
 			return (chSearch == ch2);
@@ -77,7 +77,7 @@ public class Dilugim {
 			minDilug = Integer.parseInt((String) args[2]);
 			maxDilug = Integer.parseInt((String) args[3]);
 			offset = Integer.parseInt((String) args[4]);
-			if (bool_sofiot) {
+			if (!bool_sofiot) {
 				searchSTR = switchSofiotStr(searchSTR);
 			}
 		} catch (ClassCastException e) {
@@ -105,6 +105,9 @@ public class Dilugim {
 			Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
 			// System.out.println(formatter.locale());
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
+				Output.printText("");
+				Output.printText(str=("דילוג"+ToraApp.cSpace()+thisDilug));
+				Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
 				inputStream = new BufferedReader(new FileReader("./src/Lines_2.txt"));
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
@@ -114,8 +117,9 @@ public class Dilugim {
 				int backup_countPOS = 0; // backup for when reset buffer
 				int backup_countChar = 0; // backup for when reset buffer
 				searchIndex = 0; // index of letter in searchSTR which is being examined
-				countChar = 0; // used to update progressbar and to count Chars to know if too examine the char
+				countChar = 0; // used to update progressbar
 				count = 0; // counts matches
+				int lastCharIndex = 0; // counts letters from last match
 				int c;
 				while ((c = inputStream.read()) != -1) {
 					if ((c == 10) || (c == 32)) {
@@ -127,13 +131,15 @@ public class Dilugim {
 						}
 						continue;
 					}
+					lastCharIndex = (searchIndex == 0) ? 0 : lastCharIndex + 1;
 					countPOS++;
 					countChar++;
 					if (countChar % 250 == 0) {
 						frame.SwingActivity.getInstance().callProcess(countLines);
 					}
-					if ((countChar % thisDilug) == (offset % thisDilug)) {
+					if ((searchIndex == 0) || (lastCharIndex % thisDilug == 0)) {
 						if (compareChar(searchSTR.charAt(searchIndex), (char) c, bool_sofiot)) {
+							lastCharIndex = 0;
 							if (searchIndex == 0) {
 								inputStream.mark(markInt);
 								backup_countLines = countLines;
@@ -153,10 +159,19 @@ public class Dilugim {
 								results.add(new String[] { searchSTR, pBookInstance.getBookName(),
 										pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters() });
 								inputStream.reset();
+								searchIndex = 0;
 								countLines = backup_countLines;
 								countPOS = backup_countPOS;
 								countChar = backup_countChar;
+								lastCharIndex=0;
 							}
+						} else if (searchIndex != 0) {
+							searchIndex=0;
+							inputStream.reset();
+							lastCharIndex=0;
+							countLines = backup_countLines;
+							countPOS = backup_countPOS;
+							countChar = backup_countChar;							
 						}
 					}
 				}

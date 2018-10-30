@@ -112,6 +112,9 @@ public class frame {
 	private static JTextField textField_offset;
 	private static JComboBox<?> comboBox_main;
 	
+	public static void clearTextPane() {
+		textPane.setText("");
+	}
 	public static String getTextField_offset() {
 		return textField_offset.getText();
 	}
