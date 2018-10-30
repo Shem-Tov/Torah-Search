@@ -4,7 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import StringAlignUtils.StringAlignUtils;
 
 public class Dilugim {
@@ -58,7 +62,7 @@ public class Dilugim {
 	}
 
 	public void searchWordsDilugim(Object[] args) throws IOException {
-		ArrayList<String[]> results = new ArrayList<String[]>();
+		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
@@ -151,13 +155,27 @@ public class Dilugim {
 							searchIndex++;
 							if (searchIndex == searchSTR.length()) {
 								count++;
-								ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-								String tempStr1 = "\u202B" + "\"" + searchOriginal + "\" " + "נמצא ב"
-										+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-										+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-								Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    ");
-								results.add(new String[] { searchSTR, pBookInstance.getBookName(),
-										pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters() });
+								Output.printText("\u202B" + "\"" + searchOriginal + "\" " + "נמצא ב");
+								Boolean boolRepeat = false; //verify if comma and spaces are needed
+								String[][] resArray = new String[searchSTR.length()][3];
+								for (int i=0; i<searchSTR.length(); i++) {
+									if (((i+1)<searchSTR.length()) && (lineForChar[i][0]==lineForChar[i+1][0])) {
+										Output.printText(((boolRepeat)?", ":"") + String.valueOf(searchOriginal.charAt(i)),(byte)2);
+										boolRepeat = true;
+										continue;
+									}
+									boolRepeat = false;
+									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
+									String tempStr1 = ":  "+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+											+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+									try (Stream<String> lines = Files.lines(Paths.get("file.txt"))) {
+									    String lineText = lines.skip(lineForChar[i][0]).findFirst().get();
+									    Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineText);
+									}
+									resArray[i]=new String[] { pBookInstance.getBookName(),
+											pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters() };
+								}
+								results.add(resArray);
 								inputStream.reset();
 								searchIndex = 0;
 								countLines = backup_countLines;

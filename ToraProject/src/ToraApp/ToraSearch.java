@@ -63,7 +63,7 @@ public class ToraSearch {
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
 						frame.frame.clearText();
-						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות",false);
+						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות",1);
 						if (inputStream != null) {
 							inputStream.close();
 						}

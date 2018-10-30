@@ -111,38 +111,47 @@ public class frame {
 	private static JTextField textField_dilugMax;
 	private static JTextField textField_offset;
 	private static JComboBox<?> comboBox_main;
-	
+
 	public static void clearTextPane() {
 		textPane.setText("");
 	}
+
 	public static String getTextField_offset() {
 		return textField_offset.getText();
 	}
+
 	public static String getTextField_Search() {
 		return textField_Search.getText();
 	}
+
 	public static String getTextField_dilugMin() {
 		return textField_dilugMin.getText();
 	}
+
 	public static String getTextField_dilugMax() {
 		return textField_dilugMax.getText();
 	}
+
 	public static Boolean getCheckBox_gimatriaSofiot() {
 		return checkBox_gimatriaSofiot.isSelected();
 	}
+
 	public static Boolean getCheckBox_wholeWord() {
 		return checkBox_wholeWord.isSelected();
-	}	
+	}
+
 	public static Boolean getCheckBox_countPsukim() {
 		return checkBox_countPsukim.isSelected();
 	}
+
 	public static int getComboBox_main() {
 		return comboBox_main.getSelectedIndex();
 	}
-	public static void setButtonEnabled() 
-	{
+
+	public static void setButtonEnabled() {
 		button.setEnabled(true);
 	}
+
 	static JTextPane textPane;
 	private SwingActivity activity;
 	private static JScrollPane scrollPane;
@@ -163,13 +172,11 @@ public class frame {
 	private static JProgressBar progressBar;
 	private JLabel label_offset;
 
-	
-	public static void showProgressBar(Boolean bool)
-	{
+	public static void showProgressBar(Boolean bool) {
 		progressBar.setVisible(bool);
 	}
-	public static void setProgressBar(int num) 
-	{
+
+	public static void setProgressBar(int num) {
 		progressBar.setValue(num);
 	}
 
@@ -197,13 +204,17 @@ public class frame {
 	}
 
 	public static void appendText(String str) throws BadLocationException {
-		appendText(str, true);
+		appendText(str, (byte)0);
 	}
 
-	public static void appendText(String str, boolean mode) throws BadLocationException {
+	public static void appendText(String str, byte mode) throws BadLocationException {
 		try {
 			// doc.insertString(0, "\n"+str, null );
-			doc.insertString(doc.getLength(), "\n" + str, ((mode) ? mainStyle : attentionStyle));
+			// mode 0 = regular style with Carriage Return
+			// mode 1 = error style with Carriage Return
+			// mode 2 = regular style without Carriage Return
+			doc.insertString(doc.getLength(), ((mode != 2) ? "\n" : "") + str,
+					((mode != 1) ? mainStyle : attentionStyle));
 			scrollPane.getHorizontalScrollBar().setValue(0);
 			// scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
 
@@ -421,82 +432,82 @@ public class frame {
 				activity.execute();
 			}
 		});
-		
-				checkBox_countPsukim = new JCheckBox(checkBox_countPsukim_true);
-				checkBox_countPsukim.setSelected(true);
-				checkBox_countPsukim.setAlignmentX(Component.RIGHT_ALIGNMENT);
-				checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
-				GridBagConstraints gbc_checkBox_countPsukim = new GridBagConstraints();
-				gbc_checkBox_countPsukim.anchor = GridBagConstraints.EAST;
-				gbc_checkBox_countPsukim.insets = new Insets(0, 0, 5, 5);
-				gbc_checkBox_countPsukim.gridx = 0;
-				gbc_checkBox_countPsukim.gridy = 7;
-				checkBox_countPsukim.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent event) {
-						JCheckBox cb = (JCheckBox) event.getSource();
-						cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
-					}
-				});
-												
-												label_offset = new JLabel("קיזוז");
-												label_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
-												GridBagConstraints gbc_label_offset = new GridBagConstraints();
-												gbc_label_offset.anchor = GridBagConstraints.EAST;
-												gbc_label_offset.insets = new Insets(0, 0, 5, 5);
-												gbc_label_offset.gridx = 0;
-												gbc_label_offset.gridy = 3;
-												panel.add(label_offset, gbc_label_offset);
-												
-												textField_offset = new JTextField();
-												textField_offset.setText((String) null);
-												textField_offset.setMinimumSize(new Dimension(150, 25));
-												textField_offset.setHorizontalAlignment(SwingConstants.RIGHT);
-												textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
-												textField_offset.setColumns(10);
-												GridBagConstraints gbc_textField_offset = new GridBagConstraints();
-												gbc_textField_offset.anchor = GridBagConstraints.EAST;
-												gbc_textField_offset.insets = new Insets(0, 0, 5, 0);
-												gbc_textField_offset.gridx = 1;
-												gbc_textField_offset.gridy = 3;
-												panel.add(textField_offset, gbc_textField_offset);
-										
-												JComboBox comboBox_sub = new JComboBox();
-												comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
-												comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
-												comboBox_sub.setModel(new DefaultComboBoxModel(new String[] { "אותיות", "מילים", "פסוקים" }));
-												GridBagConstraints gbc_comboBox_sub = new GridBagConstraints();
-												gbc_comboBox_sub.anchor = GridBagConstraints.EAST;
-												gbc_comboBox_sub.insets = new Insets(0, 0, 5, 5);
-												gbc_comboBox_sub.gridx = 0;
-												gbc_comboBox_sub.gridy = 4;
-												panel.add(comboBox_sub, gbc_comboBox_sub);
-												comboBox_sub.setBackground(color1);
-								
-										checkBox_wholeWord = new JCheckBox("מילים שלמות");
-										checkBox_wholeWord.setAlignmentX(Component.RIGHT_ALIGNMENT);
-										checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
-										GridBagConstraints gbc_checkBox_wholeWord = new GridBagConstraints();
-										gbc_checkBox_wholeWord.anchor = GridBagConstraints.EAST;
-										gbc_checkBox_wholeWord.insets = new Insets(0, 0, 5, 5);
-										gbc_checkBox_wholeWord.gridx = 0;
-										gbc_checkBox_wholeWord.gridy = 5;
-										panel.add(checkBox_wholeWord, gbc_checkBox_wholeWord);
-										checkBox_wholeWord.setBackground(color1);
-						
-								checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
-								checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
-								checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
-								GridBagConstraints gbc_checkBox_gimatriaSofiot = new GridBagConstraints();
-								gbc_checkBox_gimatriaSofiot.anchor = GridBagConstraints.EAST;
-								gbc_checkBox_gimatriaSofiot.insets = new Insets(0, 0, 5, 5);
-								gbc_checkBox_gimatriaSofiot.gridx = 0;
-								gbc_checkBox_gimatriaSofiot.gridy = 6;
-								panel.add(checkBox_gimatriaSofiot, gbc_checkBox_gimatriaSofiot);
-								checkBox_gimatriaSofiot.setBackground(color1);
-				
-						panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
-						checkBox_countPsukim.setBackground(color1);
+
+		checkBox_countPsukim = new JCheckBox(checkBox_countPsukim_true);
+		checkBox_countPsukim.setSelected(true);
+		checkBox_countPsukim.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		GridBagConstraints gbc_checkBox_countPsukim = new GridBagConstraints();
+		gbc_checkBox_countPsukim.anchor = GridBagConstraints.EAST;
+		gbc_checkBox_countPsukim.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox_countPsukim.gridx = 0;
+		gbc_checkBox_countPsukim.gridy = 7;
+		checkBox_countPsukim.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JCheckBox cb = (JCheckBox) event.getSource();
+				cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
+			}
+		});
+
+		label_offset = new JLabel("קיזוז");
+		label_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		GridBagConstraints gbc_label_offset = new GridBagConstraints();
+		gbc_label_offset.anchor = GridBagConstraints.EAST;
+		gbc_label_offset.insets = new Insets(0, 0, 5, 5);
+		gbc_label_offset.gridx = 0;
+		gbc_label_offset.gridy = 3;
+		panel.add(label_offset, gbc_label_offset);
+
+		textField_offset = new JTextField();
+		textField_offset.setText((String) null);
+		textField_offset.setMinimumSize(new Dimension(150, 25));
+		textField_offset.setHorizontalAlignment(SwingConstants.RIGHT);
+		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		textField_offset.setColumns(10);
+		GridBagConstraints gbc_textField_offset = new GridBagConstraints();
+		gbc_textField_offset.anchor = GridBagConstraints.EAST;
+		gbc_textField_offset.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_offset.gridx = 1;
+		gbc_textField_offset.gridy = 3;
+		panel.add(textField_offset, gbc_textField_offset);
+
+		JComboBox comboBox_sub = new JComboBox();
+		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		comboBox_sub.setModel(new DefaultComboBoxModel(new String[] { "אותיות", "מילים", "פסוקים" }));
+		GridBagConstraints gbc_comboBox_sub = new GridBagConstraints();
+		gbc_comboBox_sub.anchor = GridBagConstraints.EAST;
+		gbc_comboBox_sub.insets = new Insets(0, 0, 5, 5);
+		gbc_comboBox_sub.gridx = 0;
+		gbc_comboBox_sub.gridy = 4;
+		panel.add(comboBox_sub, gbc_comboBox_sub);
+		comboBox_sub.setBackground(color1);
+
+		checkBox_wholeWord = new JCheckBox("מילים שלמות");
+		checkBox_wholeWord.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		GridBagConstraints gbc_checkBox_wholeWord = new GridBagConstraints();
+		gbc_checkBox_wholeWord.anchor = GridBagConstraints.EAST;
+		gbc_checkBox_wholeWord.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox_wholeWord.gridx = 0;
+		gbc_checkBox_wholeWord.gridy = 5;
+		panel.add(checkBox_wholeWord, gbc_checkBox_wholeWord);
+		checkBox_wholeWord.setBackground(color1);
+
+		checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
+		checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		GridBagConstraints gbc_checkBox_gimatriaSofiot = new GridBagConstraints();
+		gbc_checkBox_gimatriaSofiot.anchor = GridBagConstraints.EAST;
+		gbc_checkBox_gimatriaSofiot.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox_gimatriaSofiot.gridx = 0;
+		gbc_checkBox_gimatriaSofiot.gridy = 6;
+		panel.add(checkBox_gimatriaSofiot, gbc_checkBox_gimatriaSofiot);
+		checkBox_gimatriaSofiot.setBackground(color1);
+
+		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
+		checkBox_countPsukim.setBackground(color1);
 
 		panel.add(button, gbc_button);
 

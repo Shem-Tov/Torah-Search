@@ -31,35 +31,39 @@ public class ExcelFunctions {
 		DataFormatter dataFormatter = new DataFormatter();
 		try {
 			FileInputStream excelFile = new FileInputStream(new File(inputFile));
-            workbook = new HSSFWorkbook(excelFile);
+			workbook = new HSSFWorkbook(excelFile);
 			Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
 			Iterator<Row> iterator = datatypeSheet.iterator();
-			data = new String[posX-X][posY-Y];
+			data = new String[posX - X][posY - Y];
 			int i = 0;
 			int j = 0;
 			Row currentRow;
-			while (j<Y) {
-				  currentRow = iterator.next();
-				  j++;
-			} 
+			while (j < Y) {
+				currentRow = iterator.next();
+				j++;
+			}
 			while (iterator.hasNext()) {
 				currentRow = iterator.next();
 				Iterator<Cell> cellIterator = currentRow.iterator();
-				i=X;
+				i = X;
 				while (cellIterator.hasNext()) {
 					Cell currentCell = cellIterator.next();
-					data[i++-X][(j)-Y] = dataFormatter.formatCellValue(currentCell);
-					if (i >= (posX)) { break;}
+					data[i++ - X][(j) - Y] = dataFormatter.formatCellValue(currentCell);
+					if (i >= (posX)) {
+						break;
+					}
 				}
 				j++;
-				if (j >= (posY)) { break;}
+				if (j >= (posY)) {
+					break;
+				}
 			}
-			Output.printText("Imported XLS", false);
+			Output.printText("Imported XLS", 1);
 		} catch (FileNotFoundException e) {
-			Output.printText("Error importing from EXCEL Sheet", false);
+			Output.printText("Error importing from EXCEL Sheet", 1);
 			e.printStackTrace();
 		} catch (IOException e) {
-			Output.printText("Error importing from EXCEL Sheet", false);
+			Output.printText("Error importing from EXCEL Sheet", 1);
 			e.printStackTrace();
 		} finally {
 			if (workbook != null) {
@@ -74,7 +78,7 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static void writeXLS(String fileName, String Title, String searchSTR, ArrayList<String[]> results) {
+	public static void writeXLS(String fileName, String Title, String[] searchSTR, ArrayList<String[][]> results) {
 
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("דוח");
@@ -133,14 +137,25 @@ public class ExcelFunctions {
 		}
 		row = sheet.createRow(rowNum++);
 		int index = 1;
-		for (String[] res : results) {
+
+		for (String[][] resArr : results) {
 			cell = row.createCell(0);
 			cell.setCellValue(index++);
-			for (int i = 1; i <= res.length; i++) {
-				cell = row.createCell(i);
-				cell.setCellValue(res[i - 1]);
+			cell = row.createCell(1);
+			cell.setCellValue(searchSTR);
+			boolean bool_isArray = (resArr.length > 1);
+			int j = 0;
+			for (String[] res : resArr) {
+				if (bool_isArray) {
+					cell = row.createCell(2);
+					cell.setCellValue(searchSTR.charAt(j++));
+				}
+				for (int i = 1; i <= res.length; i++) {
+					cell = row.createCell(i + ((bool_isArray) ? 2 : 1));
+					cell.setCellValue(res[i - 1]);
+				}
+				row = sheet.createRow(rowNum++);
 			}
-			row = sheet.createRow(rowNum++);
 		}
 
 		sheet.autoSizeColumn(0);
