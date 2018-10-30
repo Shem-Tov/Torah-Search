@@ -42,7 +42,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args = Arrays.copyOf(args, 2);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_wholeWord();
-			selection = 1;
+			selection = Methods.id_searchWords;
 			break;
 		case 1:
 			args = Arrays.copyOf(args, 4);
@@ -50,13 +50,22 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[1] = frame.getCheckBox_wholeWord();
 			args[2] = frame.getCheckBox_gimatriaSofiot();
 			args[3] = frame.getCheckBox_countPsukim();
-			selection = 2;
+			selection = Methods.id_searchGimatria;
 			break;
 		case 2:
 			args = Arrays.copyOf(args, 2);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_gimatriaSofiot();
-			selection = 3;
+			selection = Methods.id_calculateGimatria;
+			break;
+		case 3:
+			args = Arrays.copyOf(args, 4);
+			args[0] = frame.getTextField_Search();
+			args[1] = frame.getCheckBox_gimatriaSofiot();
+			args[2] = frame.getTextField_dilugMin();
+			args[3] = frame.getTextField_dilugMax();
+			args[4] = frame.getTextField_offset();
+			selection = Methods.id_searchDilugim;
 			break;
 		}
 		try {

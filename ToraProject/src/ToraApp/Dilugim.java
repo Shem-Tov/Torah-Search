@@ -69,15 +69,14 @@ public class Dilugim {
 		int minDilug;
 		int maxDilug;
 		int offset;
-		boolean bool_wholeWords;
 		// FileWriter outputStream2 = null;
 		try {
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
-			minDilug = Integer.parseInt((String) args[1]);
-			maxDilug = Integer.parseInt((String) args[2]);
-			offset = Integer.parseInt((String) args[3]);
-			bool_sofiot = (Boolean) args[4];
+			bool_sofiot = (Boolean) args[1];
+			minDilug = Integer.parseInt((String) args[2]);
+			maxDilug = Integer.parseInt((String) args[3]);
+			offset = Integer.parseInt((String) args[4]);
 			if (bool_sofiot) {
 				searchSTR = switchSofiotStr(searchSTR);
 			}
@@ -86,7 +85,6 @@ public class Dilugim {
 			return;
 		}
 
-		int countPsukim = 0;
 		int countChar;
 		int count = 0;
 		try {

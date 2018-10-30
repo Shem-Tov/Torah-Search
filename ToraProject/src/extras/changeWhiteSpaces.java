@@ -40,7 +40,6 @@ public class changeWhiteSpaces {
 	public static String readTextFile(String fileName) {
 		String returnValue = "";
 		FileReader file;
-		String line = "";
 		try {
 			file = new FileReader(fileName);
 			BufferedReader reader = new BufferedReader(file);
