@@ -59,12 +59,13 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			selection = Methods.id_calculateGimatria;
 			break;
 		case 3:
-			args = Arrays.copyOf(args, 4);
+			args = Arrays.copyOf(args, 5);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_gimatriaSofiot();
 			args[2] = frame.getTextField_dilugMin();
 			args[3] = frame.getTextField_dilugMax();
-			args[4] = frame.getTextField_offset();
+			String offset1 = frame.getTextField_offset();
+			args[4] = ((offset1==null)||(offset1.length()==0)) ? "0":offset1;
 			selection = Methods.id_searchDilugim;
 			break;
 		}
