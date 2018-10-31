@@ -157,7 +157,7 @@ public class Dilugim {
 								count++;
 								Output.printText("\u202B" + "\"" + searchOriginal + "\" " + "נמצא ב");
 								Boolean boolRepeat = false; // verify if comma and spaces are needed
-								String[][] resArray = new String[searchSTR.length() + 1][5];
+								String[][] resArray = new String[searchSTR.length() + 1][6];
 								resArray[0][0] = String.valueOf(thisDilug);
 								resArray[0][1] = searchOriginal;
 								String reportLine = "";
@@ -173,6 +173,7 @@ public class Dilugim {
 									resArray[i + 1][2] = pBookInstance.getPerekLetters();
 									resArray[i + 1][3] = pBookInstance.getPasukLetters();
 									resArray[i + 1][4] = lineText;
+									resArray[i + 1][5] = String.valueOf(lineForChar[i][1]);
 									if (((i + 1) < searchSTR.length())
 											&& (lineForChar[i][0] == lineForChar[i + 1][0])) {
 										boolRepeat = true;

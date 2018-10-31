@@ -83,7 +83,7 @@ public class ExcelFunctions {
 		// mode=1 dilugim search
 		HSSFWorkbook workbook = null;
 		HSSFSheet sheet = null;
-		File file=null;
+		File file = null;
 		String fileNameExtended = EXCEL_FILE_LOCATION + fileName + EXCEL_FILE_EXTENSION;
 		try {
 			new File(EXCEL_FILE_LOCATION).mkdirs();
@@ -101,9 +101,9 @@ public class ExcelFunctions {
 			e.printStackTrace();
 		}
 		sheet = workbook.getSheet(sheetName);
-		if(sheet != null)   {
-		    int index = workbook.getSheetIndex(sheetName);
-		    workbook.removeSheetAt(index);
+		if (sheet != null) {
+			int index = workbook.getSheetIndex(sheetName);
+			workbook.removeSheetAt(index);
 		}
 		sheet = workbook.createSheet(sheetName);
 		HSSFFont txtFont = workbook.createFont();
@@ -122,7 +122,7 @@ public class ExcelFunctions {
 		CellStyle style = workbook.createCellStyle(); // Create new style
 		style.setFont(txtFont);
 		style.setAlignment(HorizontalAlignment.RIGHT);
-		
+
 		sheet.setDefaultRowHeightInPoints(36);
 		// CellStyle fontStyle = workbook.createCellStyle();
 		// fontStyle.setFont(txtFont);
@@ -189,10 +189,22 @@ public class ExcelFunctions {
 				if (mode == 1) {
 					row = sheet.createRow(rowNum++);
 				}
-				for (int i = 1; i <= res.length; i++) {
+				for (int i = 1; i <= (res.length - ((mode == 1) ? 1 : 0)); i++) {
 					cell = row.createCell(i + ((mode == 1) ? 1 : 0));
 					cell.setCellStyle(style);
-					cell.setCellValue(res[i - 1]);
+					switch (mode) {
+					case 1:
+						if (i<4) {
+							cell.setCellValue(res[i - 1]);
+						} else {  //column 5 is Tora Line which should be HTML formatted
+							//cell.setHtmlString();
+						}
+						
+						
+						break;
+					default:
+						cell.setCellValue(res[i - 1]);
+					}
 				}
 			}
 		}
