@@ -100,7 +100,11 @@ public class ExcelFunctions {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		sheet = workbook.getSheet(sheetName);
+		if(sheet != null)   {
+		    int index = workbook.getSheetIndex(sheetName);
+		    workbook.removeSheetAt(index);
+		}
 		sheet = workbook.createSheet(sheetName);
 		HSSFFont txtFont = workbook.createFont();
 		HSSFFont txtFontTitle = workbook.createFont();
@@ -118,9 +122,8 @@ public class ExcelFunctions {
 		CellStyle style = workbook.createCellStyle(); // Create new style
 		style.setFont(txtFont);
 		style.setAlignment(HorizontalAlignment.RIGHT);
-
+		
 		sheet.setDefaultRowHeightInPoints(36);
-
 		// CellStyle fontStyle = workbook.createCellStyle();
 		// fontStyle.setFont(txtFont);
 		sheet.setRightToLeft(true);
@@ -172,8 +175,8 @@ public class ExcelFunctions {
 				cell = row.createCell(1);
 				cell.setCellStyle(style);
 				cell.setCellValue(resArr[0][0]);
-				cell.setCellStyle(style);
 				cell = row.createCell(2);
+				cell.setCellStyle(style);
 				cell.setCellValue(resArr[0][1]);
 				break;
 			}
@@ -195,7 +198,10 @@ public class ExcelFunctions {
 		}
 
 		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(2);
+		sheet.autoSizeColumn(3);
 		sheet.autoSizeColumn(5);
+		sheet.autoSizeColumn(6);
 
 		try {
 			FileOutputStream outputStream = new FileOutputStream(fileNameExtended);
