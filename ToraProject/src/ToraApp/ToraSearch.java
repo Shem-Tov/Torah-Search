@@ -19,7 +19,7 @@ public class ToraSearch {
 	}
 	
 	public void searchWords(Object[] args) throws IOException {
-		ArrayList<String[]> results = new ArrayList<String[]>();
+		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
@@ -82,8 +82,8 @@ public class ToraSearch {
 									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
-							results.add(new String[] { searchSTR, pBookInstance.getBookName(),
-									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line });
+							results.add(new String[][] {{ searchSTR, pBookInstance.getBookName(),
+									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
 						}
 					}
 				} else {
@@ -96,15 +96,16 @@ public class ToraSearch {
 								+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 								+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 						Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
-						results.add(new String[] { searchSTR, pBookInstance.getBookName(),
-								pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line });
+						results.add(new String[][] {{ searchSTR, pBookInstance.getBookName(),
+								pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
 					}
 				}
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
-			String fileName = searchSTR + "_" + ((bool_wholeWords) ? "מילים" : "אותיות");
+			String fileName = searchSTR;
+			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, Title, searchSTR, results);
+				ExcelFunctions.writeXLS(fileName,sheet,0, Title, searchSTR, results);
 			}
 			Output.printText("");
 			Output.printText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"

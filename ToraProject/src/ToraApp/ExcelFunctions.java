@@ -1,5 +1,7 @@
 package ToraApp;
 
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -9,9 +11,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,13 +77,34 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static void writeXLS(String fileName, String Title, String[] searchSTR, ArrayList<String[][]> results) {
+	public static void writeXLS(String fileName, String sheetName, int mode, String Title, String searchSTR,
+			ArrayList<String[][]> results) {
+		// mode=0 regular search
+		// mode=1 dilugim search
+		HSSFWorkbook workbook = null;
+		HSSFSheet sheet = null;
+		File file=null;
+		String fileNameExtended = EXCEL_FILE_LOCATION + fileName + EXCEL_FILE_EXTENSION;
+		try {
+			new File(EXCEL_FILE_LOCATION).mkdirs();
+			file = new File(fileNameExtended);
+			if (file.exists()) {
+				FileInputStream excelFile = new FileInputStream(file);
+				workbook = new HSSFWorkbook(excelFile);
+			} else {
+				workbook = new HSSFWorkbook();
+				// HSSFSheet sheet = workbook.createSheet("Sample sheet1");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet("דוח");
-		XSSFFont txtFont = workbook.createFont();
-		XSSFFont txtFontTitle = workbook.createFont();
-		XSSFFont txtFontHeader = workbook.createFont();
+		sheet = workbook.createSheet(sheetName);
+		HSSFFont txtFont = workbook.createFont();
+		HSSFFont txtFontTitle = workbook.createFont();
+		HSSFFont txtFontHeader = workbook.createFont();
 		txtFont.setFontName("Nachlieli CLM");
 		txtFont.setFontHeightInPoints((short) 16);
 		txtFontTitle.setFontName("Nachlieli CLM");
@@ -98,25 +118,21 @@ public class ExcelFunctions {
 		CellStyle style = workbook.createCellStyle(); // Create new style
 		style.setFont(txtFont);
 		style.setAlignment(HorizontalAlignment.RIGHT);
-		org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol cTCol = ((XSSFSheet) sheet).getCTWorksheet()
-				.getColsArray(0).addNewCol();
-		cTCol.setMin(1);
-		cTCol.setMax(16384);
-		cTCol.setWidth(12.7109375);
-		cTCol.setStyle(style.getIndex());
 
 		sheet.setDefaultRowHeightInPoints(36);
 
 		// CellStyle fontStyle = workbook.createCellStyle();
 		// fontStyle.setFont(txtFont);
-		sheet.getCTWorksheet().getSheetViews().getSheetViewArray(0).setRightToLeft(true);
+		sheet.setRightToLeft(true);
 		CellStyle styleTitle = workbook.createCellStyle(); // Create new style
 		styleTitle.setWrapText(true); // Set wordwrap
 		styleTitle.setFont(txtFontTitle);
+		styleTitle.setAlignment(HorizontalAlignment.RIGHT);
 		CellStyle styleHeader = workbook.createCellStyle(); // Create new style
 		styleHeader.setFont(txtFontHeader);
-
-		String[] header = { "אינדקס", "נמצא", "ספר", "פרק", "פסוק", "תורה" };
+		styleHeader.setAlignment(HorizontalAlignment.RIGHT);
+		final String dilugWord = "דילוג";
+		String[] header = { "אינדקס", dilugWord, "נמצא", "ספר", "פרק", "פסוק", "תורה" };
 
 		int rowNum = 0;
 		System.out.println("Creating excel");
@@ -132,29 +148,49 @@ public class ExcelFunctions {
 		row = sheet.createRow(rowNum++);
 		row.setRowStyle(styleHeader);
 		for (String field : header) {
+			if ((mode != 1) && (field == dilugWord)) {
+				continue;
+			}
 			cell = row.createCell(colNum++);
+			cell.setCellStyle(style);
 			cell.setCellValue(field);
 		}
-		row = sheet.createRow(rowNum++);
+
 		int index = 1;
 
 		for (String[][] resArr : results) {
+			// if ((mode==1) && (counter++==0)) { // The Dilugim Mode needs to skip first
+			// array
+			// continue;
+			// }
+			row = sheet.createRow(rowNum++);
 			cell = row.createCell(0);
+			cell.setCellStyle(style);
 			cell.setCellValue(index++);
-			cell = row.createCell(1);
-			cell.setCellValue(searchSTR);
-			boolean bool_isArray = (resArr.length > 1);
-			int j = 0;
+			switch (mode) {
+			case 1:
+				cell = row.createCell(1);
+				cell.setCellStyle(style);
+				cell.setCellValue(resArr[0][0]);
+				cell.setCellStyle(style);
+				cell = row.createCell(2);
+				cell.setCellValue(resArr[0][1]);
+				break;
+			}
+
+			int counter = 0;
 			for (String[] res : resArr) {
-				if (bool_isArray) {
-					cell = row.createCell(2);
-					cell.setCellValue(searchSTR.charAt(j++));
+				if ((counter++ == 0) && (mode == 1)) {
+					continue;
+				}
+				if (mode == 1) {
+					row = sheet.createRow(rowNum++);
 				}
 				for (int i = 1; i <= res.length; i++) {
-					cell = row.createCell(i + ((bool_isArray) ? 2 : 1));
+					cell = row.createCell(i + ((mode == 1) ? 1 : 0));
+					cell.setCellStyle(style);
 					cell.setCellValue(res[i - 1]);
 				}
-				row = sheet.createRow(rowNum++);
 			}
 		}
 
@@ -162,11 +198,13 @@ public class ExcelFunctions {
 		sheet.autoSizeColumn(5);
 
 		try {
-			new File(EXCEL_FILE_LOCATION).mkdirs();
-			FileOutputStream outputStream = new FileOutputStream(EXCEL_FILE_LOCATION + fileName + EXCEL_FILE_EXTENSION);
+			FileOutputStream outputStream = new FileOutputStream(fileNameExtended);
 			workbook.write(outputStream);
 			workbook.close();
-		} catch (FileNotFoundException e) {
+			outputStream.close();
+		} catch (
+
+		FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -178,8 +216,8 @@ public class ExcelFunctions {
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
-		writeXLS("בדיקה", "Title", "searchSTR",
-				new ArrayList<String[]>(Arrays.asList(new String[] { "1", "2" }, new String[] { "3", "4" })));
+		writeXLS("בדיקה", "דוח", 0, "Title", "searchSTR", new ArrayList<String[][]>(
+				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })));
 
 	}
 

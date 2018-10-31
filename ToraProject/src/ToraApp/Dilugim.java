@@ -62,7 +62,6 @@ public class Dilugim {
 	}
 
 	public void searchWordsDilugim(Object[] args) throws IOException {
-		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
@@ -109,8 +108,9 @@ public class Dilugim {
 			Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
 			// System.out.println(formatter.locale());
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
+				ArrayList<String[][]> results = new ArrayList<String[][]>();
 				Output.printText("");
-				Output.printText(str=("דילוג"+ToraApp.cSpace()+thisDilug));
+				Output.printText(str = ("דילוג" + ToraApp.cSpace() + thisDilug));
 				Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
 				inputStream = new BufferedReader(new FileReader("./src/Lines_2.txt"));
 				inputStream.mark(markInt);
@@ -156,24 +156,33 @@ public class Dilugim {
 							if (searchIndex == searchSTR.length()) {
 								count++;
 								Output.printText("\u202B" + "\"" + searchOriginal + "\" " + "נמצא ב");
-								Boolean boolRepeat = false; //verify if comma and spaces are needed
-								String[][] resArray = new String[searchSTR.length()][3];
-								for (int i=0; i<searchSTR.length(); i++) {
-									if (((i+1)<searchSTR.length()) && (lineForChar[i][0]==lineForChar[i+1][0])) {
-										Output.printText(((boolRepeat)?", ":"") + String.valueOf(searchOriginal.charAt(i)),(byte)2);
+								Boolean boolRepeat = false; // verify if comma and spaces are needed
+								String[][] resArray = new String[searchSTR.length() + 1][5];
+								resArray[0][0] = String.valueOf(thisDilug);
+								resArray[0][1] = searchOriginal;
+								String reportLine = "";
+								for (int i = 0; i < searchSTR.length(); i++) {
+									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
+									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
+									String lineText;
+									try (Stream<String> lines = Files.lines(Paths.get("./src/Lines_2.txt"))) {
+										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
+									}
+									resArray[i + 1][0] = String.valueOf(searchSTR.charAt(i));
+									resArray[i + 1][1] = pBookInstance.getBookName();
+									resArray[i + 1][2] = pBookInstance.getPerekLetters();
+									resArray[i + 1][3] = pBookInstance.getPasukLetters();
+									resArray[i + 1][4] = lineText;
+									if (((i + 1) < searchSTR.length())
+											&& (lineForChar[i][0] == lineForChar[i + 1][0])) {
 										boolRepeat = true;
 										continue;
 									}
 									boolRepeat = false;
-									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
-									String tempStr1 = ":  "+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+									String tempStr1 = reportLine + ":  "
+											+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 											+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-									try (Stream<String> lines = Files.lines(Paths.get("file.txt"))) {
-									    String lineText = lines.skip(lineForChar[i][0]).findFirst().get();
-									    Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineText);
-									}
-									resArray[i]=new String[] { pBookInstance.getBookName(),
-											pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters() };
+									Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineText);
 								}
 								results.add(resArray);
 								inputStream.reset();
@@ -181,23 +190,24 @@ public class Dilugim {
 								countLines = backup_countLines;
 								countPOS = backup_countPOS;
 								countChar = backup_countChar;
-								lastCharIndex=0;
+								lastCharIndex = 0;
 							}
 						} else if (searchIndex != 0) {
-							searchIndex=0;
+							searchIndex = 0;
 							inputStream.reset();
-							lastCharIndex=0;
+							lastCharIndex = 0;
 							countLines = backup_countLines;
 							countPOS = backup_countPOS;
-							countChar = backup_countChar;							
+							countChar = backup_countChar;
 						}
 					}
 				}
-			}
-			String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
-			String fileName = searchSTR + "_" + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
-			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, Title, searchOriginal, results);
+				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
+				String fileName = searchOriginal;
+				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
+				if (count > 0) {
+					ExcelFunctions.writeXLS(fileName,sheet, 1, Title, searchOriginal, results);
+				}
 			}
 			Output.printText("");
 			Output.printText(
