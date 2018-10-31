@@ -68,10 +68,9 @@ public class Dilugim {
 		String searchSTR;
 		String searchOriginal;
 		Boolean bool_sofiot;
-		int searchIndex;
 		int minDilug;
 		int maxDilug;
-		int offset;
+//		int offset;
 		// FileWriter outputStream2 = null;
 		try {
 			searchOriginal = ((String) args[0]);
@@ -79,7 +78,7 @@ public class Dilugim {
 			bool_sofiot = (Boolean) args[1];
 			minDilug = Integer.parseInt((String) args[2]);
 			maxDilug = Integer.parseInt((String) args[3]);
-			offset = Integer.parseInt((String) args[4]);
+//			offset = Integer.parseInt((String) args[4]);
 			if (!bool_sofiot) {
 				searchSTR = switchSofiotStr(searchSTR);
 			}
@@ -88,7 +87,6 @@ public class Dilugim {
 			return;
 		}
 
-		int countChar;
 		int count = 0;
 		try {
 			// System.out.println("Working Directory = " +
@@ -120,8 +118,8 @@ public class Dilugim {
 				int backup_countLines = 0; // backup for when reset buffer
 				int backup_countPOS = 0; // backup for when reset buffer
 				int backup_countChar = 0; // backup for when reset buffer
-				searchIndex = 0; // index of letter in searchSTR which is being examined
-				countChar = 0; // used to update progressbar
+				int searchIndex = 0; // index of letter in searchSTR which is being examined
+				int countChar = 0; // used to update progressbar
 				count = 0; // counts matches
 				int lastCharIndex = 0; // counts letters from last match
 				int c;
@@ -168,12 +166,13 @@ public class Dilugim {
 									try (Stream<String> lines = Files.lines(Paths.get("./src/Lines_2.txt"))) {
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
+									//must change dimension of resArray if you add to the results
 									resArray[i + 1][0] = String.valueOf(searchSTR.charAt(i));
 									resArray[i + 1][1] = pBookInstance.getBookName();
 									resArray[i + 1][2] = pBookInstance.getPerekLetters();
 									resArray[i + 1][3] = pBookInstance.getPasukLetters();
-									resArray[i + 1][4] = lineText;
-									resArray[i + 1][5] = String.valueOf(lineForChar[i][1]);
+									resArray[i + 1][ExcelFunctions.id_toraLine] = lineText;
+									resArray[i + 1][ExcelFunctions.id_charPOS] = String.valueOf(lineForChar[i][1]);
 									if (((i + 1) < searchSTR.length())
 											&& (lineForChar[i][0] == lineForChar[i + 1][0])) {
 										boolRepeat = true;
@@ -207,7 +206,7 @@ public class Dilugim {
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
-					ExcelFunctions.writeXLS(fileName,sheet, 1, Title, searchOriginal, results);
+					ExcelFunctions.writeXLS(fileName,sheet, 1, Title, results);
 				}
 			}
 			Output.printText("");

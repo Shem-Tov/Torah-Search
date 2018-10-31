@@ -105,7 +105,7 @@ public class ToraSearch {
 			String fileName = searchSTR;
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName,sheet,0, Title, searchSTR, results);
+				ExcelFunctions.writeXLS(fileName,sheet,0, Title, results);
 			}
 			Output.printText("");
 			Output.printText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"

@@ -1,6 +1,7 @@
 package ToraApp;
 
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,6 +12,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +24,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class ExcelFunctions {
-
+	public static final int id_toraLine = 4;
+	public static final int id_charPOS = 5;
 	public static String[][] readXLS(String inputFile, int sheetNUM, int X, int Y, int posX, int posY)
 			throws IOException {
 		String[][] data = null;
@@ -77,10 +80,18 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static void writeXLS(String fileName, String sheetName, int mode, String Title, String searchSTR,
+	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
 			ArrayList<String[][]> results) {
 		// mode=0 regular search
 		// mode=1 dilugim search
+
+		// fileName - name of excel file, can have multiple sheets
+		// sheetName - sheetName, depends on search settings
+		// mode - explained above
+		// Title - used as header inside sheet
+		// searchSTR - the string searched for
+		// results - depends on mode, will be described below, at the switch
+
 		HSSFWorkbook workbook = null;
 		HSSFSheet sheet = null;
 		File file = null;
@@ -148,65 +159,118 @@ public class ExcelFunctions {
 		cell.setCellValue(Title);
 		rowNum++;
 		int colNum = 0;
+		int index;
 		row = sheet.createRow(rowNum++);
 		row.setRowStyle(styleHeader);
-		for (String field : header) {
-			if ((mode != 1) && (field == dilugWord)) {
-				continue;
+		// unique table layout
+		// mode 0 - Regular search
+		// mode 1 - Dilugim
+		switch (mode) {
+		// mode = 0 regular search
+		// multidimensional array used as one dimensional array shows result for each word of search results
+		// [0] = searchSTR
+		// [1] = BookName
+		// [2] = Perek
+		// [3] = Pasuk
+		// [4] = Torah of the Pasuk
+		case 0:
+			for (String field : header) {
+				if (field == dilugWord) {
+					continue;
+				}
+				cell = row.createCell(colNum++);
+				cell.setCellStyle(style);
+				cell.setCellValue(field);
 			}
-			cell = row.createCell(colNum++);
-			cell.setCellStyle(style);
-			cell.setCellValue(field);
-		}
-
-		int index = 1;
-
-		for (String[][] resArr : results) {
-			// if ((mode==1) && (counter++==0)) { // The Dilugim Mode needs to skip first
-			// array
-			// continue;
-			// }
-			row = sheet.createRow(rowNum++);
-			cell = row.createCell(0);
-			cell.setCellStyle(style);
-			cell.setCellValue(index++);
-			switch (mode) {
-			case 1:
+			index = 1;
+			for (String[][] resArr : results) {
+				row = sheet.createRow(rowNum++);
+				cell = row.createCell(0);
+				cell.setCellStyle(style);
+				cell.setCellValue(index++);
+				for (String[] res : resArr) {
+					for (int i = 1; i <= res.length; i++) {
+						cell = row.createCell(i);
+						cell.setCellStyle(style);
+						cell.setCellValue(res[i - 1]);
+					}
+				}
+			}
+			break;
+		// mode = 0 regular search
+		// multidimensional array - shows result for each letter of the search word in every search
+		// [0] = searchSTR
+		// [1] = BookName
+		// [2] = Perek
+		// [3] = Pasuk
+		// [4] = Torah of the Pasuk
+		// [5] = Character position in the Pasuk for the letter matching the Dilug Search
+			
+		case 1:
+			
+			for (String field : header) {
+				cell = row.createCell(colNum++);
+				cell.setCellStyle(style);
+				cell.setCellValue(field);
+			}
+			index = 1;
+			for (String[][] resArr : results) {
+				// if ((mode==1) && (counter++==0)) { // The Dilugim Mode needs to skip first
+				// array
+				// continue;
+				// }
+				row = sheet.createRow(rowNum++);
+				cell = row.createCell(0);
+				cell.setCellStyle(style);
+				cell.setCellValue(index++);
 				cell = row.createCell(1);
 				cell.setCellStyle(style);
 				cell.setCellValue(resArr[0][0]);
 				cell = row.createCell(2);
 				cell.setCellStyle(style);
 				cell.setCellValue(resArr[0][1]);
-				break;
-			}
-
-			int counter = 0;
-			for (String[] res : resArr) {
-				if ((counter++ == 0) && (mode == 1)) {
-					continue;
-				}
-				if (mode == 1) {
+				int counter = 0;
+				for (String[] res : resArr) {
+					if (counter++ == 0) {
+						continue;
+					}
 					row = sheet.createRow(rowNum++);
-				}
-				for (int i = 1; i <= (res.length - ((mode == 1) ? 1 : 0)); i++) {
-					cell = row.createCell(i + ((mode == 1) ? 1 : 0));
-					cell.setCellStyle(style);
-					switch (mode) {
-					case 1:
-						if (i<4) {
-							cell.setCellValue(res[i - 1]);
-						} else {  //column 5 is Tora Line which should be HTML formatted
-							//cell.setHtmlString();
+					for (int i = 0; i <= res.length-1; i++) {
+						if (i == id_charPOS) {
+							continue;
 						}
-						
-						
-						break;
-					default:
-						cell.setCellValue(res[i - 1]);
+						cell = row.createCell(i+2);
+						cell.setCellStyle(style);
+						if (i == id_toraLine) {
+							/*	String newLineText = lineText.substring(0,lineForChar[i][1]-1)
+							+"<p style=\"color:MediumSeaGreen;\"><b><mark>"
+							+String.valueOf(lineText.charAt(lineForChar[i][1]-1))+"</mark></b></p>"
+							+lineText.substring(lineForChar[i][1]);
+					*/
+							HSSFFont fontDilug = workbook.createFont();
+						    fontDilug.setFontName ("Nachlieli CLM");
+						    fontDilug.setBold(true);
+						    fontDilug.setFontHeightInPoints((short) 26);
+						    fontDilug.setColor(IndexedColors.PLUM.getIndex());
+						    //HSSFCell hssfCell = row.createCell();
+							//rich text consists of two runs
+							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
+							try {
+							richString.applyFont(0, Integer.parseInt(res[id_charPOS])-1, txtFont );
+							richString.applyFont(Integer.parseInt(res[id_charPOS])-1, Integer.parseInt(res[id_charPOS]), fontDilug );
+							richString.applyFont(Integer.parseInt(res[id_charPOS]),richString.length(), txtFont );
+							cell.setCellValue( richString );
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							//cell.setCellValue(res[i - 1]);
+						} else {
+							cell.setCellValue(res[i]);
+						}
 					}
 				}
 			}
+			break;
 		}
 
 		sheet.autoSizeColumn(0);
@@ -234,8 +298,10 @@ public class ExcelFunctions {
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
-		writeXLS("בדיקה", "דוח", 0, "Title", "searchSTR", new ArrayList<String[][]>(
-				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })));
+		writeXLS("בדיקה", "דוח", 0, "Title",
+				new ArrayList<String[][]>(Arrays.asList(
+						new String[][] { { "1", "<p style=\"color:MediumSeaGreen;\"><b><mark>2</mark></b></p>" } },
+						new String[][] { { "3", "4" } })));
 
 	}
 
