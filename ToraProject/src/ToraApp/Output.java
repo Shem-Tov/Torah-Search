@@ -1,5 +1,7 @@
 package ToraApp;
 
+import java.util.ArrayList;
+
 import StringFormatting.StringAlignUtils;
 import StringFormatting.StringAlignUtils.Alignment;
 import frame.frame;
@@ -8,10 +10,31 @@ public class Output {
 	public static String[][] printPasukInfo(int countLines, String searchSTR, String line) throws NoSuchFieldException{
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		String[] htmlText1 = StringFormatting.HtmlGenerator.setRGBHtmlString(128, 150, 255);
+		int i=0;
+		ArrayList<Integer> indexes = new ArrayList<Integer>();
+		indexes.add(line.lastIndexOf(searchSTR,0));
+		int STRLength=searchSTR.length();
+		int newIndex;
+		//find all occurences of searchSTR in Line and Color them
+		while ((newIndex = line.lastIndexOf(indexes.get(i))) != -1) {
+			indexes.add(newIndex);
+			i++;
+		}
+		int lastIndex = 0;
+		String lineHtml="";
+		for (Integer thisIndex:indexes) {
+			lineHtml += ((thisIndex>0)? line.substring(lastIndex,thisIndex-1):"")
+						+ htmlText1[0] + line.substring(thisIndex-1,STRLength)+htmlText1[1];
+			lastIndex = thisIndex+STRLength;
+		}
+		lineHtml += line.substring(lastIndex);
+		
 		String tempStr1 = "\u202B" + "\""+ htmlText1[0] + searchSTR + htmlText1[1] + "\" " + "נמצא ב"
 				+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 				+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 		Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
+		Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
+
 		return (new String[][] {{ searchSTR, pBookInstance.getBookName(),
 				pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
 	}
