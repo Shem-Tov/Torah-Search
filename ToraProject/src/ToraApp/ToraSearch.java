@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
+import HebrewLetters.HebrewLetters;
 import StringFormatting.StringAlignUtils;
 
 public class ToraSearch {
@@ -25,11 +26,15 @@ public class ToraSearch {
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
 		String searchSTR;
+		String searchConvert;
 		boolean bool_wholeWords;
+		boolean bool_sofiot;
 		// FileWriter outputStream2 = null;
 		try {
 			searchSTR = (String) args[0];
-			bool_wholeWords = (Boolean) args[1];
+			bool_wholeWords =  (args[1]!=null)?(Boolean)args[1]:true;
+			bool_sofiot = (args[2]!=null)?(Boolean) args[2]:true;
+			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR):searchSTR;
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...",1);
 			return;
@@ -73,22 +78,27 @@ public class ToraSearch {
 						}
 						return;
 					}
-					String[] splitStr = line.trim().split("\\s+");
+					String[] splitStr;
+					if (!bool_sofiot) {
+						splitStr = HebrewLetters.switchSofiotStr(line).trim().split("\\s+");
+					} else {
+						splitStr = line.trim().split("\\s+");
+					}
 					for (String s : splitStr) {
 						// Do your stuff here
-						if (s.equals(searchSTR)) {
+						if (s.equals(searchConvert)) {
 							count++;
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML));
+							results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot));
 						}
 					}
 				} else {
-					if (line.contains(searchSTR)) {
+					if (((!bool_sofiot)?HebrewLetters.switchSofiotStr(line):line).contains(searchConvert)) {
 						int countMatch = StringUtils.countMatches(line, searchSTR);
 						count = count + countMatch;
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML));
+						results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot));
 					}
 				}
 			}

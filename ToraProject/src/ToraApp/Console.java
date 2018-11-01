@@ -39,8 +39,7 @@ public class Console {
 			System.out.println("-------------------------");
 			System.out.println("(1) - Search Word: " + PropStore.map.get(PropStore.searchWord));
 			System.out.println("(2) - Gimatria Sum: " + PropStore.map.get(PropStore.searchGmt));
-			System.out
-					.println("(3) - Special Gimatria for Sofiot: " + PropStore.map.get(PropStore.bool_gimatriaSofiot));
+			System.out.println("(3) - Special Gimatria for Sofiot: " + PropStore.map.get(PropStore.bool_gimatriaSofiot));
 			System.out.println("(4) - Search only for whole words: " + PropStore.map.get(PropStore.bool_wholeWord));
 			System.out.println("(5) - Return count of matches in distinct Psukim: "
 					+ PropStore.map.get(PropStore.bool_countPsukim));

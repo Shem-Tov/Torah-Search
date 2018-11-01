@@ -22,8 +22,6 @@ public class Dilugim {
 		return instance;
 	}
 
-
-
 	public StringBuilder readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding) {
 		BufferedReader inputStream = null;
 		StringBuilder str = null;
@@ -91,12 +89,13 @@ public class Dilugim {
 		try {
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
-			bool_sofiot = (Boolean) args[1];
-			minDilug = Integer.parseInt((String) args[2]);
-			maxDilug = Integer.parseInt((String) args[3]);
-			padding = ((args[4] == null) || (((String) args[4]).length() == 0)) ? 0
-					: Integer.parseInt((String) args[4]);
-			offset = ((args[5] == null) || (((String) args[5]).length() == 0)) ? 0 : Integer.parseInt((String) args[5]);
+			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
+			minDilug = ((args[2] != null) && (((String) args[2]).length() > 0)) ? Integer.parseInt((String) args[2])
+					: 2;
+			maxDilug = ((args[3] != null) && (((String) args[3]).length() > 0)) ? Integer.parseInt((String) args[3])
+					: 2;
+			padding = ((args[4] != null) && (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
+			offset = ((args[5] != null) && (((String) args[5]).length() > 0)) ? Integer.parseInt((String) args[5]) : 0;
 
 			if (!bool_sofiot) {
 				searchSTR = HebrewLetters.switchSofiotStr(searchSTR);

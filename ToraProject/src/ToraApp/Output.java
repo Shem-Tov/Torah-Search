@@ -2,21 +2,30 @@ package ToraApp;
 
 import java.util.ArrayList;
 
+import HebrewLetters.HebrewLetters;
 import StringFormatting.StringAlignUtils;
 import StringFormatting.StringAlignUtils.Alignment;
 import frame.frame;
 
 public class Output {
-	public static String markMatchesInLine(String line,String searchSTR,StringFormatting.HtmlGenerator htmlFormat) throws Exception{
+	public static String markMatchesInLine(String line,String searchSTR,StringFormatting.HtmlGenerator htmlFormat,Boolean bool_sofiot) throws Exception{
 		int i=0;
 		String lineHtml="";
-		
+		String lineConvert;
+		String searchConvert;
+		if (!bool_sofiot) {
+			searchConvert=HebrewLetters.switchSofiotStr(searchSTR);
+			lineConvert=HebrewLetters.switchSofiotStr(line);
+		} else {
+			searchConvert = searchSTR;
+			lineConvert = line;
+		}
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		indexes.add(line.indexOf(searchSTR,0));
+		indexes.add(lineConvert.indexOf(searchConvert,0));
 		int STRLength=searchSTR.length();
 		int newIndex=0;
 		//find all occurences of searchSTR in Line and Color them
-		while ((newIndex = line.indexOf(searchSTR,indexes.get(i)+1)) != -1) {
+		while ((newIndex = lineConvert.indexOf(searchConvert,indexes.get(i)+1)) != -1) {
 			indexes.add(newIndex);
 			i++;
 		}
@@ -40,7 +49,7 @@ public class Output {
 		return lineHtml;
 	}
 	
-	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, StringFormatting.HtmlGenerator markupStyle ) throws NoSuchFieldException{
+	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, StringFormatting.HtmlGenerator markupStyle,Boolean bool_sofiot ) throws NoSuchFieldException{
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		try {
 			String tempStr1 = "\u202B" + 
@@ -48,7 +57,7 @@ public class Output {
 				+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 				+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 		//Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
-		String lineHtml = markMatchesInLine(line, searchSTR, markupStyle);
+		String lineHtml = markMatchesInLine(line, searchSTR, markupStyle,bool_sofiot);
 		Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
 		} catch (Exception e) {
 			System.out.println("Error at line: " +countLines);

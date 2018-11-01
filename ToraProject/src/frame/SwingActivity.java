@@ -39,9 +39,10 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		int selection = 0;
 		switch (frame.getComboBox_main()) {
 		case 0:
-			args = Arrays.copyOf(args, 2);
+			args = Arrays.copyOf(args, 3);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_wholeWord();
+			args[2] = frame.getCheckBox_gimatriaSofiot();
 			selection = Methods.id_searchWords;
 			break;
 		case 1:
