@@ -61,6 +61,57 @@ public class Dilugim {
 		}
 	}
 
+	public StringBuilder readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding) {
+		BufferedReader inputStream = null;
+		StringBuilder str = null;
+		try {
+			inputStream = new BufferedReader(new FileReader(ToraApp.ToraLetterFile));
+			@SuppressWarnings("unused")
+			int markInt = 640000;
+			// inputStream.mark(markInt);
+			int c;
+			int startChar = countChar - dilug * padding;
+			int newpadding = padding;
+			while (startChar < 0) {
+				// if the padding is too large find the minimum position to read from.
+				startChar += dilug;
+				newpadding -= 1;
+			}
+			int maxJumps = padding + newpadding + searchSTR.length();
+			int countJumps = 0;
+			str = new StringBuilder(maxJumps);
+			if (startChar > 1) {
+				inputStream.skip(startChar - 1);
+			}
+			while ((c = inputStream.read()) != -1) {
+				countJumps++;
+				str.append((char) c);
+				if (countJumps < maxJumps) {
+					try {
+						if (dilug > 0) {
+							inputStream.skip((dilug - 1));
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return str;
+	}
+
 	public void searchWordsDilugim(Object[] args) throws IOException {
 		// String[][] results=null;
 		BufferedReader inputStream = null;
@@ -70,7 +121,9 @@ public class Dilugim {
 		Boolean bool_sofiot;
 		int minDilug;
 		int maxDilug;
-//		int offset;
+		int padding;
+		@SuppressWarnings("unused")
+		int offset;
 		// FileWriter outputStream2 = null;
 		try {
 			searchOriginal = ((String) args[0]);
@@ -78,7 +131,10 @@ public class Dilugim {
 			bool_sofiot = (Boolean) args[1];
 			minDilug = Integer.parseInt((String) args[2]);
 			maxDilug = Integer.parseInt((String) args[3]);
-//			offset = Integer.parseInt((String) args[4]);
+			padding = ((args[4] == null) || (((String) args[4]).length() == 0)) ? 0
+					: Integer.parseInt((String) args[4]);
+			offset = ((args[5] == null) || (((String) args[5]).length() == 0)) ? 0 : Integer.parseInt((String) args[5]);
+
 			if (!bool_sofiot) {
 				searchSTR = switchSofiotStr(searchSTR);
 			}
@@ -113,13 +169,13 @@ public class Dilugim {
 				inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
-				int[][] lineForChar = new int[searchSTR.length()][2]; // Holds line and position of char found
+				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and position of char found
 				int countLines = 1; // counts line in Tora File
 				int backup_countLines = 0; // backup for when reset buffer
 				int backup_countPOS = 0; // backup for when reset buffer
 				int backup_countChar = 0; // backup for when reset buffer
 				int searchIndex = 0; // index of letter in searchSTR which is being examined
-				int countChar = 0; // used to update progressbar
+				int countChar = 0; // used to update progressbar and connect with Letter version of Torah
 				count = 0; // counts matches
 				int lastCharIndex = 0; // counts letters from last match
 				int c;
@@ -150,6 +206,7 @@ public class Dilugim {
 							}
 							lineForChar[searchIndex][0] = countLines;
 							lineForChar[searchIndex][1] = countPOS;
+							lineForChar[searchIndex][2] = countChar;
 							searchIndex++;
 							if (searchIndex == searchSTR.length()) {
 								count++;
@@ -166,7 +223,7 @@ public class Dilugim {
 									try (Stream<String> lines = Files.lines(Paths.get(ToraApp.ToraLineFile))) {
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
-									//must change dimension of resArray if you add to the results
+									// must change dimension of resArray if you add to the results
 									resArray[i + 1][0] = String.valueOf(searchSTR.charAt(i));
 									resArray[i + 1][1] = pBookInstance.getBookName();
 									resArray[i + 1][2] = pBookInstance.getPerekLetters();
@@ -185,6 +242,10 @@ public class Dilugim {
 									Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineText);
 								}
 								results.add(resArray);
+								StringBuilder strBuilder = readDilugExpandedResult(searchSTR, lineForChar[0][2],
+										thisDilug, padding);
+								Output.printText(strBuilder.toString());
+								Output.printText("");
 								inputStream.reset();
 								searchIndex = 0;
 								countLines = backup_countLines;
@@ -206,7 +267,7 @@ public class Dilugim {
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
-					ExcelFunctions.writeXLS(fileName,sheet, 1, Title, results);
+					ExcelFunctions.writeXLS(fileName, sheet, 1, Title, results);
 				}
 			}
 			Output.printText("");

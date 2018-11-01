@@ -24,6 +24,7 @@ public class copyFiles {
 			// around with this number and see what effect it will have on the performance
 			// byte[] buffer = new byte[1024];
 			int c = 0;
+			@SuppressWarnings("unused")
 			int lastC = 0;
 			while ((c = inputStream.read()) != -1) {
 				// outputStream.write((c==13)?10:c);
@@ -46,6 +47,7 @@ public class copyFiles {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void copyFileLines(String src, String dest) throws IOException {
 
 		BufferedReader br = null;
