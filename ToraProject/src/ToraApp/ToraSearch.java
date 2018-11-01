@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
-import StringAlignUtils.StringAlignUtils;
+
+import StringFormatting.StringAlignUtils;
 
 public class ToraSearch {
 	private static ToraSearch instance;
@@ -30,7 +31,7 @@ public class ToraSearch {
 			searchSTR = (String) args[0];
 			bool_wholeWords = (Boolean) args[1];
 		} catch (ClassCastException e) {
-			Output.printText("casting exception...");
+			Output.printText("casting exception...",1);
 			return;
 		}
 		int countPsukim = 0;
@@ -77,13 +78,8 @@ public class ToraSearch {
 						// Do your stuff here
 						if (s.equals(searchSTR)) {
 							count++;
-							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\"" + searchSTR + "\" " + "נמצא ב"
-									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
-							results.add(new String[][] {{ searchSTR, pBookInstance.getBookName(),
-									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
+							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
+							results.add(Output.printPasukInfo(countLines, searchSTR, line));
 						}
 					}
 				} else {
@@ -91,13 +87,8 @@ public class ToraSearch {
 						int countMatch = StringUtils.countMatches(line, searchSTR);
 						count = count + countMatch;
 						countPsukim++;
-						ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-						String tempStr1 = "\u202B" + "\"" + searchSTR + "\" " + "נמצא ב"
-								+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-								+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-						Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
-						results.add(new String[][] {{ searchSTR, pBookInstance.getBookName(),
-								pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
+						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
+						results.add(Output.printPasukInfo(countLines, searchSTR, line));
 					}
 				}
 			}
@@ -111,7 +102,7 @@ public class ToraSearch {
 			Output.printText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
 					+ ((bool_wholeWords) ? "." : (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")));
 		} catch (Exception e) {
-			Output.printText("Found Error at Line: " + countLines);
+			Output.printText("Found Error at Line: " + countLines,1);
 		} finally {
 			Output.printText("");
 			Output.printText("\u202B" + "סיים חיפוש");

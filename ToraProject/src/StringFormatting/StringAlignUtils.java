@@ -1,4 +1,4 @@
-package StringAlignUtils;
+package StringFormatting;
 
 import java.text.FieldPosition;
 import java.text.Format;

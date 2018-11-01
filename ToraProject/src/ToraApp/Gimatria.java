@@ -5,7 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import org.apache.commons.lang3.StringUtils;
-import StringAlignUtils.StringAlignUtils;
+
+import StringFormatting.StringAlignUtils;
 
 
 public class Gimatria {
@@ -184,7 +185,7 @@ public class Gimatria {
 			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
 		} catch (Exception e) {
 			Output.printText("");
-			Output.printText("Found Error at Line: " + countLines);
+			Output.printText("Found Error at Line: " + countLines,1);
 			e.printStackTrace();
 		} finally {
 			Output.printText("");

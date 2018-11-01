@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import StringAlignUtils.StringAlignUtils;
+import StringFormatting.StringAlignUtils;
 
 public class Dilugim {
 	private static Dilugim instance;

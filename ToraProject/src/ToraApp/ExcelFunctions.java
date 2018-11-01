@@ -59,7 +59,7 @@ public class ExcelFunctions {
 					break;
 				}
 			}
-			Output.printText("Imported XLS", 1);
+			Output.printText("Imported XLS", 2);
 		} catch (FileNotFoundException e) {
 			Output.printText("Error importing from EXCEL Sheet", 1);
 			e.printStackTrace();
