@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import HebrewLetters.HebrewLetters;
 import StringFormatting.StringAlignUtils;
 
 public class Dilugim {
@@ -21,45 +22,7 @@ public class Dilugim {
 		return instance;
 	}
 
-	private static char switchSofiot(char ch) {
-		switch (ch) {
-		case 'ך':
-			ch = 'כ';
-			break;
-		case 'ם':
-			ch = 'מ';
-			break;
-		case 'ן':
-			ch = 'נ';
-			break;
-		case 'ף':
-			ch = 'פ';
-			break;
-		case 'ץ':
-			ch = 'צ';
-		}
-		return ch;
-	}
 
-	private static String switchSofiotStr(String str) {
-		String str2 = "";
-		for (char ch : str.toCharArray()) {
-			str2 += switchSofiot(ch);
-		}
-		System.out.println(str + " - Original string length: " + str.length());
-		System.out.println(str2 + " - New string length: " + str2.length());
-		return str2;
-	}
-
-	private static Boolean compareChar(char chSearch, char ch2, boolean sofiot) {
-		// chSearch must first be without sofiot;
-		// use switchSofiotStr()
-		if (!sofiot) {
-			return (chSearch == switchSofiot(ch2));
-		} else {
-			return (chSearch == ch2);
-		}
-	}
 
 	public StringBuilder readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding) {
 		BufferedReader inputStream = null;
@@ -136,7 +99,7 @@ public class Dilugim {
 			offset = ((args[5] == null) || (((String) args[5]).length() == 0)) ? 0 : Integer.parseInt((String) args[5]);
 
 			if (!bool_sofiot) {
-				searchSTR = switchSofiotStr(searchSTR);
+				searchSTR = HebrewLetters.switchSofiotStr(searchSTR);
 			}
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
@@ -196,7 +159,7 @@ public class Dilugim {
 						frame.SwingActivity.getInstance().callProcess(countLines);
 					}
 					if ((searchIndex == 0) || (lastCharIndex % thisDilug == 0)) {
-						if (compareChar(searchSTR.charAt(searchIndex), (char) c, bool_sofiot)) {
+						if (HebrewLetters.compareChar(searchSTR.charAt(searchIndex), (char) c, bool_sofiot)) {
 							lastCharIndex = 0;
 							if (searchIndex == 0) {
 								inputStream.mark(markInt);

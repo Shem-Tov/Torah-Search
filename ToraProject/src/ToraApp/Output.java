@@ -10,6 +10,7 @@ public class Output {
 	public static String markMatchesInLine(String line,String searchSTR,StringFormatting.HtmlGenerator htmlFormat) throws Exception{
 		int i=0;
 		String lineHtml="";
+		
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		indexes.add(line.indexOf(searchSTR,0));
 		int STRLength=searchSTR.length();
