@@ -15,6 +15,9 @@ public class ToraApp {
 	//static StringBuffer buffer = new StringBuffer();
 	//static Formatter formatter = new Formatter(buffer, new Locale("he", "IL"));
 	
+	public static final String ToraLineFile = "./src/Lines.txt";
+	public static final String ToraLetterFile = "./src/NoTevot.txt";
+	
 	private static byte guiMode = 0;
 	static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ',
 			'ק', 'ר', 'ש', 'ת' };
@@ -22,7 +25,8 @@ public class ToraApp {
 	static char[] otherLetters = { '-' };
 	static String[][] tablePerekBooks;
 	static String[][] tablePerekParashot;
-
+	private static boolean tableLoaded=false; 
+	
 	public static char cSpace() {
 		return '\u00A0';
 	}
@@ -30,6 +34,7 @@ public class ToraApp {
 		PropStore.load();
 		Methods.arrayMethodCreator();
 		tablePerekBooks = ExcelFunctions.readXLS("./src/TorahTables2.xls", 0, 0, 1, 6, 53);
+		tableLoaded=true;
 	}
 	
 	public static byte getGuiMode() {
@@ -39,7 +44,7 @@ public class ToraApp {
 		guiMode = i;
 	}
 	
-	static class perekBookInfo {
+	public static class perekBookInfo {
 		private String[] bookNames = { "בראשית", "שמות", "ויקרא", "במדבר", "דברים" };
 		private char[][] letters = { { ' ', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט' },
 				{ ' ', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ' } };
@@ -77,8 +82,11 @@ public class ToraApp {
 		}
 	}
 
-	public static perekBookInfo findPerekBook(int lineNum) {
+	public static perekBookInfo findPerekBook(int lineNum) throws NoSuchFieldException {
 		int oldI, oldJ;
+		if (!tableLoaded) {
+			throw new NoSuchFieldException("Tora Tables were not loaded, they should be loaded through ToraApp.starter() function");
+		}
 		oldI = 1;
 		oldJ = 0;
 		for (int i = 1; i < tablePerekBooks.length; i++) {

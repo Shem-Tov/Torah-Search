@@ -39,7 +39,7 @@ public class ToraSearch {
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
-			inputStream = new BufferedReader(new FileReader("./src/Lines_2.txt"));
+			inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
 			outputStream = new StringWriter();
 			// outputStream2 = new FileWriter("./src/myText.txt", false);
 			inputStream.mark(640000);

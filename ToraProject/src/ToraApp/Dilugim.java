@@ -110,7 +110,7 @@ public class Dilugim {
 				Output.printText("");
 				Output.printText(str = ("דילוג" + ToraApp.cSpace() + thisDilug));
 				Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
-				inputStream = new BufferedReader(new FileReader("./src/Lines_2.txt"));
+				inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
 				int[][] lineForChar = new int[searchSTR.length()][2]; // Holds line and position of char found
@@ -163,7 +163,7 @@ public class Dilugim {
 									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
-									try (Stream<String> lines = Files.lines(Paths.get("./src/Lines_2.txt"))) {
+									try (Stream<String> lines = Files.lines(Paths.get(ToraApp.ToraLineFile))) {
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
 									//must change dimension of resArray if you add to the results
