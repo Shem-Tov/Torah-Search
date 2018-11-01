@@ -79,7 +79,7 @@ public class ToraSearch {
 						if (s.equals(searchSTR)) {
 							count++;
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR, line));
+							results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML));
 						}
 					}
 				} else {
@@ -88,7 +88,7 @@ public class ToraSearch {
 						count = count + countMatch;
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, line));
+						results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML));
 					}
 				}
 			}

@@ -7,36 +7,54 @@ import StringFormatting.StringAlignUtils.Alignment;
 import frame.frame;
 
 public class Output {
-	public static String[][] printPasukInfo(int countLines, String searchSTR, String line) throws NoSuchFieldException{
-		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-		String[] htmlText1 = StringFormatting.HtmlGenerator.setRGBHtmlString(128, 150, 255);
+	public static String markMatchesInLine(String line,String searchSTR,StringFormatting.HtmlGenerator htmlFormat) throws Exception{
 		int i=0;
+		String lineHtml="";
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		indexes.add(line.lastIndexOf(searchSTR,0));
+		indexes.add(line.indexOf(searchSTR,0));
 		int STRLength=searchSTR.length();
-		int newIndex;
+		int newIndex=0;
 		//find all occurences of searchSTR in Line and Color them
-		while ((newIndex = line.lastIndexOf(indexes.get(i))) != -1) {
+		while ((newIndex = line.indexOf(searchSTR,indexes.get(i)+1)) != -1) {
 			indexes.add(newIndex);
 			i++;
 		}
 		int lastIndex = 0;
-		String lineHtml="";
 		for (Integer thisIndex:indexes) {
-			lineHtml += ((thisIndex>0)? line.substring(lastIndex,thisIndex-1):"")
-						+ htmlText1[0] + line.substring(thisIndex-1,STRLength)+htmlText1[1];
+			Boolean wasSpace=false;
+			String tempStr ="";
+			if (thisIndex>0) {
+			tempStr = line.substring(lastIndex,thisIndex);
+			if (tempStr.charAt(tempStr.length() - 1)==' ') {
+				wasSpace=true;
+				//removes whitespace from the end
+				tempStr = tempStr.replaceFirst("\\s++$", "");
+			}
+			}
+			lineHtml += tempStr
+						+((wasSpace)?ToraApp.cSpace():"")+ htmlFormat.getHtml(0) + line.substring(thisIndex,STRLength+thisIndex)+htmlFormat.getHtml(1);
 			lastIndex = thisIndex+STRLength;
 		}
 		lineHtml += line.substring(lastIndex);
-		
-		String tempStr1 = "\u202B" + "\""+ htmlText1[0] + searchSTR + htmlText1[1] + "\" " + "נמצא ב"
+		return lineHtml;
+	}
+	
+	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, StringFormatting.HtmlGenerator markupStyle ) throws NoSuchFieldException{
+		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
+		try {
+			String tempStr1 = "\u202B" + 
+				"\""+ markupStyle.getHtml(0) + searchSTR + markupStyle.getHtml(1) + "\" " + "נמצא ב"
 				+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 				+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-		Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
+		//Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
+		String lineHtml = markMatchesInLine(line, searchSTR, markupStyle);
 		Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
-
+		} catch (Exception e) {
+			System.out.println("Error at line: " +countLines);
+			e.printStackTrace();
+		}
 		return (new String[][] {{ searchSTR, pBookInstance.getBookName(),
-				pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
+			pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line }});
 	}
 	
 	public static void printText(String text) {

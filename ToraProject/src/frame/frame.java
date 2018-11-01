@@ -212,9 +212,10 @@ public class frame {
 		PropStore.store();
 	}
 
-	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(5, 250, 40, 40);
-	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(5, 128, 88, 255);
-
+	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(5, 250, 40, 40,0b111);
+	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(5, 128, 88, 255,0b111);
+	public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(0, 250, 160, 120,0b100);
+	
 	public static void appendText(String str) throws BadLocationException {
 		appendText(str, (byte) 0);
 	}
