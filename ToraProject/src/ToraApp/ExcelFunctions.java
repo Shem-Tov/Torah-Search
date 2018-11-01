@@ -301,6 +301,36 @@ public class ExcelFunctions {
 						if (i == id_toraLine) {
 							// HSSFCell hssfCell = row.createCell();
 							// rich text consists of two runs
+							
+						/*	
+							ArrayList<Integer> indexes = new ArrayList<Integer>();
+							String lineHtml = "";
+							for (int[] i : charPOSArray) {
+								if (charPOSArray[indexOfArray][0] == i[0]) {
+									indexes.add(i[1]-1);
+								}
+							}
+							int lastIndex = 0;
+							for (Integer thisIndex : indexes) {
+								Boolean wasSpace = false;
+								String tempStr = "";
+								if (thisIndex > 0) {
+									tempStr = line.substring(lastIndex, thisIndex);
+									if (tempStr.charAt(tempStr.length() - 1) == ' ') {
+										wasSpace = true;
+										// removes whitespace from the end
+										tempStr = tempStr.replaceFirst("\\s++$", "");
+									}
+								}
+								lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
+										+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
+								lastIndex = thisIndex + 1;
+							}
+							lineHtml += line.substring(lastIndex);
+							return lineHtml;
+						*/	
+							
+							
 							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
 							try {
 								richString.applyFont(0, Integer.parseInt(res[id_charPOS]) - 1, txtFont);
