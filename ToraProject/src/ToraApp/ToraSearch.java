@@ -56,10 +56,10 @@ public class ToraSearch {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
-			Output.printText(str);
+			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
-			Output.printText(str);
-			Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
+			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
+			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()+4).replace(' ', '-'), frame.frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
@@ -109,13 +109,13 @@ public class ToraSearch {
 				ExcelFunctions.writeXLS(fileName,sheet,0, Title, results);
 			}
 			Output.printText("");
-			Output.printText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
-					+ ((bool_wholeWords) ? "." : (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")));
+			Output.printText(Output.markText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
+					+ ((bool_wholeWords) ? "." : (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")), frame.frame.footerStyleHTML));
 		} catch (Exception e) {
 			Output.printText("Found Error at Line: " + countLines,1);
 		} finally {
 			Output.printText("");
-			Output.printText("\u202B" + "סיים חיפוש");
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}

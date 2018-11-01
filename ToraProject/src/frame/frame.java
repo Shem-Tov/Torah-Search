@@ -211,10 +211,14 @@ public class frame {
 		PropStore.map.put(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
 		PropStore.store();
 	}
+	private final static int textHtmlSize=5; 
+	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 250, 40, 40,0b111);
+	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 128, 88, 255,0b111);
+	//public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
+	public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize+1, 245, 195, 92,0b100);
 
-	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(5, 250, 40, 40,0b111);
-	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(5, 128, 88, 255,0b111);
-	public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(0, 250, 160, 120,0b100);
+	public static StringFormatting.HtmlGenerator headerStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize+1, 58, 124, 240,0b100);
+	public static StringFormatting.HtmlGenerator footerStyleHTML = new StringFormatting.HtmlGenerator(0, 255, 144, 180,0b100);
 	
 	public static void appendText(String str) throws BadLocationException {
 		appendText(str, (byte) 0);
@@ -421,7 +425,7 @@ public class frame {
 		textPane.setEditable(false);
 		scrollPane = new JScrollPane(textPane);
 		panelWidth = scrollPane.getWidth();
-		textPane.setBackground(new java.awt.Color(251, 255, 243));
+		textPane.setBackground(new java.awt.Color(251, 255, 253));
 		textPane.addMouseListener(new PopClickListener());
 		// textPane.setContentType( "text/html" );
 		Color color1 = new java.awt.Color(240, 240, 255);

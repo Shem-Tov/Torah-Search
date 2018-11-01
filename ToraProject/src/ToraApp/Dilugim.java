@@ -105,7 +105,6 @@ public class Dilugim {
 			return;
 		}
 
-		int count = 0;
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
@@ -118,27 +117,26 @@ public class Dilugim {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
-			Output.printText(str);
+			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
-			Output.printText(str);
-			Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
+			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
+			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
+					frame.frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
-				Output.printText("");
-				Output.printText(str = ("דילוג" + ToraApp.cSpace() + thisDilug));
-				Output.printText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'));
 				inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
-				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and position of char found
+				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and | position of Char found on Line
+																		// | position of Char in File
 				int countLines = 1; // counts line in Tora File
 				int backup_countLines = 0; // backup for when reset buffer
 				int backup_countPOS = 0; // backup for when reset buffer
 				int backup_countChar = 0; // backup for when reset buffer
 				int searchIndex = 0; // index of letter in searchSTR which is being examined
 				int countChar = 0; // used to update progressbar and connect with Letter version of Torah
-				count = 0; // counts matches
+				int count = 0; // counts matches
 				int lastCharIndex = 0; // counts letters from last match
 				int c;
 				while ((c = inputStream.read()) != -1) {
@@ -172,17 +170,31 @@ public class Dilugim {
 							searchIndex++;
 							if (searchIndex == searchSTR.length()) {
 								count++;
-								Output.printText("\u202B" + "\"" + searchOriginal + "\" " + "נמצא ב");
+								if (count == 1) {
+									Output.printText("");
+									Output.printText(str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug),
+											frame.frame.headerStyleHTML));
+									Output.printText(Output.markText(
+											StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
+											frame.frame.headerStyleHTML));
+								}
+								Output.printText(
+										"\u202B" + "\"" + Output.markText(searchOriginal, frame.frame.markupStyleHTML)
+												+ "\" " + "נמצא ב");
 								Boolean boolRepeat = false; // verify if comma and spaces are needed
 								String[][] resArray = new String[searchSTR.length() + 1][6];
 								resArray[0][0] = String.valueOf(thisDilug);
 								resArray[0][1] = searchOriginal;
 								String reportLine = "";
 								for (int i = 0; i < searchSTR.length(); i++) {
+									if (!boolRepeat) {
+										reportLine = "";
+									}
 									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
 									try (Stream<String> lines = Files.lines(Paths.get(ToraApp.ToraLineFile))) {
+										// Recieves words of Pasuk
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
 									// must change dimension of resArray if you add to the results
@@ -198,10 +210,12 @@ public class Dilugim {
 										continue;
 									}
 									boolRepeat = false;
-									String tempStr1 = reportLine + ":  "
+									String tempStr1 = Output.markText(reportLine, frame.frame.markupStyleHTML) + ":  "
 											+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 											+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-									Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineText);
+									String lineHtml = Output.markMatchPOS(lineText, i, lineForChar,
+											frame.frame.markupStyleHTML);
+									Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
 								}
 								results.add(resArray);
 								StringBuilder strBuilder = readDilugExpandedResult(searchSTR, lineForChar[0][2],
@@ -225,6 +239,10 @@ public class Dilugim {
 						}
 					}
 				}
+				Output.printText("");
+				Output.printText(Output.markText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0"
+						+ String.valueOf(count) + " פעמים" + ".", frame.frame.footerStyleHTML));
+				Output.printText("");
 				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
@@ -232,14 +250,11 @@ public class Dilugim {
 					ExcelFunctions.writeXLS(fileName, sheet, 1, Title, results);
 				}
 			}
-			Output.printText("");
-			Output.printText(
-					"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים" + ".");
 		} catch (Exception e) {
 			// Output.printText("Found Error at Line: " + countLines);
 		} finally {
 			Output.printText("");
-			Output.printText("\u202B" + "סיים חיפוש");
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש",frame.frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}
