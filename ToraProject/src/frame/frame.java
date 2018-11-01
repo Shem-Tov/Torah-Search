@@ -23,8 +23,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
@@ -62,8 +60,6 @@ public class frame {
 	private static JScrollPane scrollPane;
 	private static HTMLDocument doc = new HTMLDocument();
 	private static HTMLEditorKit kit = new HTMLEditorKit();
-	private static SimpleAttributeSet mainStyle;
-	private static SimpleAttributeSet attentionStyle;
 	private static JCheckBox checkBox_gimatriaSofiot;
 	private static JCheckBox checkBox_wholeWord;
 	private static JCheckBox checkBox_countPsukim;
@@ -438,16 +434,7 @@ public class frame {
 
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
-		mainStyle = new SimpleAttributeSet();
-		StyleConstants.setForeground(mainStyle, new java.awt.Color(128, 88, 255));
-		attentionStyle = new SimpleAttributeSet();
-		StyleConstants.setForeground(attentionStyle, new java.awt.Color(250, 40, 40));
-		StyleConstants.setBold(mainStyle, true);
-		StyleConstants.setBold(attentionStyle, true);
-		StyleConstants.setAlignment(mainStyle, StyleConstants.ALIGN_RIGHT);
-		StyleConstants.setAlignment(attentionStyle, StyleConstants.ALIGN_RIGHT);
 
-		doc.setParagraphAttributes(0, doc.getLength(), mainStyle, false);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 

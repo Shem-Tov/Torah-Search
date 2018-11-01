@@ -247,7 +247,7 @@ public class Dilugim {
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
-					ExcelFunctions.writeXLS(fileName, sheet, 1, Title, results);
+					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results);
 				}
 			}
 		} catch (Exception e) {

@@ -13,6 +13,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import HebrewLetters.HebrewLetters;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,8 +25,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class ExcelFunctions {
+	public static final int id_searchSTR = 0;
 	public static final int id_toraLine = 4;
 	public static final int id_charPOS = 5;
+
 	public static String[][] readXLS(String inputFile, int sheetNUM, int X, int Y, int posX, int posY)
 			throws IOException {
 		String[][] data = null;
@@ -161,24 +165,33 @@ public class ExcelFunctions {
 		int index;
 		row = sheet.createRow(rowNum++);
 		row.setRowStyle(styleHeader);
+		HSSFFont fontDilug = workbook.createFont();
+		fontDilug.setFontName("Nachlieli CLM");
+		fontDilug.setBold(true);
+		fontDilug.setFontHeightInPoints((short) 26);
+		fontDilug.setColor(IndexedColors.PLUM.getIndex());
 		// unique table layout
-		// mode 0 - Regular search
-		// mode 1 - Dilugim
+		// mode 0 - Regular search - sofiot considered
+		// mode 1 - Regular search - sofiot NOT considered
+		// mode 2 - Dilugim
 		switch (mode) {
 		// mode = 0 regular search
-		// multidimensional array used as one dimensional array shows result for each word of search results
+		// multidimensional array used as one dimensional array shows result for each
+		// word of search results
 		// [0] = searchSTR
 		// [1] = BookName
 		// [2] = Perek
 		// [3] = Pasuk
 		// [4] = Torah of the Pasuk
 		case 0:
+		case 1:
+			Boolean bool_sofiot = (mode == 0) ? true : false;
 			for (String field : header) {
 				if (field == dilugWord) {
 					continue;
 				}
 				cell = row.createCell(colNum++);
-				cell.setCellStyle(style);
+				cell.setCellStyle(styleHeader);
 				cell.setCellValue(field);
 			}
 			index = 1;
@@ -188,28 +201,73 @@ public class ExcelFunctions {
 				cell.setCellStyle(style);
 				cell.setCellValue(index++);
 				for (String[] res : resArr) {
-					for (int i = 1; i <= res.length; i++) {
-						cell = row.createCell(i);
+					for (int i = 0; i < res.length; i++) {
+						cell = row.createCell(i + 1);
 						cell.setCellStyle(style);
-						cell.setCellValue(res[i - 1]);
+						if (i == id_toraLine) {
+							int j = 0;
+							String lineConvert;
+							String searchConvert;
+							if (!bool_sofiot) {
+								searchConvert = HebrewLetters.switchSofiotStr(res[id_searchSTR]);
+								lineConvert = HebrewLetters.switchSofiotStr(res[id_toraLine]);
+							} else {
+								searchConvert = res[id_searchSTR];
+								lineConvert = res[id_toraLine];
+							}
+							ArrayList<Integer> indexes = new ArrayList<Integer>();
+							indexes.add(lineConvert.indexOf(searchConvert, 0));
+							int STRLength = res[id_searchSTR].length();
+							int newIndex = 0;
+							// find all occurences of searchSTR in Line and Color them
+							while ((newIndex = lineConvert.indexOf(searchConvert, indexes.get(j) + 1)) != -1) {
+								indexes.add(newIndex);
+								j++;
+							}
+							int lastIndex = 0;
+							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
+							try {
+								for (Integer thisIndex : indexes) {
+
+									if (thisIndex > 0) {
+										richString.applyFont(lastIndex, thisIndex, txtFont);
+									}
+									richString.applyFont(thisIndex, STRLength + thisIndex, fontDilug);
+									lastIndex = thisIndex + STRLength;
+									cell.setCellValue(richString);
+								}
+								richString.applyFont(lastIndex, richString.length(), txtFont);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+							// HSSFCell hssfCell = row.createCell();
+							// rich text consists of two runs
+
+							// cell.setCellValue(res[i - 1]);
+						} else {
+							cell.setCellValue(res[i]);
+						}
 					}
 				}
 			}
 			break;
-		// mode = 0 regular search
-		// multidimensional array - shows result for each letter of the search word in every search
+		// mode = 2 dilugim search
+		// multidimensional array - shows result for each letter of the search word in
+		// every search
 		// [0] = searchSTR
 		// [1] = BookName
 		// [2] = Perek
 		// [3] = Pasuk
 		// [4] = Torah of the Pasuk
-		// [5] = Character position in the Pasuk for the letter matching the Dilug Search
-			
-		case 1:
-			
+		// [5] = Character position in the Pasuk for the letter matching the Dilug
+		// Search
+
+		case 2:
+
 			for (String field : header) {
 				cell = row.createCell(colNum++);
-				cell.setCellStyle(style);
+				cell.setCellStyle(styleHeader);
 				cell.setCellValue(field);
 			}
 			index = 1;
@@ -234,35 +292,26 @@ public class ExcelFunctions {
 						continue;
 					}
 					row = sheet.createRow(rowNum++);
-					for (int i = 0; i <= res.length-1; i++) {
+					for (int i = 0; i <= res.length - 1; i++) {
 						if (i == id_charPOS) {
 							continue;
 						}
-						cell = row.createCell(i+2);
+						cell = row.createCell(i + 2);
 						cell.setCellStyle(style);
 						if (i == id_toraLine) {
-							/*	String newLineText = lineText.substring(0,lineForChar[i][1]-1)
-							+"<p style=\"color:MediumSeaGreen;\"><b><mark>"
-							+String.valueOf(lineText.charAt(lineForChar[i][1]-1))+"</mark></b></p>"
-							+lineText.substring(lineForChar[i][1]);
-					*/
-							HSSFFont fontDilug = workbook.createFont();
-						    fontDilug.setFontName ("Nachlieli CLM");
-						    fontDilug.setBold(true);
-						    fontDilug.setFontHeightInPoints((short) 26);
-						    fontDilug.setColor(IndexedColors.PLUM.getIndex());
-						    //HSSFCell hssfCell = row.createCell();
-							//rich text consists of two runs
+							// HSSFCell hssfCell = row.createCell();
+							// rich text consists of two runs
 							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
 							try {
-							richString.applyFont(0, Integer.parseInt(res[id_charPOS])-1, txtFont );
-							richString.applyFont(Integer.parseInt(res[id_charPOS])-1, Integer.parseInt(res[id_charPOS]), fontDilug );
-							richString.applyFont(Integer.parseInt(res[id_charPOS]),richString.length(), txtFont );
-							cell.setCellValue( richString );
+								richString.applyFont(0, Integer.parseInt(res[id_charPOS]) - 1, txtFont);
+								richString.applyFont(Integer.parseInt(res[id_charPOS]) - 1,
+										Integer.parseInt(res[id_charPOS]), fontDilug);
+								richString.applyFont(Integer.parseInt(res[id_charPOS]), richString.length(), txtFont);
+								cell.setCellValue(richString);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
-							//cell.setCellValue(res[i - 1]);
+							// cell.setCellValue(res[i - 1]);
 						} else {
 							cell.setCellValue(res[i]);
 						}
@@ -299,7 +348,7 @@ public class ExcelFunctions {
 
 		writeXLS("בדיקה", "דוח", 0, "Title",
 				new ArrayList<String[][]>(Arrays.asList(
-						new String[][] { { "1", "<p style=\"color:MediumSeaGreen;\"><b><mark>2</mark></b></p>" } },
+						new String[][] { { "1", "2" } },
 						new String[][] { { "3", "4" } })));
 
 	}
