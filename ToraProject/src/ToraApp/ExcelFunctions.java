@@ -14,21 +14,26 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import HebrewLetters.HebrewLetters;
+import StringFormatting.StringAlignUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class ExcelFunctions {
-	public static final int id_searchSTR = 0;
+	public static final int id_searchSTR = 0; //for row 0
+	public static final int id_searchLetter = 0; //for the rest of the rows
 	public static final int id_toraLine = 4;
 	public static final int id_charPOS = 5;
-
+	public static final int id_lineNum = 6;
 	public static String[][] readXLS(String inputFile, int sheetNUM, int X, int Y, int posX, int posY)
 			throws IOException {
 		String[][] data = null;
@@ -228,15 +233,14 @@ public class ExcelFunctions {
 							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
 							try {
 								for (Integer thisIndex : indexes) {
-
 									if (thisIndex > 0) {
 										richString.applyFont(lastIndex, thisIndex, txtFont);
 									}
 									richString.applyFont(thisIndex, STRLength + thisIndex, fontDilug);
 									lastIndex = thisIndex + STRLength;
-									cell.setCellValue(richString);
 								}
 								richString.applyFont(lastIndex, richString.length(), txtFont);
+								cell.setCellValue(richString);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -255,14 +259,16 @@ public class ExcelFunctions {
 		// mode = 2 dilugim search
 		// multidimensional array - shows result for each letter of the search word in
 		// every search
-		// [0] = searchSTR
-		// [1] = BookName
-		// [2] = Perek
-		// [3] = Pasuk
-		// [4] = Torah of the Pasuk
-		// [5] = Character position in the Pasuk for the letter matching the Dilug
+		// [0][0] = Dilug Number
+		// [0][1] = searchSTR
+		//    [0] = searchLetter(except first Row)
+		//    [1] = Book Name (except first Row)
+		//    [2] = Perek
+		//    [3] = Pasuk
+		//    [4] = Torah of the Pasuk
+		//    [5] = Character position in the Pasuk for the letter matching the Dilug
+		//    [6] = Line Number of Pasuk
 		// Search
-
 		case 2:
 
 			for (String field : header) {
@@ -271,11 +277,14 @@ public class ExcelFunctions {
 				cell.setCellValue(field);
 			}
 			index = 1;
+			
 			for (String[][] resArr : results) {
 				// if ((mode==1) && (counter++==0)) { // The Dilugim Mode needs to skip first
 				// array
 				// continue;
 				// }
+				// results has all results
+				// resArr holds one result
 				row = sheet.createRow(rowNum++);
 				cell = row.createCell(0);
 				cell.setCellStyle(style);
@@ -286,63 +295,84 @@ public class ExcelFunctions {
 				cell = row.createCell(2);
 				cell.setCellStyle(style);
 				cell.setCellValue(resArr[0][1]);
+				int j = 0;
 				int counter = 0;
+				Boolean boolRepeat = false;
+				String reportLine="";
+				ArrayList<Integer> charPOSList = new ArrayList<Integer>();
 				for (String[] res : resArr) {
+					//resArr holds one result
+					//resArr is a Database with some rows of data
+					//res is one row of data
+					//when "res" is the first row it is:
+					//first row [0][0] containing Dilug Number
+					//first row [0][1] containing Search String 
+					//
+					//The rest of the time "res" holds 
+					//[0] One Search Letter in order of Search String
+					//[1] = Book Name (except first Row)
+					//[2] = Perek
+					//[3] = Pasuk
+					//[4] = Torah of the Pasuk
+					//[5] = Character position in the Pasuk for the letter matching the Dilug
+					//[6] = Line Number of Pasuk
+					j++; //index next result
 					if (counter++ == 0) {
+						// skip first row (row 0)
 						continue;
 					}
-					row = sheet.createRow(rowNum++);
-					for (int i = 0; i <= res.length - 1; i++) {
-						if (i == id_charPOS) {
+					if (!boolRepeat) {
+						charPOSList = new ArrayList<Integer>();
+						row = sheet.createRow(rowNum++);
+						reportLine = "";
+					}
+					charPOSList.add(Integer.parseInt(res[id_charPOS])-1);
+					reportLine += res[id_searchLetter];						
+					if ((j < (resArr[0][1].length()+1))&& (res[id_lineNum].equals(resArr[j][id_lineNum]))) {
+						boolRepeat = true;
+						continue;	
+					}
+					boolRepeat = false;
+					for (int i = 0; i < res.length; i++) {
+						if ((i == id_charPOS) || (i == id_lineNum)) {
 							continue;
 						}
 						cell = row.createCell(i + 2);
 						cell.setCellStyle(style);
 						if (i == id_toraLine) {
+							// Compares lineNum of this and next index in resArr.
+							// j is the index of the letter + 1 because first index doesn't count
+							// ignore the last letter of the String Search
 							// HSSFCell hssfCell = row.createCell();
 							// rich text consists of two runs
-							
-						/*	
-							ArrayList<Integer> indexes = new ArrayList<Integer>();
-							String lineHtml = "";
-							for (int[] i : charPOSArray) {
-								if (charPOSArray[indexOfArray][0] == i[0]) {
-									indexes.add(i[1]-1);
-								}
-							}
 							int lastIndex = 0;
-							for (Integer thisIndex : indexes) {
-								Boolean wasSpace = false;
-								String tempStr = "";
-								if (thisIndex > 0) {
-									tempStr = line.substring(lastIndex, thisIndex);
-									if (tempStr.charAt(tempStr.length() - 1) == ' ') {
-										wasSpace = true;
-										// removes whitespace from the end
-										tempStr = tempStr.replaceFirst("\\s++$", "");
-									}
-								}
-								lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
-										+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
-								lastIndex = thisIndex + 1;
-							}
-							lineHtml += line.substring(lastIndex);
-							return lineHtml;
-						*/	
-							
-							
 							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
 							try {
+								for (Integer thisIndex : charPOSList) {
+
+									if (thisIndex > 0) {
+										richString.applyFont(lastIndex, thisIndex, txtFont);
+									}
+									richString.applyFont(thisIndex, 1 + thisIndex, fontDilug);
+									lastIndex = thisIndex + 1;
+									cell.setCellValue(richString);
+								}
+								richString.applyFont(lastIndex, richString.length(), txtFont);
+								
+								/*
 								richString.applyFont(0, Integer.parseInt(res[id_charPOS]) - 1, txtFont);
 								richString.applyFont(Integer.parseInt(res[id_charPOS]) - 1,
 										Integer.parseInt(res[id_charPOS]), fontDilug);
 								richString.applyFont(Integer.parseInt(res[id_charPOS]), richString.length(), txtFont);
+								*/
 								cell.setCellValue(richString);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 							// cell.setCellValue(res[i - 1]);
-						} else {
+						} else if (i==id_searchLetter) {
+							cell.setCellValue(reportLine);	
+						} else { 
 							cell.setCellValue(res[i]);
 						}
 					}

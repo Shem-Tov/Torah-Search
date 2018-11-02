@@ -182,7 +182,8 @@ public class Dilugim {
 										"\u202B" + "\"" + Output.markText(searchOriginal, frame.frame.markupStyleHTML)
 												+ "\" " + "נמצא ב");
 								Boolean boolRepeat = false; // verify if comma and spaces are needed
-								String[][] resArray = new String[searchSTR.length() + 1][6];
+								// Must change size of resArray when adding more information
+								String[][] resArray = new String[searchSTR.length() + 1][7];
 								resArray[0][0] = String.valueOf(thisDilug);
 								resArray[0][1] = searchOriginal;
 								String reportLine = "";
@@ -204,6 +205,7 @@ public class Dilugim {
 									resArray[i + 1][3] = pBookInstance.getPasukLetters();
 									resArray[i + 1][ExcelFunctions.id_toraLine] = lineText;
 									resArray[i + 1][ExcelFunctions.id_charPOS] = String.valueOf(lineForChar[i][1]);
+									resArray[i + 1][ExcelFunctions.id_lineNum]= String.valueOf(lineForChar[i][0]);
 									if (((i + 1) < searchSTR.length())
 											&& (lineForChar[i][0] == lineForChar[i + 1][0])) {
 										boolRepeat = true;
