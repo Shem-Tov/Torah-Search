@@ -83,6 +83,7 @@ public class Dilugim {
 		int minDilug;
 		int maxDilug;
 		int padding;
+		int countAll=0;
 		@SuppressWarnings("unused")
 		int offset;
 		// FileWriter outputStream2 = null;
@@ -123,7 +124,9 @@ public class Dilugim {
 			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
 					frame.frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
+			frame.frame.setLabel_countMatch("נמצא "+"0"+" פעמים");
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
+				frame.frame.setLabel_dProgress("דילוג "+thisDilug);
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
 				inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
 				inputStream.mark(markInt);
@@ -153,7 +156,7 @@ public class Dilugim {
 					countPOS++;
 					countChar++;
 					if (countChar % 250 == 0) {
-						frame.SwingActivity.getInstance().callProcess(countLines);
+						frame.SwingActivity.getInstance().callProcess(countLines,thisDilug,minDilug, maxDilug);
 					}
 					if ((searchIndex == 0) || (lastCharIndex % thisDilug == 0)) {
 						if (HebrewLetters.compareChar(searchSTR.charAt(searchIndex), (char) c, bool_sofiot)) {
@@ -170,6 +173,8 @@ public class Dilugim {
 							searchIndex++;
 							if (searchIndex == searchSTR.length()) {
 								count++;
+								countAll++;
+								frame.frame.setLabel_countMatch("נמצא "+countAll+" פעמים");
 								if (count == 1) {
 									Output.printText("");
 									Output.printText(str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug),
@@ -243,7 +248,7 @@ public class Dilugim {
 				}
 				Output.printText("");
 				Output.printText(Output.markText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0"
-						+ String.valueOf(count) + " פעמים" + ".", frame.frame.footerStyleHTML));
+						+ String.valueOf(count) + " פעמים" + " לדילוג"+ToraApp.cSpace()+thisDilug+".", frame.frame.footerStyleHTML));
 				Output.printText("");
 				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
 				String fileName = searchOriginal;
@@ -251,11 +256,19 @@ public class Dilugim {
 				if (count > 0) {
 					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results);
 				}
+				if (frame.frame.getMethodCancelRequest()) {
+					maxDilug=thisDilug;
+					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע",1);
+					//break is redundant, because for loop will end anyway because maxDilug has changed to current loop index
+					break;
+				}
 			}
 		} catch (Exception e) {
 			// Output.printText("Found Error at Line: " + countLines);
 		} finally {
 			Output.printText("");
+			Output.printText(Output.markText("\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0"
+					+ String.valueOf(countAll) + " פעמים" +" לדילוגים"+ToraApp.cSpace()+minDilug+" עד"+ToraApp.cSpace()+maxDilug+ ".", frame.frame.footerStyleHTML));
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש",frame.frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();

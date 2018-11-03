@@ -114,7 +114,7 @@ public class countLettersInLines {
 		styleHeader.setFont(txtFontHeader);
 		styleHeader.setAlignment(HorizontalAlignment.RIGHT);
 		int rowNum = 0;
-		System.out.println("Creating excel");
+		System.out.println("Creating excel "+fileNameExtended+" : Sheet - "+ sheetName);
 
 		Row row = null;
 		Cell cell = null;

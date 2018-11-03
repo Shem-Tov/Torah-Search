@@ -61,6 +61,7 @@ public class ToraSearch {
 			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
 			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()+4).replace(' ', '-'), frame.frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
+			frame.frame.setLabel_countMatch("נמצא "+"0"+" פעמים");
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
 				if (countLines % 25 == 0) {
@@ -88,6 +89,7 @@ public class ToraSearch {
 						// Do your stuff here
 						if (s.equals(searchConvert)) {
 							count++;
+							frame.frame.setLabel_countMatch("נמצא "+count+" פעמים");
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
 							results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot));
 						}
@@ -96,10 +98,15 @@ public class ToraSearch {
 					if (((!bool_sofiot)?HebrewLetters.switchSofiotStr(line):line).contains(searchConvert)) {
 						int countMatch = StringUtils.countMatches(line, searchSTR);
 						count = count + countMatch;
+						frame.frame.setLabel_countMatch("נמצא "+count+" פעמים");
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
 						results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot));
 					}
+				}
+				if (frame.frame.getMethodCancelRequest()) {
+					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע",1);
+					break;
 				}
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");

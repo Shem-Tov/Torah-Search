@@ -14,19 +14,15 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import HebrewLetters.HebrewLetters;
-import StringFormatting.StringAlignUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 public class ExcelFunctions {
 	public static final int id_searchSTR = 0; //for row 0
@@ -157,7 +153,7 @@ public class ExcelFunctions {
 		String[] header = { "אינדקס", dilugWord, "נמצא", "ספר", "פרק", "פסוק", "תורה" };
 
 		int rowNum = 0;
-		System.out.println("Creating excel");
+		System.out.println("Creating excel "+fileNameExtended+" : Sheet - "+ sheetName);
 
 		Row row = sheet.createRow(rowNum++);
 		Cell cell = row.createCell(0);

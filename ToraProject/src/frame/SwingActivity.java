@@ -25,10 +25,14 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		return instance;
 	}
 	
-	public void callProcess(int num) 
+	public void callProcess(int num) {
+		callProcess(num,1,1,1);
+	}
+	
+	public void callProcess(int num, int thisDilug, int minDilug, int maxDilug) 
 	{
 		currentProgress=num;
-		int factor=(int)(100*currentProgress/finalProgress);
+		int factor=(int)(100*(((float)currentProgress/finalProgress)+(thisDilug-minDilug))/(maxDilug-minDilug+1));
 		publish(factor);
 	}
 	
@@ -39,6 +43,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		int selection = 0;
 		switch (frame.getComboBox_main()) {
 		case 0:
+			frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 3);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_wholeWord();
@@ -46,6 +51,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			selection = Methods.id_searchWords;
 			break;
 		case 1:
+			frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 4);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_wholeWord();
@@ -60,6 +66,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			selection = Methods.id_calculateGimatria;
 			break;
 		case 3:
+			frame.showProgressBar(true,0b11);
 			args = Arrays.copyOf(args, 6);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_gimatriaSofiot();
@@ -94,8 +101,9 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 	protected void done()
 	{
 		currentProgress=0;
-		frame.showProgressBar(false);
-		frame.setButtonEnabled();
+		frame.showProgressBar(false,0b11);
+		//frame.setButtonEnabled();
+		frame.setMethodRunning(false);
 		instance=null;
 	}
 }

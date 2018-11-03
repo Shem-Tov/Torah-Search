@@ -45,8 +45,13 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
 public class frame {
-
-	private JFrame frame;
+	
+	private static Boolean methodCancelRequest = false;
+	private static Boolean methodRunning = false;
+	private static final String buttonRunText = "חפש";
+	private static final String buttonCancelText = "בטל";
+	private static final String buttonCancelRequestText = "מבטל..";
+			private JFrame frame;
 	private static JButton button;
 	private static JTextField textField_Search;
 	private static JTextField textField_dilugMin;
@@ -74,6 +79,8 @@ public class frame {
 	private static JProgressBar progressBar;
 	private JLabel label_offset;
 	private JLabel label_padding;
+	private static JLabel label_dProgress;
+	private static JLabel label_countMatch;
 
 	class PopUpTextPane extends JPopupMenu {
 		/**
@@ -173,16 +180,42 @@ public class frame {
 		return comboBox_main.getSelectedIndex();
 	}
 
-	public static void setButtonEnabled() {
-		button.setEnabled(true);
+	public static void setMethodRunning(Boolean bool) {
+		methodRunning=bool;
+		if (bool) {
+			button.setText(buttonCancelText);
+		} else {
+			button.setText(buttonRunText);
+			methodCancelRequest=false;
+		}
+	}
+	
+	public static Boolean getMethodCancelRequest(){
+		return methodCancelRequest;
 	}
 
-	public static void showProgressBar(Boolean bool) {
-		progressBar.setVisible(bool);
+	public static void showProgressBar(Boolean bool, int flag) {
+		// 0b01 - progressBar and countLabel
+		// 0b10 - label
+		if ((flag & 0b01) == 0b01) {
+			progressBar.setVisible(bool);
+			label_countMatch.setVisible(bool);
+		}
+		if ((flag & 0b10) == 0b10) {
+			label_dProgress.setVisible(bool);
+		}
 	}
 
 	public static void setProgressBar(int num) {
 		progressBar.setValue(num);
+	}
+
+	public static void setLabel_countMatch(String str) {
+		label_countMatch.setText(str);
+	}
+
+	public static void setLabel_dProgress(String str) {
+		label_dProgress.setText(str);
 	}
 
 	public static void initValues() {
@@ -207,15 +240,22 @@ public class frame {
 		PropStore.map.put(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
 		PropStore.store();
 	}
-	private final static int textHtmlSize=5; 
-	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 250, 40, 40,0b111);
-	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 128, 88, 255,0b111);
-	//public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
-	public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize+1, 245, 195, 92,0b100);
 
-	public static StringFormatting.HtmlGenerator headerStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize+1, 58, 124, 240,0b100);
-	public static StringFormatting.HtmlGenerator footerStyleHTML = new StringFormatting.HtmlGenerator(0, 255, 144, 180,0b100);
-	
+	private final static int textHtmlSize = 5;
+	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 250,
+			40, 40, 0b111);
+	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 128,
+			88, 255, 0b111);
+	// public static StringFormatting.HtmlGenerator markupStyleHTML = new
+	// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
+	public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize + 1,
+			245, 195, 92, 0b100);
+
+	public static StringFormatting.HtmlGenerator headerStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize + 1,
+			58, 124, 240, 0b100);
+	public static StringFormatting.HtmlGenerator footerStyleHTML = new StringFormatting.HtmlGenerator(0, 255, 144, 180,
+			0b100);
+
 	public static void appendText(String str) throws BadLocationException {
 		appendText(str, (byte) 0);
 	}
@@ -444,11 +484,17 @@ public class frame {
 		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				button.setEnabled(false);
-				progressBar.setVisible(true);
-				textPane.setText("");
-				activity = SwingActivity.getInstance();
-				activity.execute();
+				// button.setEnabled(false);
+				if (!methodRunning) {
+					methodRunning = true;
+					button.setText(buttonCancelText);
+					textPane.setText("");
+					activity = SwingActivity.getInstance();
+					activity.execute();
+				} else {
+					methodCancelRequest=true;
+					button.setText(buttonCancelRequestText);
+				}
 			}
 		});
 
@@ -561,18 +607,41 @@ public class frame {
 		gbc_textField_offset.gridy = 9;
 		panel.add(textField_offset, gbc_textField_offset);
 
-		panel.add(button, gbc_button);
-
 		progressBar = new JProgressBar();
+		progressBar.setMinimumSize(new Dimension(150, 30));
+		progressBar.setVisible(false);
+		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		progressBar.setStringPainted(true);
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(100);
-		progressBar.setVisible(true);
 		GridBagConstraints gbc_progressBar = new GridBagConstraints();
 		gbc_progressBar.gridheight = 2;
-		gbc_progressBar.insets = new Insets(0, 0, 0, 5);
+		gbc_progressBar.insets = new Insets(0, 0, 5, 5);
 		gbc_progressBar.gridx = 0;
-		gbc_progressBar.gridy = 24;
+		gbc_progressBar.gridy = 14;
 		panel.add(progressBar, gbc_progressBar);
+
+		label_countMatch = new JLabel("dilug progress");
+		label_countMatch.setVisible(false);
+
+		label_dProgress = new JLabel("dilug progress");
+		label_dProgress.setVisible(false);
+		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		GridBagConstraints gbc_label_dProgress = new GridBagConstraints();
+		gbc_label_dProgress.anchor = GridBagConstraints.EAST;
+		gbc_label_dProgress.insets = new Insets(0, 0, 5, 0);
+		gbc_label_dProgress.gridx = 1;
+		gbc_label_dProgress.gridy = 14;
+		panel.add(label_dProgress, gbc_label_dProgress);
+		label_countMatch.setFont(new Font("Miriam Mono CLM", Font.BOLD, 12));
+		GridBagConstraints gbc_label_dCountMatch = new GridBagConstraints();
+		gbc_label_dCountMatch.anchor = GridBagConstraints.EAST;
+		gbc_label_dCountMatch.insets = new Insets(0, 0, 5, 0);
+		gbc_label_dCountMatch.gridx = 1;
+		gbc_label_dCountMatch.gridy = 15;
+		panel.add(label_countMatch, gbc_label_dCountMatch);
+
+		panel.add(button, gbc_button);
 
 		initValues();
 	}
