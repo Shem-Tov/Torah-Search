@@ -83,6 +83,14 @@ public class Output {
 	public static String markText(String str, HtmlGenerator markupStyle) {
 		return (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
 	}
+	
+	public static String markTextBounds(String str, int startMark,int finishMark,HtmlGenerator markupStyle) {
+		String[] strArray = new String[] {"","",""};
+		strArray[0] = str.substring(0, startMark);
+		strArray[1] = markupStyle.getHtml(0) + str.substring(startMark, finishMark)+ markupStyle.getHtml(1);
+		strArray[2] = str.substring(finishMark);
+		return strArray[0]+strArray[1]+strArray[2];
+	}
 
 	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot) throws NoSuchFieldException {

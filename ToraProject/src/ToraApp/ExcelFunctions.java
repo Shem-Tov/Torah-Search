@@ -257,6 +257,9 @@ public class ExcelFunctions {
 		// every search
 		// [0][0] = Dilug Number
 		// [0][1] = searchSTR
+		// [0][2] = padding
+		// [0][3] = headPadding
+		// [0][4] = tailPadding
 		//    [0] = searchLetter(except first Row)
 		//    [1] = Book Name (except first Row)
 		//    [2] = Perek
@@ -291,6 +294,18 @@ public class ExcelFunctions {
 				cell = row.createCell(2);
 				cell.setCellStyle(style);
 				cell.setCellValue(resArr[0][1]);
+				cell = row.createCell(6);
+				cell.setCellStyle(style);
+				HSSFRichTextString richString = new HSSFRichTextString(resArr[0][2]);
+				try {
+					richString.applyFont(0,1+Integer.parseInt(resArr[0][3]), txtFont);
+					richString.applyFont(Integer.parseInt(resArr[0][3]), Integer.parseInt(resArr[0][4]), fontDilug);
+					richString.applyFont(Integer.parseInt(resArr[0][4]), richString.length(), txtFont);
+					cell.setCellValue(richString);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 				int j = 0;
 				int counter = 0;
 				Boolean boolRepeat = false;
@@ -342,7 +357,7 @@ public class ExcelFunctions {
 							// HSSFCell hssfCell = row.createCell();
 							// rich text consists of two runs
 							int lastIndex = 0;
-							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
+							richString = new HSSFRichTextString(new String(res[id_toraLine]));
 							try {
 								for (Integer thisIndex : charPOSList) {
 
@@ -351,17 +366,17 @@ public class ExcelFunctions {
 									}
 									richString.applyFont(thisIndex, 1 + thisIndex, fontDilug);
 									lastIndex = thisIndex + 1;
-									cell.setCellValue(richString);
 								}
 								richString.applyFont(lastIndex, richString.length(), txtFont);
-								
+								cell.setCellValue(richString);
+									
 								/*
 								richString.applyFont(0, Integer.parseInt(res[id_charPOS]) - 1, txtFont);
 								richString.applyFont(Integer.parseInt(res[id_charPOS]) - 1,
 										Integer.parseInt(res[id_charPOS]), fontDilug);
 								richString.applyFont(Integer.parseInt(res[id_charPOS]), richString.length(), txtFont);
 								*/
-								cell.setCellValue(richString);
+							
 							} catch (Exception e) {
 								e.printStackTrace();
 							}

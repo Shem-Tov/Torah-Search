@@ -223,6 +223,7 @@ public class frame {
 		textField_dilugMin.setText(PropStore.map.get(PropStore.minDilug));
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
 		textField_offset.setText(PropStore.map.get(PropStore.offsetDilug));
+		textField_padding.setText(PropStore.map.get(PropStore.paddingDilug));
 		checkBox_gimatriaSofiot.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_gimatriaSofiot)));
 		checkBox_wholeWord.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_wholeWord)));
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
@@ -235,6 +236,7 @@ public class frame {
 		PropStore.map.put(PropStore.minDilug, textField_dilugMin.getText());
 		PropStore.map.put(PropStore.maxDilug, textField_dilugMax.getText());
 		PropStore.map.put(PropStore.offsetDilug, textField_offset.getText());
+		PropStore.map.put(PropStore.paddingDilug, textField_padding.getText());
 		PropStore.map.put(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
 		PropStore.map.put(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
 		PropStore.map.put(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));

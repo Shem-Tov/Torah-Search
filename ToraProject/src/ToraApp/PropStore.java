@@ -20,9 +20,9 @@ public class PropStore {
 	public static final String minDilug = "minDilug";
 	public static final String maxDilug = "maxDikug";
 	public static final String offsetDilug = "offsetDilug";
+	public static final String paddingDilug = "paddingDilug";
 	
 	public static void store() {
-
 		Properties prop = new Properties();
 		OutputStream output = null;
 		try {

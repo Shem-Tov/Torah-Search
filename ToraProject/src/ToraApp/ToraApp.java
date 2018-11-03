@@ -27,8 +27,15 @@ public class ToraApp {
 	static String[][] tablePerekParashot;
 	private static boolean tableLoaded=false; 
 	
-	public static char cSpace() {
-		return '\u00A0';
+	public static String cSpace() {
+		return cSpace(1);
+	}
+	public static String cSpace(int count) {
+		String str = "";
+		for (int i=1; i<=count; i++) {
+			str += "\u00A0";
+		}
+		return str;
 	}
 	public static void starter() throws IOException{
 		PropStore.load();
