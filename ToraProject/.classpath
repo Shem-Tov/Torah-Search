@@ -17,6 +17,7 @@
 	<classpathentry kind="lib" path="src/ToraApp/resources/TorahTables.xls"/>
 	<classpathentry kind="lib" path="src/ToraApp/resources/Lines.txt"/>
 	<classpathentry kind="lib" path="src/ToraApp/resources/NoTevot.txt"/>
+	<classpathentry kind="lib" path="src/ToraApp/resources/config.properties"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
