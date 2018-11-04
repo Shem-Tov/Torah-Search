@@ -1,6 +1,7 @@
 package ToraApp;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -111,9 +112,9 @@ public class Gimatria {
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
-			inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
+			inputStream = new BufferedReader(new FileReader(new File(ClassLoader.getSystemResource(ToraApp.ToraLineFile).toURI())));
 			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("./dbFiles/myText.txt", false);
+			// outputStream2 = new FileWriter("/myText.txt", false);
 			inputStream.mark(640000);
 			count = 0;
 //				outputStream.getBuffer().setLength(0);

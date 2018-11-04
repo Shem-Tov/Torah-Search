@@ -15,8 +15,8 @@ public class ToraApp {
 	//static StringBuffer buffer = new StringBuffer();
 	//static Formatter formatter = new Formatter(buffer, new Locale("he", "IL"));
 	
-	public static final String ToraLineFile = "./dbFiles/Lines.txt";
-	public static final String ToraLetterFile = "./dbFiles/NoTevot.txt";
+	public static final String ToraLineFile = "Lines.txt";
+	public static final String ToraLetterFile = "NoTevot.txt";
 	
 	private static byte guiMode = 0;
 	static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ',
@@ -40,7 +40,7 @@ public class ToraApp {
 	public static void starter() throws IOException{
 		PropStore.load();
 		Methods.arrayMethodCreator();
-		tablePerekBooks = ExcelFunctions.readXLS("./dbFiles/TorahTables2.xls", 0, 0, 1, 6, 53);
+		tablePerekBooks = ExcelFunctions.readXLS("TorahTables2.xls", 0, 0, 1, 6, 53);
 		tableLoaded=true;
 	}
 	

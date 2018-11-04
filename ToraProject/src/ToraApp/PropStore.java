@@ -1,16 +1,18 @@
 package ToraApp;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class PropStore {
-	private static final String fileName = "./dbFiles/config.properties";
+	private static final String fileName = "config.properties";
 	public static Map<String, String> map = new HashMap<String, String>();
 	public static final String searchWord = "searchWord";
 	public static final String bool_wholeWord = "bool_wholeWord";
@@ -26,7 +28,12 @@ public class PropStore {
 		Properties prop = new Properties();
 		OutputStream output = null;
 		try {
-			output = new FileOutputStream(fileName);
+			try {
+				output = new FileOutputStream(new File(ClassLoader.getSystemResource(fileName).toURI()));
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// set the properties value
 			prop.putAll(map);
 			
@@ -52,7 +59,7 @@ public class PropStore {
     	InputStream input = null;
 
     	try {
-        	input = new FileInputStream(fileName);
+        	input = new FileInputStream(new File(ClassLoader.getSystemResource(fileName).toURI()));
      		//load a properties file from class path, inside static method
     		prop.load(input);
     		map = prop.entrySet().stream().collect(Collectors.toMap(
@@ -61,7 +68,7 @@ public class PropStore {
                 //get the property value and print it out
                 //System.out.println(prop.getProperty("database"));
  
-    	} catch (IOException ex) {
+    	} catch (IOException | URISyntaxException ex) {
     		System.out.println("Could not open config file");
     		//ex.printStackTrace();
         } finally{

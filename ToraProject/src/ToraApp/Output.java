@@ -40,7 +40,6 @@ public class Output {
 
 	public static String markMatchesInLine(String line, String searchSTR, StringFormatting.HtmlGenerator htmlFormat,
 			Boolean bool_sofiot, Boolean bool_wholeWords) throws Exception {
-		int i = 0;
 		String lineHtml = "";
 		String lineConvert;
 		String searchConvert;

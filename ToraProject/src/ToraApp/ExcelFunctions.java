@@ -20,23 +20,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
 public class ExcelFunctions {
-	public static final int id_searchSTR = 0; //for row 0
-	public static final int id_searchLetter = 0; //for the rest of the rows
+	public static final int id_searchSTR = 0; // for row 0
+	public static final int id_searchLetter = 0; // for the rest of the rows
 	public static final int id_toraLine = 4;
 	public static final int id_charPOS = 5;
 	public static final int id_lineNum = 6;
+
 	public static String[][] readXLS(String inputFile, int sheetNUM, int X, int Y, int posX, int posY)
 			throws IOException {
 		String[][] data = null;
 		Workbook workbook = null;
 		DataFormatter dataFormatter = new DataFormatter();
 		try {
-			FileInputStream excelFile = new FileInputStream(new File(inputFile));
+			FileInputStream excelFile = new FileInputStream(new File(ClassLoader.getSystemResource(inputFile).toURI()));
 			workbook = new HSSFWorkbook(excelFile);
 			Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
 			Iterator<Row> iterator = datatypeSheet.iterator();
@@ -65,10 +67,7 @@ public class ExcelFunctions {
 				}
 			}
 			Output.printText("Imported XLS", 2);
-		} catch (FileNotFoundException e) {
-			Output.printText("Error importing from EXCEL Sheet", 1);
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (URISyntaxException | IOException e) {
 			Output.printText("Error importing from EXCEL Sheet", 1);
 			e.printStackTrace();
 		} finally {
@@ -80,7 +79,7 @@ public class ExcelFunctions {
 	}
 // End Excel Tables
 
-	// private static final String FILE_NAME = "./dbFiles/MyFirstExcel.xlsx";
+	// private static final String FILE_NAME = "/MyFirstExcel.xlsx";
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
@@ -153,7 +152,7 @@ public class ExcelFunctions {
 		String[] header = { "אינדקס", dilugWord, "נמצא", "ספר", "פרק", "פסוק", "תורה" };
 
 		int rowNum = 0;
-		System.out.println("Creating excel "+fileNameExtended+" : Sheet - "+ sheetName);
+		System.out.println("Creating excel " + fileNameExtended + " : Sheet - " + sheetName);
 
 		Row row = sheet.createRow(rowNum++);
 		Cell cell = row.createCell(0);
@@ -260,13 +259,13 @@ public class ExcelFunctions {
 		// [0][2] = padding
 		// [0][3] = headPadding
 		// [0][4] = tailPadding
-		//    [0] = searchLetter(except first Row)
-		//    [1] = Book Name (except first Row)
-		//    [2] = Perek
-		//    [3] = Pasuk
-		//    [4] = Torah of the Pasuk
-		//    [5] = Character position in the Pasuk for the letter matching the Dilug
-		//    [6] = Line Number of Pasuk
+		// [0] = searchLetter(except first Row)
+		// [1] = Book Name (except first Row)
+		// [2] = Perek
+		// [3] = Pasuk
+		// [4] = Torah of the Pasuk
+		// [5] = Character position in the Pasuk for the letter matching the Dilug
+		// [6] = Line Number of Pasuk
 		// Search
 		case 2:
 
@@ -276,7 +275,7 @@ public class ExcelFunctions {
 				cell.setCellValue(field);
 			}
 			index = 1;
-			
+
 			for (String[][] resArr : results) {
 				// if ((mode==1) && (counter++==0)) { // The Dilugim Mode needs to skip first
 				// array
@@ -298,7 +297,7 @@ public class ExcelFunctions {
 				cell.setCellStyle(style);
 				HSSFRichTextString richString = new HSSFRichTextString(resArr[0][2]);
 				try {
-					richString.applyFont(0,1+Integer.parseInt(resArr[0][3]), txtFont);
+					richString.applyFont(0, 1 + Integer.parseInt(resArr[0][3]), txtFont);
 					richString.applyFont(Integer.parseInt(resArr[0][3]), Integer.parseInt(resArr[0][4]), fontDilug);
 					richString.applyFont(Integer.parseInt(resArr[0][4]), richString.length(), txtFont);
 					cell.setCellValue(richString);
@@ -309,25 +308,25 @@ public class ExcelFunctions {
 				int j = 0;
 				int counter = 0;
 				Boolean boolRepeat = false;
-				String reportLine="";
+				String reportLine = "";
 				ArrayList<Integer> charPOSList = new ArrayList<Integer>();
 				for (String[] res : resArr) {
-					//resArr holds one result
-					//resArr is a Database with some rows of data
-					//res is one row of data
-					//when "res" is the first row it is:
-					//first row [0][0] containing Dilug Number
-					//first row [0][1] containing Search String 
+					// resArr holds one result
+					// resArr is a Database with some rows of data
+					// res is one row of data
+					// when "res" is the first row it is:
+					// first row [0][0] containing Dilug Number
+					// first row [0][1] containing Search String
 					//
-					//The rest of the time "res" holds 
-					//[0] One Search Letter in order of Search String
-					//[1] = Book Name (except first Row)
-					//[2] = Perek
-					//[3] = Pasuk
-					//[4] = Torah of the Pasuk
-					//[5] = Character position in the Pasuk for the letter matching the Dilug
-					//[6] = Line Number of Pasuk
-					j++; //index next result
+					// The rest of the time "res" holds
+					// [0] One Search Letter in order of Search String
+					// [1] = Book Name (except first Row)
+					// [2] = Perek
+					// [3] = Pasuk
+					// [4] = Torah of the Pasuk
+					// [5] = Character position in the Pasuk for the letter matching the Dilug
+					// [6] = Line Number of Pasuk
+					j++; // index next result
 					if (counter++ == 0) {
 						// skip first row (row 0)
 						continue;
@@ -337,11 +336,11 @@ public class ExcelFunctions {
 						row = sheet.createRow(rowNum++);
 						reportLine = "";
 					}
-					charPOSList.add(Integer.parseInt(res[id_charPOS])-1);
-					reportLine += res[id_searchLetter];						
-					if ((j < (resArr[0][1].length()+1))&& (res[id_lineNum].equals(resArr[j][id_lineNum]))) {
+					charPOSList.add(Integer.parseInt(res[id_charPOS]) - 1);
+					reportLine += res[id_searchLetter];
+					if ((j < (resArr[0][1].length() + 1)) && (res[id_lineNum].equals(resArr[j][id_lineNum]))) {
 						boolRepeat = true;
-						continue;	
+						continue;
 					}
 					boolRepeat = false;
 					for (int i = 0; i < res.length; i++) {
@@ -369,21 +368,22 @@ public class ExcelFunctions {
 								}
 								richString.applyFont(lastIndex, richString.length(), txtFont);
 								cell.setCellValue(richString);
-									
+
 								/*
-								richString.applyFont(0, Integer.parseInt(res[id_charPOS]) - 1, txtFont);
-								richString.applyFont(Integer.parseInt(res[id_charPOS]) - 1,
-										Integer.parseInt(res[id_charPOS]), fontDilug);
-								richString.applyFont(Integer.parseInt(res[id_charPOS]), richString.length(), txtFont);
-								*/
-							
+								 * richString.applyFont(0, Integer.parseInt(res[id_charPOS]) - 1, txtFont);
+								 * richString.applyFont(Integer.parseInt(res[id_charPOS]) - 1,
+								 * Integer.parseInt(res[id_charPOS]), fontDilug);
+								 * richString.applyFont(Integer.parseInt(res[id_charPOS]), richString.length(),
+								 * txtFont);
+								 */
+
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 							// cell.setCellValue(res[i - 1]);
-						} else if (i==id_searchLetter) {
-							cell.setCellValue(reportLine);	
-						} else { 
+						} else if (i == id_searchLetter) {
+							cell.setCellValue(reportLine);
+						} else {
 							cell.setCellValue(res[i]);
 						}
 					}
@@ -417,10 +417,8 @@ public class ExcelFunctions {
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
-		writeXLS("בדיקה", "דוח", 0, "Title",
-				new ArrayList<String[][]>(Arrays.asList(
-						new String[][] { { "1", "2" } },
-						new String[][] { { "3", "4" } })));
+		writeXLS("בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
+				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })));
 
 	}
 

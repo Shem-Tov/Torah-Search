@@ -17,9 +17,9 @@ public class extraFunctions {
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
-			inputStream = new BufferedReader(new FileReader("./dbFiles/EveryWord.txt"));
+			inputStream = new BufferedReader(new FileReader("/EveryWord.txt"));
 			outputStream = new StringWriter();
-			outputStream2 = new FileWriter("./dbFiles/myText.txt", false);
+			outputStream2 = new FileWriter("/myText.txt", false);
 			inputStream.mark(640000);
 			int c;
 			char chInt = 0;
@@ -104,7 +104,7 @@ public class extraFunctions {
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
-			inputStream = new BufferedReader(new FileReader("./dbFiles/EveryWord.txt"));
+			inputStream = new BufferedReader(new FileReader("/EveryWord.txt"));
 			outputStream = new StringWriter();
 			inputStream.mark(640000);
 			int c;

@@ -1,6 +1,7 @@
 package ToraApp;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -49,7 +50,7 @@ public class Dilugim {
 		StringBuilder str = null;
 		int countJumps = 0, newpadding = 0;
 		try {
-			inputStream = new BufferedReader(new FileReader(ToraApp.ToraLetterFile));
+			inputStream = new BufferedReader(new FileReader(new File(ClassLoader.getSystemResource(ToraApp.ToraLetterFile).toURI())));
 			@SuppressWarnings("unused")
 			int markInt = 640000;
 			// inputStream.mark(markInt);
@@ -132,7 +133,7 @@ public class Dilugim {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
 			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("./dbFiles/myText.txt", false);
+			// outputStream2 = new FileWriter("/myText.txt", false);
 
 			final int markInt = 640000;
 			// outputStream.getBuffer().setLength(0);
@@ -150,7 +151,7 @@ public class Dilugim {
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
 				frame.frame.setLabel_dProgress("דילוג " + thisDilug);
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
-				inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
+				inputStream = new BufferedReader(new FileReader(new File(ClassLoader.getSystemResource(ToraApp.ToraLineFile).toURI())));
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
 				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and | position of Char found on Line
@@ -221,7 +222,7 @@ public class Dilugim {
 									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
-									try (Stream<String> lines = Files.lines(Paths.get(ToraApp.ToraLineFile))) {
+									try (Stream<String> lines = Files.lines(Paths.get(ClassLoader.getSystemResource(ToraApp.ToraLineFile).toURI()))) {
 										// Recieves words of Pasuk
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
