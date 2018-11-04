@@ -40,7 +40,7 @@ public class ExcelFunctions {
 		for (int dloop = 0; dloop < inputFiles.length; dloop++) {
 			try {
 				File file;
-				if (dloop==0) {
+				if ((dloop==0) && (inputFiles.length>1)) {
 				  file =new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
 				} else {
 				  file =new File(inputFiles[dloop]);
@@ -74,12 +74,17 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
+				frame.frame.clearText();
 				frame.frame.setButtonEnabled(true);
 				Output.printText("Imported XLS", 2);
 				break;
 			} catch (URISyntaxException | IOException | NullPointerException e) {
 				if (dloop==inputFiles.length-1) {
-					frame.frame.clearText();
+					try {
+						frame.frame.clearText();
+					} catch (NullPointerException ex) {
+						//safe to ignore
+					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
 					Output.printText("Program can not work without TorahTables Excel file", 1);
 					tableLoaded = false;
