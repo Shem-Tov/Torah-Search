@@ -91,7 +91,7 @@ public class ToraSearch {
 							count++;
 							frame.frame.setLabel_countMatch("נמצא "+count+" פעמים");
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot));
+							results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot, bool_wholeWords));
 						}
 					}
 				} else {
@@ -101,7 +101,7 @@ public class ToraSearch {
 						frame.frame.setLabel_countMatch("נמצא "+count+" פעמים");
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot));
+						results.add(Output.printPasukInfo(countLines, searchSTR, line,frame.frame.markupStyleHTML,bool_sofiot, bool_wholeWords));
 					}
 				}
 				if (frame.frame.getMethodCancelRequest()) {

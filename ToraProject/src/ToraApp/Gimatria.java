@@ -122,13 +122,13 @@ public class Gimatria {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
-			Output.printText(str);
+			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
 			if (bool_wholeWords) {
-				Output.printText("\u202B" + "חיפוש מילים שלמות");
+				Output.printText("\u202B" + Output.markText("חיפוש מילים שלמות",frame.frame.headerStyleHTML));
 			} else {
-				Output.printText("\u202B" + "חיפוש צירופי אותיות");
+				Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות",frame.frame.headerStyleHTML));
 			}
-			Output.printText(String.format("%1$-" + (str.length() - 1) + "s", "").replace(' ', '-'));
+			Output.printText(Output.markText(String.format("%1$-" + (str.length() + 1) + "s", "").replace(' ', '-'), frame.frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
@@ -142,10 +142,10 @@ public class Gimatria {
 						if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
 							count++;
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\"" + s + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
+							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML) + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
 									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							wCounter.addWord(s);
-							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + line);
+							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML, bool_gimatriaSofiot, bool_wholeWords));
 						}
 					}
 				} else {
@@ -168,15 +168,21 @@ public class Gimatria {
 							count += 1;
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 							String s = line.substring(lineCountStart, lineCountEnd);
-							String tempStr1 = "\u202B" + "\"" + s + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
+							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML) + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
 									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							wCounter.addWord(s);
-							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + line);
+							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML, bool_gimatriaSofiot, bool_wholeWords));
 							if (bool_countPsukim) {
 								break;
 							}
 						}
 					}
+				}
+				if (frame.frame.getMethodCancelRequest()) {
+					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
+					// break is redundant, because for loop will end anyway because maxDilug has
+					// changed to current loop index
+					break;
 				}
 			}
 			Output.printText("");

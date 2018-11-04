@@ -15,7 +15,7 @@ public class Output {
 		String lineHtml = "";
 		for (int[] i : charPOSArray) {
 			if (charPOSArray[indexOfArray][0] == i[0]) {
-				indexes.add(i[1]-1);
+				indexes.add(i[1] - 1);
 			}
 		}
 		int lastIndex = 0;
@@ -39,7 +39,7 @@ public class Output {
 	}
 
 	public static String markMatchesInLine(String line, String searchSTR, StringFormatting.HtmlGenerator htmlFormat,
-			Boolean bool_sofiot) throws Exception {
+			Boolean bool_sofiot, Boolean bool_wholeWords) throws Exception {
 		int i = 0;
 		String lineHtml = "";
 		String lineConvert;
@@ -53,12 +53,52 @@ public class Output {
 		}
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		indexes.add(lineConvert.indexOf(searchConvert, 0));
+		try {
+		if (indexes.get(0)==-1) {
+			throw new IllegalArgumentException();
+		} } catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 		int STRLength = searchSTR.length();
 		int newIndex = 0;
+		int startPOS = indexes.get(0);
+		if (bool_wholeWords) {
+			//checks for spaces before and after word
+			boolean cancel = false;
+			if ((indexes.get(0)>0) && (lineConvert.charAt(indexes.get(0)-1)!=' ')){
+				cancel =true;
+			}
+			if (((indexes.get(0)+searchConvert.length()<lineConvert.length()) && 
+					(lineConvert.charAt(indexes.get(0)+searchConvert.length())!=' '))) {
+				cancel =true;
+			}
+			if (cancel) {
+				startPOS += 1;
+				indexes.remove(0);
+			}
+		}
 		// find all occurences of searchSTR in Line and Color them
-		while ((newIndex = lineConvert.indexOf(searchConvert, indexes.get(i) + 1)) != -1) {
-			indexes.add(newIndex);
-			i++;
+		while ((newIndex = lineConvert.indexOf(searchConvert, startPOS + 1)) != -1) {
+			if (bool_wholeWords) {
+				//checks for spaces before and after word
+				Boolean cancel =false;
+				if ((newIndex>0) && (lineConvert.charAt(newIndex-1)!=' ')){
+					cancel =true;
+				}
+				if (((newIndex+searchConvert.length()<lineConvert.length()) && 
+						(lineConvert.charAt(newIndex+searchConvert.length())!=' '))) {
+					cancel =true;
+				}
+				if (!cancel) {
+					startPOS = newIndex;
+					indexes.add(newIndex);
+				} else {
+					startPOS += 1;
+				}
+			} else {
+				startPOS = newIndex;
+				indexes.add(newIndex);
+			}
 		}
 		int lastIndex = 0;
 		for (Integer thisIndex : indexes) {
@@ -66,7 +106,7 @@ public class Output {
 			String tempStr = "";
 			if (thisIndex > 0) {
 				tempStr = line.substring(lastIndex, thisIndex);
-				if (tempStr.charAt(tempStr.length() - 1) == ' ') {
+				if ((tempStr.length()>=1) && (tempStr.charAt(tempStr.length() - 1) == ' ')) {
 					wasSpace = true;
 					// removes whitespace from the end
 					tempStr = tempStr.replaceFirst("\\s++$", "");
@@ -83,24 +123,24 @@ public class Output {
 	public static String markText(String str, HtmlGenerator markupStyle) {
 		return (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
 	}
-	
-	public static String markTextBounds(String str, int startMark,int finishMark,HtmlGenerator markupStyle) {
-		String[] strArray = new String[] {"","",""};
+
+	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
+		String[] strArray = new String[] { "", "", "" };
 		strArray[0] = str.substring(0, startMark);
-		strArray[1] = markupStyle.getHtml(0) + str.substring(startMark, finishMark)+ markupStyle.getHtml(1);
+		strArray[1] = markupStyle.getHtml(0) + str.substring(startMark, finishMark) + markupStyle.getHtml(1);
 		strArray[2] = str.substring(finishMark);
-		return strArray[0]+strArray[1]+strArray[2];
+		return strArray[0] + strArray[1] + strArray[2];
 	}
 
 	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-			Boolean bool_sofiot) throws NoSuchFieldException {
+			Boolean bool_sofiot, Boolean bool_wholeWords) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" " + "נמצא ב"
 					+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
 					+ ":" + pBookInstance.getPasukLetters();
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
-			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot);
+			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords);
 			Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);
