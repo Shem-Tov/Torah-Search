@@ -73,8 +73,8 @@ public class copyFiles {
 
 	public static void main(String[] args) {
 		try {
-			copyFileBytes("./src/Lines_3.txt", "./src/Letters_3.txt");
-			//copyFileLines("./src/Lines_3.txt", "./src/Lines_4.txt");
+			copyFileBytes("./dbFiles/Lines_3.txt", "./dbFiles/Letters_3.txt");
+			//copyFileLines("./dbFiles/Lines_3.txt", "./dbFiles/Lines_4.txt");
 			System.out.println("Finished Copying");
 		} catch (IOException e) {
 			e.printStackTrace();

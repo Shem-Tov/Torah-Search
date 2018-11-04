@@ -10,7 +10,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class PropStore {
-	private static final String fileName = "./src/config.properties";
+	private static final String fileName = "./dbFiles/config.properties";
 	public static Map<String, String> map = new HashMap<String, String>();
 	public static final String searchWord = "searchWord";
 	public static final String bool_wholeWord = "bool_wholeWord";
@@ -62,7 +62,8 @@ public class PropStore {
                 //System.out.println(prop.getProperty("database"));
  
     	} catch (IOException ex) {
-    		ex.printStackTrace();
+    		System.out.println("Could not open config file");
+    		//ex.printStackTrace();
         } finally{
         	if(input!=null){
         		try {

@@ -132,7 +132,7 @@ public class Dilugim {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
 			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("./src/myText.txt", false);
+			// outputStream2 = new FileWriter("./dbFiles/myText.txt", false);
 
 			final int markInt = 640000;
 			// outputStream.getBuffer().setLength(0);

@@ -215,15 +215,15 @@ public class fileManipulation {
 	}
 
 	public static void main(String[] args) {
-		// readTextFile("./src/Lines_3.txt");
+		// readTextFile("./dbFiles/Lines_3.txt");
 		try {
 			ToraApp.starter();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//compareTextFileLines("./src/Lines.txt", "./src/Lines_2.txt",2,10);
+		//compareTextFileLines("./dbFiles/Lines.txt", "./dbFiles/Lines_2.txt",2,10);
 		
-		compareTextFileBytes("./src/Lines.txt", "./src/NoTevot.txt");
+		compareTextFileBytes("./dbFiles/Lines.txt", "./dbFiles/NoTevot.txt");
 	}
 }

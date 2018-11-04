@@ -47,7 +47,7 @@ public class ToraSearch {
 			// System.getProperty("user.dir"));
 			inputStream = new BufferedReader(new FileReader(ToraApp.ToraLineFile));
 			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("./src/myText.txt", false);
+			// outputStream2 = new FileWriter("./dbFiles/myText.txt", false);
 			inputStream.mark(640000);
 			count = 0;
 //				outputStream.getBuffer().setLength(0);
