@@ -1,6 +1,7 @@
 package frame;
 
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -16,12 +17,15 @@ import java.awt.Component;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Point;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.border.BevelBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -30,11 +34,14 @@ import ToraApp.ToraApp;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 import java.awt.Font;
 import java.awt.Dimension;
+
+import ToraApp.ExcelFunctions;
 import ToraApp.PropStore;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -45,13 +52,13 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
 public class frame {
-	
+	private static String subTorahFile;
 	private static Boolean methodCancelRequest = false;
 	private static Boolean methodRunning = false;
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
-			private JFrame frame;
+	private JFrame frame;
 	private static JButton button;
 	private static JTextField textField_Search;
 	private static JTextField textField_dilugMin;
@@ -120,6 +127,29 @@ public class frame {
 				}
 			});
 			add(anItem);
+			anItem = new JMenuItem("טעינת קובץ טבלאות");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+				    JFileChooser chooser = new JFileChooser();
+				    File workingDirectory = new File(System.getProperty("user.dir"));
+				    chooser.setCurrentDirectory(workingDirectory);
+				    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				    		"XLS files", "xls");
+				    chooser.setFileFilter(filter);
+				    int returnVal = chooser.showOpenDialog(getParent());
+				    if(returnVal == JFileChooser.APPROVE_OPTION) {
+				       System.out.println("You chose to open this file: " +
+				            chooser.getSelectedFile().getAbsolutePath());
+				       subTorahFile = chooser.getSelectedFile().getAbsolutePath();
+				       //There are identical calls like this, one here the another in ToraApp.starter()
+				       ToraApp.tablePerekBooks = ExcelFunctions.readXLS(new String[] {subTorahFile}, 0, 0, 1, 6, 53);
+				       PropStore.map.put(PropStore.subTorahTablesFile,subTorahFile);
+				       PropStore.store();
+				    }
+				}
+			});
+			add(anItem);
 		}
 	}
 
@@ -180,6 +210,14 @@ public class frame {
 		return comboBox_main.getSelectedIndex();
 	}
 
+	public static Boolean getMethodCancelRequest(){
+		return methodCancelRequest;
+	}
+	
+	public static void setButtonEnabled(Boolean bool) {
+		button.setEnabled(bool);
+	}
+	
 	public static void setMethodRunning(Boolean bool) {
 		methodRunning=bool;
 		if (bool) {
@@ -190,10 +228,6 @@ public class frame {
 		}
 	}
 	
-	public static Boolean getMethodCancelRequest(){
-		return methodCancelRequest;
-	}
-
 	public static void showProgressBar(Boolean bool, int flag) {
 		// 0b01 - progressBar and countLabel
 		// 0b10 - label
@@ -224,6 +258,7 @@ public class frame {
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
 		textField_offset.setText(PropStore.map.get(PropStore.offsetDilug));
 		textField_padding.setText(PropStore.map.get(PropStore.paddingDilug));
+		subTorahFile=PropStore.map.get(PropStore.subTorahTablesFile);
 		checkBox_gimatriaSofiot.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_gimatriaSofiot)));
 		checkBox_wholeWord.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_wholeWord)));
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
@@ -237,6 +272,7 @@ public class frame {
 		PropStore.map.put(PropStore.maxDilug, textField_dilugMax.getText());
 		PropStore.map.put(PropStore.offsetDilug, textField_offset.getText());
 		PropStore.map.put(PropStore.paddingDilug, textField_padding.getText());
+		PropStore.map.put(PropStore.subTorahTablesFile,subTorahFile);
 		PropStore.map.put(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
 		PropStore.map.put(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
 		PropStore.map.put(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
@@ -480,8 +516,6 @@ public class frame {
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
-		ToraApp.starter();
-
 		button = new JButton("חפש");
 		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
 		button.addActionListener(new ActionListener() {
@@ -646,5 +680,6 @@ public class frame {
 		panel.add(button, gbc_button);
 
 		initValues();
+		ToraApp.starter();
 	}
 }

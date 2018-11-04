@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class PropStore {
-	private static final String fileName = "config.properties";
+	private static final String fileName = ToraApp.resourceFolder+"config.properties";
 	public static Map<String, String> map = new HashMap<String, String>();
 	public static final String searchWord = "searchWord";
 	public static final String bool_wholeWord = "bool_wholeWord";
@@ -23,16 +23,23 @@ public class PropStore {
 	public static final String maxDilug = "maxDikug";
 	public static final String offsetDilug = "offsetDilug";
 	public static final String paddingDilug = "paddingDilug";
+	public static final String subTorahTablesFile = "subTorahTables";
 	
 	public static void store() {
 		Properties prop = new Properties();
 		OutputStream output = null;
 		try {
+			File outputFile;
 			try {
-				output = new FileOutputStream(new File(ClassLoader.getSystemResource(fileName).toURI()));
-			} catch (URISyntaxException e) {
+				outputFile = new File(ClassLoader.getSystemResource(fileName).toURI());
+				outputFile.createNewFile(); // if file already exists will do nothing 
+				output = new FileOutputStream(outputFile);
+			} catch (URISyntaxException | NullPointerException e) {
+				outputFile = new File(fileName);
+				outputFile.createNewFile(); // if file already exists will do nothing 
+				output = new FileOutputStream(outputFile);
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			// set the properties value
 			prop.putAll(map);
@@ -68,8 +75,8 @@ public class PropStore {
                 //get the property value and print it out
                 //System.out.println(prop.getProperty("database"));
  
-    	} catch (IOException | URISyntaxException ex) {
-    		System.out.println("Could not open config file");
+    	} catch (IOException | URISyntaxException | NullPointerException ex) {
+    		Output.printText("Could not open config file",1);
     		//ex.printStackTrace();
         } finally{
         	if(input!=null){

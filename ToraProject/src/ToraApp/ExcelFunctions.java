@@ -26,53 +26,74 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class ExcelFunctions {
+	public static Boolean tableLoaded = false;
 	public static final int id_searchSTR = 0; // for row 0
 	public static final int id_searchLetter = 0; // for the rest of the rows
 	public static final int id_toraLine = 4;
 	public static final int id_charPOS = 5;
 	public static final int id_lineNum = 6;
 
-	public static String[][] readXLS(String inputFile, int sheetNUM, int X, int Y, int posX, int posY)
-			throws IOException {
+	public static String[][] readXLS(String[] inputFiles, int sheetNUM, int X, int Y, int posX, int posY) {
 		String[][] data = null;
 		Workbook workbook = null;
 		DataFormatter dataFormatter = new DataFormatter();
-		try {
-			FileInputStream excelFile = new FileInputStream(new File(ClassLoader.getSystemResource(inputFile).toURI()));
-			workbook = new HSSFWorkbook(excelFile);
-			Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
-			Iterator<Row> iterator = datatypeSheet.iterator();
-			data = new String[posX - X][posY - Y];
-			int i = 0;
-			int j = 0;
-			Row currentRow;
-			while (j < Y) {
-				currentRow = iterator.next();
-				j++;
-			}
-			while (iterator.hasNext()) {
-				currentRow = iterator.next();
-				Iterator<Cell> cellIterator = currentRow.iterator();
-				i = X;
-				while (cellIterator.hasNext()) {
-					Cell currentCell = cellIterator.next();
-					data[i++ - X][(j) - Y] = dataFormatter.formatCellValue(currentCell);
-					if (i >= (posX)) {
+		for (int dloop = 0; dloop < inputFiles.length; dloop++) {
+			try {
+				File file;
+				if (dloop==0) {
+				  file =new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
+				} else {
+				  file =new File(inputFiles[dloop]);
+				}
+				FileInputStream excelFile = new FileInputStream(file);
+				workbook = new HSSFWorkbook(excelFile);
+				Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
+				Iterator<Row> iterator = datatypeSheet.iterator();
+				data = new String[posX - X][posY - Y];
+				int i = 0;
+				int j = 0;
+				Row currentRow;
+				while (j < Y) {
+					currentRow = iterator.next();
+					j++;
+				}
+				while (iterator.hasNext()) {
+					currentRow = iterator.next();
+					Iterator<Cell> cellIterator = currentRow.iterator();
+					i = X;
+					while (cellIterator.hasNext()) {
+						Cell currentCell = cellIterator.next();
+						data[i++ - X][(j) - Y] = dataFormatter.formatCellValue(currentCell);
+						if (i >= (posX)) {
+							break;
+						}
+					}
+					j++;
+					if (j >= (posY)) {
 						break;
 					}
 				}
-				j++;
-				if (j >= (posY)) {
-					break;
+				tableLoaded = true;
+				frame.frame.setButtonEnabled(true);
+				Output.printText("Imported XLS", 2);
+				break;
+			} catch (URISyntaxException | IOException | NullPointerException e) {
+				if (dloop==inputFiles.length-1) {
+					frame.frame.clearText();
+					Output.printText("Error importing from EXCEL Sheet", 1);
+					Output.printText("Program can not work without TorahTables Excel file", 1);
+					tableLoaded = false;
+					frame.frame.setButtonEnabled(false);
+					// e.printStackTrace();
 				}
-			}
-			Output.printText("Imported XLS", 2);
-		} catch (URISyntaxException | IOException e) {
-			Output.printText("Error importing from EXCEL Sheet", 1);
-			e.printStackTrace();
-		} finally {
-			if (workbook != null) {
-				workbook.close();
+			} finally {
+				try {
+					if (workbook != null) {
+						workbook.close();
+					}
+				} catch (IOException e) {
+
+				}
 			}
 		}
 		return data;
