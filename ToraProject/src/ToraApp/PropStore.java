@@ -25,7 +25,15 @@ public class PropStore {
 	public static final String offsetDilug = "offsetDilug";
 	public static final String paddingDilug = "paddingDilug";
 	public static final String subTorahTablesFile = "subTorahTables";
+	public static final String subTorahLineFile = "subTorahLineFile";
+	public static final String subTorahLettersFile = "subTorahLettersFile";
 
+	public static void addNotNull(String key, String value) {
+	   if (value != null) {
+		map.put(key, value);
+	   }
+	}
+	
 	public static void store() {
 		Properties prop = new Properties();
 		OutputStream output = null;

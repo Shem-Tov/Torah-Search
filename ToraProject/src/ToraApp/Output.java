@@ -10,7 +10,7 @@ import frame.frame;
 
 public class Output {
 	public static String markMatchPOS(String line, int indexOfArray, int[][] charPOSArray,
-			StringFormatting.HtmlGenerator htmlFormat) throws Exception {
+			StringFormatting.HtmlGenerator htmlFormat) {
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		String lineHtml = "";
 		for (int[] i : charPOSArray) {
@@ -39,7 +39,7 @@ public class Output {
 	}
 
 	public static String markMatchesInLine(String line, String searchSTR, StringFormatting.HtmlGenerator htmlFormat,
-			Boolean bool_sofiot, Boolean bool_wholeWords) throws Exception {
+		Boolean bool_sofiot, Boolean bool_wholeWords) {
 		String lineHtml = "";
 		String lineConvert;
 		String searchConvert;

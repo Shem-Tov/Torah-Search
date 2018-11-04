@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import StringFormatting.StringAlignUtils;
 
-
 public class Gimatria {
 	private static Gimatria instance;
 
@@ -85,6 +84,10 @@ public class Gimatria {
 		boolean bool_wholeWords;
 		boolean bool_gimatriaSofiot;
 		boolean bool_countPsukim;
+		File file = ToraApp.checkFile(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
+		if (file == null) {
+			return;
+		}	
 		// FileWriter outputStream2 = null;
 		try {
 			searchSTR = (String) args[0];
@@ -110,103 +113,110 @@ public class Gimatria {
 		int countLines = 0;
 		int count = 0;
 		try {
-			// System.out.println("Working Directory = " +
-			// System.getProperty("user.dir"));
-			inputStream = new BufferedReader(new FileReader(new File(ClassLoader.getSystemResource(ToraApp.ToraLineFile).toURI())));
-			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("/myText.txt", false);
-			inputStream.mark(640000);
-			count = 0;
+				// System.out.println("Working Directory = " +
+				// System.getProperty("user.dir"));
+				inputStream = new BufferedReader(new FileReader(file));
+				outputStream = new StringWriter();
+				// outputStream2 = new FileWriter("/myText.txt", false);
+				inputStream.mark(640000);
+				count = 0;
 //				outputStream.getBuffer().setLength(0);
-			String line;
-			// \u202A - Left to Right Formatting
-			// \u202B - Right to Left Formatting
-			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
-			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
-			if (bool_wholeWords) {
-				Output.printText("\u202B" + Output.markText("חיפוש מילים שלמות",frame.frame.headerStyleHTML));
-			} else {
-				Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות",frame.frame.headerStyleHTML));
-			}
-			Output.printText(Output.markText(String.format("%1$-" + (str.length() + 1) + "s", "").replace(' ', '-'), frame.frame.headerStyleHTML));
-			// System.out.println(formatter.locale());
-			while ((line = inputStream.readLine()) != null) {
-				countLines++;
-				if (countLines % 25 == 0) {
-					frame.SwingActivity.getInstance().callProcess(countLines);
-				}
+				String line;
+				// \u202A - Left to Right Formatting
+				// \u202B - Right to Left Formatting
+				// \u202C - Pop Directional Formatting
+				String str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
+				Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
 				if (bool_wholeWords) {
-					String[] splitStr = line.trim().split("\\s+");
-					for (String s : splitStr) {
-						// Do your stuff here
-						if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
-							count++;
-							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML) + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-							wCounter.addWord(s);
-							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML, bool_gimatriaSofiot, bool_wholeWords));
-						}
-					}
+					Output.printText("\u202B" + Output.markText("חיפוש מילים שלמות", frame.frame.headerStyleHTML));
 				} else {
-					sumGimatria = 0;
-					int lineCountEnd = 0;
-					int lineCountStart = 0;
-					for (char ch : line.toCharArray()) {
-						lineCountEnd += 1;
-						sumGimatria += calculateGimatriaLetter(ch, bool_gimatriaSofiot);
-						if (sumGimatria > searchGmt) {
-							while ((sumGimatria > searchGmt)
-									|| ((line.length() > lineCountStart) && (line.charAt(lineCountStart) == ' '))) {
-								sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart),
-										bool_gimatriaSofiot);
-								lineCountStart += 1;
+					Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.frame.headerStyleHTML));
+				}
+				Output.printText(Output.markText(String.format("%1$-" + (str.length() + 1) + "s", "").replace(' ', '-'),
+						frame.frame.headerStyleHTML));
+				// System.out.println(formatter.locale());
+				while ((line = inputStream.readLine()) != null) {
+					countLines++;
+					if (countLines % 25 == 0) {
+						frame.SwingActivity.getInstance().callProcess(countLines);
+					}
+					if (bool_wholeWords) {
+						String[] splitStr = line.trim().split("\\s+");
+						for (String s : splitStr) {
+							// Do your stuff here
+							if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
+								count++;
+								ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
+								String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML)
+										+ "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
+										+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+								wCounter.addWord(s);
+								Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  "
+										+ Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML,
+												bool_gimatriaSofiot, bool_wholeWords));
 							}
 						}
-						if ((sumGimatria == searchGmt)
-								&& ((line.length() > lineCountEnd) && (line.charAt(lineCountEnd) != ' '))) {
-							count += 1;
-							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String s = line.substring(lineCountStart, lineCountEnd);
-							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML) + "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
-							wCounter.addWord(s);
-							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML, bool_gimatriaSofiot, bool_wholeWords));
-							if (bool_countPsukim) {
-								break;
+					} else {
+						sumGimatria = 0;
+						int lineCountEnd = 0;
+						int lineCountStart = 0;
+						for (char ch : line.toCharArray()) {
+							lineCountEnd += 1;
+							sumGimatria += calculateGimatriaLetter(ch, bool_gimatriaSofiot);
+							if (sumGimatria > searchGmt) {
+								while ((sumGimatria > searchGmt)
+										|| ((line.length() > lineCountStart) && (line.charAt(lineCountStart) == ' '))) {
+									sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart),
+											bool_gimatriaSofiot);
+									lineCountStart += 1;
+								}
+							}
+							if ((sumGimatria == searchGmt)
+									&& ((line.length() > lineCountEnd) && (line.charAt(lineCountEnd) != ' '))) {
+								count += 1;
+								ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
+								String s = line.substring(lineCountStart, lineCountEnd);
+								String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML)
+										+ "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
+										+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+								wCounter.addWord(s);
+								Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  "
+										+ Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML,
+												bool_gimatriaSofiot, bool_wholeWords));
+								if (bool_countPsukim) {
+									break;
+								}
 							}
 						}
 					}
+					if (frame.frame.getMethodCancelRequest()) {
+						Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
+						// break is redundant, because for loop will end anyway because maxDilug has
+						// changed to current loop index
+						break;
+					}
 				}
-				if (frame.frame.getMethodCancelRequest()) {
-					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
-					// break is redundant, because for loop will end anyway because maxDilug has
-					// changed to current loop index
-					break;
+				Output.printText("");
+				wCounter.printWords();
+				Output.printText("");
+				Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
+				Output.printText("");
+				Output.printText("\u202B" + "סיים חיפוש");
+			} catch (Exception e) {
+				Output.printText("");
+				Output.printText("Found Error at Line: " + countLines, 1);
+				e.printStackTrace();
+			} finally {
+				if (inputStream != null) {
+					inputStream.close();
 				}
-			}
-			Output.printText("");
-			wCounter.printWords();
-			Output.printText("");
-			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
-		} catch (Exception e) {
-			Output.printText("");
-			Output.printText("Found Error at Line: " + countLines,1);
-			e.printStackTrace();
-		} finally {
-			Output.printText("");
-			Output.printText("\u202B" + "סיים חיפוש");
-			if (inputStream != null) {
-				inputStream.close();
-			}
-			if (outputStream != null) {
-				outputStream.close();
-			}
+				if (outputStream != null) {
+					outputStream.close();
+				}
 
-			/*
-			 * if (outputStream2 != null) { outputStream2.close(); }
-			 */
+				/*
+				 * if (outputStream2 != null) { outputStream2.close(); }
+				 */
+			}
 		}
-	}
 }

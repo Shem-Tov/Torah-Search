@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import java.awt.ComponentOrientation;
@@ -52,7 +53,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
 public class frame {
-	private static String subTorahFile;
 	private static Boolean methodCancelRequest = false;
 	private static Boolean methodRunning = false;
 	private static final String buttonRunText = "חפש";
@@ -127,29 +127,76 @@ public class frame {
 				}
 			});
 			add(anItem);
-			anItem = new JMenuItem("טעינת קובץ טבלאות");
+			JMenu menu = new JMenu("טעינת קובץ חדש");
+			anItem = new JMenuItem("טבלת אינדקס - TorahTables.xls");
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-				    JFileChooser chooser = new JFileChooser();
-				    File workingDirectory = new File(System.getProperty("user.dir"));
-				    chooser.setCurrentDirectory(workingDirectory);
-				    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				    		"XLS files", "xls");
-				    chooser.setFileFilter(filter);
-				    int returnVal = chooser.showOpenDialog(getParent());
-				    if(returnVal == JFileChooser.APPROVE_OPTION) {
-				       System.out.println("You chose to open this file: " +
-				            chooser.getSelectedFile().getAbsolutePath());
-				       subTorahFile = chooser.getSelectedFile().getAbsolutePath();
-				       //There are identical calls like this, one here the another in ToraApp.starter()
-				       ToraApp.tablePerekBooks = ExcelFunctions.readXLS(new String[] {subTorahFile}, 0, 0, 1, 6, 53);
-				       PropStore.map.put(PropStore.subTorahTablesFile,subTorahFile);
-				       PropStore.store();
-				    }
+					JFileChooser chooser = new JFileChooser();
+					File workingDirectory = new File(System.getProperty("user.dir"));
+					chooser.setCurrentDirectory(workingDirectory);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("XLS files", "xls");
+					chooser.setFileFilter(filter);
+					int returnVal = chooser.showOpenDialog(getParent());
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						System.out
+								.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+						ToraApp.subTorahTableFile = chooser.getSelectedFile().getAbsolutePath();
+						// There are identical calls like this, one here the another in
+						// ToraApp.starter()
+						ToraApp.tablePerekBooks = ExcelFunctions.readXLS(new String[] { ToraApp.subTorahTableFile }, 0,
+								0, 1, 6, 53);
+						PropStore.map.put(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
+						PropStore.store();
+					}
 				}
 			});
-			add(anItem);
+			menu.add(anItem);
+			anItem = new JMenuItem("קובץ תורה מחולק בשורות - Lines.txt");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					JFileChooser chooser = new JFileChooser();
+					File workingDirectory = new File(System.getProperty("user.dir"));
+					chooser.setCurrentDirectory(workingDirectory);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+					chooser.setFileFilter(filter);
+					int returnVal = chooser.showOpenDialog(getParent());
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						System.out
+								.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+						ToraApp.subTorahLineFile = chooser.getSelectedFile().getAbsolutePath();
+						// There are identical calls like this, one here the another in
+						// ToraApp.starter()
+						PropStore.map.put(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
+						PropStore.store();
+					}
+				}
+			});
+			menu.add(anItem);
+			anItem = new JMenuItem("קובץ תורה אותיות - NoTevot.txt");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					JFileChooser chooser = new JFileChooser();
+					File workingDirectory = new File(System.getProperty("user.dir"));
+					chooser.setCurrentDirectory(workingDirectory);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+					chooser.setFileFilter(filter);
+					int returnVal = chooser.showOpenDialog(getParent());
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						System.out
+								.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+						ToraApp.subTorahLetterFile = chooser.getSelectedFile().getAbsolutePath();
+						// There are identical calls like this, one here the another in
+						// ToraApp.starter()
+						PropStore.map.put(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
+						PropStore.store();
+					}
+				}
+			});
+			menu.add(anItem);
+			add(menu);
 		}
 	}
 
@@ -210,24 +257,24 @@ public class frame {
 		return comboBox_main.getSelectedIndex();
 	}
 
-	public static Boolean getMethodCancelRequest(){
+	public static Boolean getMethodCancelRequest() {
 		return methodCancelRequest;
 	}
-	
+
 	public static void setButtonEnabled(Boolean bool) {
 		button.setEnabled(bool);
 	}
-	
+
 	public static void setMethodRunning(Boolean bool) {
-		methodRunning=bool;
+		methodRunning = bool;
 		if (bool) {
 			button.setText(buttonCancelText);
 		} else {
 			button.setText(buttonRunText);
-			methodCancelRequest=false;
+			methodCancelRequest = false;
 		}
 	}
-	
+
 	public static void showProgressBar(Boolean bool, int flag) {
 		// 0b01 - progressBar and countLabel
 		// 0b10 - label
@@ -258,7 +305,9 @@ public class frame {
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
 		textField_offset.setText(PropStore.map.get(PropStore.offsetDilug));
 		textField_padding.setText(PropStore.map.get(PropStore.paddingDilug));
-		subTorahFile=PropStore.map.get(PropStore.subTorahTablesFile);
+		ToraApp.subTorahTableFile = PropStore.map.get(PropStore.subTorahTablesFile);
+		ToraApp.subTorahLineFile = PropStore.map.get(PropStore.subTorahLineFile);
+		ToraApp.subTorahLetterFile = PropStore.map.get(PropStore.subTorahLettersFile);
 		checkBox_gimatriaSofiot.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_gimatriaSofiot)));
 		checkBox_wholeWord.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_wholeWord)));
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
@@ -267,15 +316,17 @@ public class frame {
 	}
 
 	public static void saveValues() {
-		PropStore.map.put(PropStore.searchWord, textField_Search.getText());
-		PropStore.map.put(PropStore.minDilug, textField_dilugMin.getText());
-		PropStore.map.put(PropStore.maxDilug, textField_dilugMax.getText());
-		PropStore.map.put(PropStore.offsetDilug, textField_offset.getText());
-		PropStore.map.put(PropStore.paddingDilug, textField_padding.getText());
-		PropStore.map.put(PropStore.subTorahTablesFile,subTorahFile);
-		PropStore.map.put(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
-		PropStore.map.put(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
-		PropStore.map.put(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
+		PropStore.addNotNull(PropStore.searchWord, textField_Search.getText());
+		PropStore.addNotNull(PropStore.minDilug, textField_dilugMin.getText());
+		PropStore.addNotNull(PropStore.maxDilug, textField_dilugMax.getText());
+		PropStore.addNotNull(PropStore.offsetDilug, textField_offset.getText());
+		PropStore.addNotNull(PropStore.paddingDilug, textField_padding.getText());
+		PropStore.addNotNull(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
+		PropStore.addNotNull(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
+		PropStore.addNotNull(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
+		PropStore.addNotNull(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
+		PropStore.addNotNull(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
+		PropStore.addNotNull(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
 		PropStore.store();
 	}
 
@@ -528,7 +579,7 @@ public class frame {
 					activity = SwingActivity.getInstance();
 					activity.execute();
 				} else {
-					methodCancelRequest=true;
+					methodCancelRequest = true;
 					button.setText(buttonCancelRequestText);
 				}
 			}
@@ -678,8 +729,7 @@ public class frame {
 		panel.add(label_countMatch, gbc_label_dCountMatch);
 
 		panel.add(button, gbc_button);
-
-		initValues();
 		ToraApp.starter();
+		initValues();
 	}
 }

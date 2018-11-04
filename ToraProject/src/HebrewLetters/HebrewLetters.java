@@ -26,8 +26,8 @@ public class HebrewLetters {
 		for (char ch : str.toCharArray()) {
 			str2 += switchSofiot(ch);
 		}
-		System.out.println(str + " - Original string length: " + str.length());
-		System.out.println(str2 + " - New string length: " + str2.length());
+		//System.out.println(str + " - Original string length: " + str.length());
+		//System.out.println(str2 + " - New string length: " + str2.length());
 		return str2;
 	}
 

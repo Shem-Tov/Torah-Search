@@ -40,10 +40,10 @@ public class ExcelFunctions {
 		for (int dloop = 0; dloop < inputFiles.length; dloop++) {
 			try {
 				File file;
-				if ((dloop==0) && (inputFiles.length>1)) {
-				  file =new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
+				if ((dloop == 0) && (inputFiles.length > 1)) {
+					file = new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
 				} else {
-				  file =new File(inputFiles[dloop]);
+					file = new File(inputFiles[dloop]);
 				}
 				FileInputStream excelFile = new FileInputStream(file);
 				workbook = new HSSFWorkbook(excelFile);
@@ -79,11 +79,11 @@ public class ExcelFunctions {
 				Output.printText("Imported XLS", 2);
 				break;
 			} catch (URISyntaxException | IOException | NullPointerException e) {
-				if (dloop==inputFiles.length-1) {
+				if (dloop == inputFiles.length - 1) {
 					try {
 						frame.frame.clearText();
 					} catch (NullPointerException ex) {
-						//safe to ignore
+						// safe to ignore
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
 					Output.printText("Program can not work without TorahTables Excel file", 1);
@@ -110,7 +110,7 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
 	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
-			ArrayList<String[][]> results) {
+			ArrayList<String[][]> results, boolean bool_Padding) {
 		// mode=0 regular search
 		// mode=1 dilugim search
 
@@ -120,7 +120,7 @@ public class ExcelFunctions {
 		// Title - used as header inside sheet
 		// searchSTR - the string searched for
 		// results - depends on mode, will be described below, at the switch
-
+		// boolPadding - says if the Padding was succesful for Dilugim
 		HSSFWorkbook workbook = null;
 		HSSFSheet sheet = null;
 		File file = null;
@@ -321,16 +321,19 @@ public class ExcelFunctions {
 				cell.setCellValue(resArr[0][1]);
 				cell = row.createCell(6);
 				cell.setCellStyle(style);
-				HSSFRichTextString richString = new HSSFRichTextString(resArr[0][2]);
-				try {
-					richString.applyFont(0, 1 + Integer.parseInt(resArr[0][3]), txtFont);
-					richString.applyFont(Integer.parseInt(resArr[0][3]), Integer.parseInt(resArr[0][4]), fontDilug);
-					richString.applyFont(Integer.parseInt(resArr[0][4]), richString.length(), txtFont);
-					cell.setCellValue(richString);
-				} catch (Exception e) {
-					e.printStackTrace();
+				HSSFRichTextString richString;
+				// Padding Check
+				if (bool_Padding) {
+					richString = new HSSFRichTextString(resArr[0][2]);
+					try {
+						richString.applyFont(0, 1 + Integer.parseInt(resArr[0][3]), txtFont);
+						richString.applyFont(Integer.parseInt(resArr[0][3]), Integer.parseInt(resArr[0][4]), fontDilug);
+						richString.applyFont(Integer.parseInt(resArr[0][4]), richString.length(), txtFont);
+						cell.setCellValue(richString);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-
 				int j = 0;
 				int counter = 0;
 				Boolean boolRepeat = false;
@@ -444,7 +447,7 @@ public class ExcelFunctions {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
 		writeXLS("בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
-				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })));
+				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })), true);
 
 	}
 

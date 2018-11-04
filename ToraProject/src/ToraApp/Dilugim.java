@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -50,57 +49,55 @@ public class Dilugim {
 		BufferedReader inputStream = null;
 		StringBuilder str = null;
 		int countJumps = 0, newpadding = 0;
-		for (int dloop = 0; dloop < 2; dloop++) {
-			try {
-				inputStream = new BufferedReader(
-						new FileReader(new File(ClassLoader.getSystemResource(ToraApp.ToraLetterFile).toURI())));
-				@SuppressWarnings("unused")
-				int markInt = 640000;
-				// inputStream.mark(markInt);
-				int c;
-				int startChar = countChar - dilug * padding;
-				newpadding = padding;
-				while (startChar < 0) {
-					// if the padding is too large find the minimum position to read from.
-					startChar += dilug;
-					newpadding -= 1;
-				}
-				int maxJumps = padding + newpadding + searchSTR.length();
-				str = new StringBuilder(maxJumps);
-				if (startChar > 1) {
-					inputStream.skip(startChar - 1);
-				}
-				while ((c = inputStream.read()) != -1) {
-					countJumps++;
-					str.append((char) c);
-					if (countJumps < maxJumps) {
-						try {
-							if (dilug > 0) {
-								inputStream.skip((dilug - 1));
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-							break;
+		File file = ToraApp.checkFile(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
+		if (file == null) {
+			return null;
+		}
+		try {
+			inputStream = new BufferedReader(new FileReader(file));
+			@SuppressWarnings("unused")
+			int markInt = 640000;
+			// inputStream.mark(markInt);
+			int c;
+			int startChar = countChar - dilug * padding;
+			newpadding = padding;
+			while (startChar < 0) {
+				// if the padding is too large find the minimum position to read from.
+				startChar += dilug;
+				newpadding -= 1;
+			}
+			int maxJumps = padding + newpadding + searchSTR.length();
+			str = new StringBuilder(maxJumps);
+			if (startChar > 1) {
+				inputStream.skip(startChar - 1);
+			}
+			while ((c = inputStream.read()) != -1) {
+				countJumps++;
+				str.append((char) c);
+				if (countJumps < maxJumps) {
+					try {
+						if (dilug > 0) {
+							inputStream.skip((dilug - 1));
 						}
-					} else {
+					} catch (IOException e) {
+						e.printStackTrace();
 						break;
 					}
+				} else {
+					break;
 				}
-				break;
-			} catch (IOException | URISyntaxException e) {
-				if (dloop == 1) {
-					Output.printText("Error with loading Lines.txt", 1);
-				}
-				/*
-				 * } catch (NoSuchFieldException e) { e.printStackTrace();
-				 */
-			} finally {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
+		} catch (Exception e) {
+			Output.printText("Error with loading Lines.txt", 1);
+			/*
+			 * } catch (NoSuchFieldException e) { e.printStackTrace();
+			 */
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		return new paddingResults(str, newpadding, newpadding + searchSTR.length());
@@ -113,6 +110,7 @@ public class Dilugim {
 		String searchSTR;
 		String searchOriginal;
 		Boolean bool_sofiot;
+		Boolean bool_filePaddingFound = true;
 		int minDilug;
 		int maxDilug;
 		int padding;
@@ -120,6 +118,14 @@ public class Dilugim {
 		@SuppressWarnings("unused")
 		int offset;
 		// FileWriter outputStream2 = null;
+		File file = ToraApp.checkFile(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		if (file == null) {
+			return;
+		}
+		File file2 = ToraApp.checkFile(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
+		if (file2 == null) {
+			bool_filePaddingFound = false;
+		}
 		try {
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
@@ -161,11 +167,11 @@ public class Dilugim {
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
 				frame.frame.setLabel_dProgress("דילוג " + thisDilug);
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
-				inputStream = new BufferedReader(
-						new FileReader(new File(ClassLoader.getSystemResource(ToraApp.ToraLineFile).toURI())));
+				inputStream = new BufferedReader(new FileReader(file));
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
-				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and | position of Char found on Line
+				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and | position of Char found on
+																		// Line
 																		// | position of Char in File
 				int countLines = 1; // counts line in Tora File
 				int backup_countLines = 0; // backup for when reset buffer
@@ -234,7 +240,7 @@ public class Dilugim {
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
 									try (Stream<String> lines = Files.lines(
-											Paths.get(ClassLoader.getSystemResource(ToraApp.ToraLineFile).toURI()))) {
+											Paths.get(file.getPath()))) {
 										// Recieves words of Pasuk
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
@@ -259,15 +265,18 @@ public class Dilugim {
 											frame.frame.markupStyleHTML);
 									Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
 								}
-								paddingResults strResults = readDilugExpandedResult(searchSTR, lineForChar[0][2],
-										thisDilug, padding);
-								resArray[0][2] = strResults.getMyString().toString();
-								resArray[0][3] = String.valueOf(strResults.getPaddingHead());
-								resArray[0][4] = String.valueOf(strResults.getPaddingTail());
-								Output.printText("שורת הדילוג:" + ToraApp.cSpace(2)
-										+ Output.markTextBounds(strResults.getMyString().toString(),
-												strResults.getPaddingHead(), (strResults.getPaddingTail()),
-												frame.frame.markupStyleHTML));
+								if (bool_filePaddingFound) {
+									paddingResults strResults = readDilugExpandedResult(searchSTR, lineForChar[0][2],
+											thisDilug, padding);
+
+									resArray[0][2] = strResults.getMyString().toString();
+									resArray[0][3] = String.valueOf(strResults.getPaddingHead());
+									resArray[0][4] = String.valueOf(strResults.getPaddingTail());
+									Output.printText("שורת הדילוג:" + ToraApp.cSpace(2)
+											+ Output.markTextBounds(strResults.getMyString().toString(),
+													strResults.getPaddingHead(), (strResults.getPaddingTail()),
+													frame.frame.markupStyleHTML));
+								}
 								Output.printText("");
 								results.add(resArray);
 								inputStream.reset();
@@ -298,7 +307,7 @@ public class Dilugim {
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
-					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results);
+					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results,bool_filePaddingFound);
 				}
 				if (frame.frame.getMethodCancelRequest()) {
 					maxDilug = thisDilug;
@@ -308,15 +317,15 @@ public class Dilugim {
 					break;
 				}
 			}
-		} catch (Exception e) {
-			// Output.printText("Found Error at Line: " + countLines);
-		} finally {
 			Output.printText("");
 			Output.printText(Output.markText(
 					"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(countAll) + " פעמים"
 							+ " לדילוגים" + ToraApp.cSpace() + minDilug + " עד" + ToraApp.cSpace() + maxDilug + ".",
 					frame.frame.footerStyleHTML));
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.frame.footerStyleHTML));
+		} catch (Exception e) {
+			Output.printText("Error with Dilug", 1);
+		} finally {
 			if (inputStream != null) {
 				inputStream.close();
 			}
