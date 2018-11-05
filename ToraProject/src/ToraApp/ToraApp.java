@@ -1,7 +1,13 @@
 package ToraApp;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
+import extras.testResource;
 
 //import java.util.Formatter;
 //import java.util.Locale;
@@ -153,6 +159,28 @@ public class ToraApp {
 			}
 		}
 		return file;
+	}
+
+	public static BufferedReader getBufferedReader(String fileName1, String fileName2) {
+		BufferedReader bReader = null;
+		try {
+			bReader = new BufferedReader(
+					new InputStreamReader(testResource.class.getClassLoader().getResourceAsStream(fileName1)));
+		} catch (Exception e) {
+			try {
+				File file = new File(fileName2);
+				bReader = new BufferedReader(new FileReader(file));
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				//e1.printStackTrace();
+				frame.frame.clearText();
+				Output.printText("Could not find file for TorahLetters", 1);
+				return null;
+			}
+			return bReader;
+			// safe to ignore
+		}
+		return bReader;
 	}
 
 	public static void main(String[] args) throws IOException {

@@ -1,8 +1,6 @@
 package ToraApp;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import org.apache.commons.lang3.StringUtils;
@@ -84,8 +82,8 @@ public class Gimatria {
 		boolean bool_wholeWords;
 		boolean bool_gimatriaSofiot;
 		boolean bool_countPsukim;
-		File file = ToraApp.checkFile(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
-		if (file == null) {
+		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
+		if (bReader == null) {
 			return;
 		}	
 		// FileWriter outputStream2 = null;
@@ -115,7 +113,7 @@ public class Gimatria {
 		try {
 				// System.out.println("Working Directory = " +
 				// System.getProperty("user.dir"));
-				inputStream = new BufferedReader(new FileReader(file));
+				inputStream = bReader;
 				outputStream = new StringWriter();
 				// outputStream2 = new FileWriter("/myText.txt", false);
 				inputStream.mark(640000);

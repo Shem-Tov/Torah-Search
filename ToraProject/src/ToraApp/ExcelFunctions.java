@@ -88,8 +88,12 @@ public class ExcelFunctions {
 					Output.printText("Error importing from EXCEL Sheet", 1);
 					Output.printText("Program can not work without TorahTables Excel file", 1);
 					tableLoaded = false;
-					frame.frame.setButtonEnabled(false);
-					// e.printStackTrace();
+					try {
+						frame.frame.setButtonEnabled(false);
+					} catch (NullPointerException ex) {
+						// safe to ignore
+					}
+						// e.printStackTrace();
 				}
 			} finally {
 				try {

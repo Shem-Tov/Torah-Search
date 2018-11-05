@@ -2,11 +2,8 @@ package ToraApp;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
@@ -49,19 +46,19 @@ public class Dilugim {
 		BufferedReader inputStream = null;
 		StringBuilder str = null;
 		int countJumps = 0, newpadding = 0;
-		File file = ToraApp.checkFile(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
-		if (file == null) {
+		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
+		if (bReader == null) {
 			return null;
 		}
 		try {
-			inputStream = new BufferedReader(new FileReader(file));
+			inputStream = bReader;
 			@SuppressWarnings("unused")
 			int markInt = 640000;
 			// inputStream.mark(markInt);
 			int c;
 			int startChar = countChar - dilug * padding;
 			newpadding = padding;
-			while (startChar < 0) {
+			while (startChar <= 0) {
 				// if the padding is too large find the minimum position to read from.
 				startChar += dilug;
 				newpadding -= 1;
@@ -118,8 +115,8 @@ public class Dilugim {
 		@SuppressWarnings("unused")
 		int offset;
 		// FileWriter outputStream2 = null;
-		File file = ToraApp.checkFile(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
-		if (file == null) {
+		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		if (bReader == null) {
 			return;
 		}
 		File file2 = ToraApp.checkFile(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
@@ -167,7 +164,7 @@ public class Dilugim {
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
 				frame.frame.setLabel_dProgress("דילוג " + thisDilug);
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
-				inputStream = new BufferedReader(new FileReader(file));
+				inputStream = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
 				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and | position of Char found on
@@ -239,8 +236,8 @@ public class Dilugim {
 									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
-									try (Stream<String> lines = Files.lines(
-											Paths.get(file.getPath()))) {
+									try (	BufferedReader bReader2 = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+											Stream<String> lines = bReader2.lines()){
 										// Recieves words of Pasuk
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}

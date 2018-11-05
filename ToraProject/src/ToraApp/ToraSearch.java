@@ -1,8 +1,6 @@
 package ToraApp;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -44,14 +42,14 @@ public class ToraSearch {
 		int countLines = 0;
 		int count = 0;
 
-		File file = ToraApp.checkFile(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
-		if (file == null) {
+		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
+		if (bReader == null) {
 			return;
 		}
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
-			inputStream = new BufferedReader(new FileReader(file));
+			inputStream = bReader;
 			outputStream = new StringWriter();
 			// outputStream2 = new FileWriter("/myText.txt", false);
 			inputStream.mark(640000);
