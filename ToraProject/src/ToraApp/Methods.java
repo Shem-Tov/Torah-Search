@@ -42,7 +42,7 @@ public class Methods {
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				Gimatria.callCalculateGimatria((String)args[0]);
+				Gimatria.callCalculateGimatria(args);
 			}
 		});
 		arrayMethodID.add(id_searchDilugim);

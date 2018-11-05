@@ -70,8 +70,8 @@ public class Gimatria {
 		return sumGimatria;
 	}
 
-	public static void callCalculateGimatria(String str) {
-		Output.printText(String.valueOf(Gimatria.calculateGimatria(str)));
+	public static void callCalculateGimatria(Object[] args) {
+		Output.printText(String.valueOf(Gimatria.calculateGimatria((String)args[0],(Boolean)args[1])));
 	}
 
 	public void searchGimatria(Object[] args) throws IOException {

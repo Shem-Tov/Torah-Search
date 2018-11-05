@@ -53,11 +53,20 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
 public class frame {
-	private static Boolean methodCancelRequest = false;
-	private static Boolean methodRunning = false;
+	private static final String combo_strSearch = "חיפוש רגיל";
+	private static final String combo_strGimatriaSearch = "חיפוש גימטריה";
+	private static final String combo_strGimatriaCalculate = "חישוב גימטריה";
+	private static final String combo_strDilugim = "דילוגים";
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
+	private static final String checkBox_gimatriaSofiot_text = "<html>" + "חישוב מיוחד" + "<br/>" + "לסופיות"
+			+ "</html>";
+	private static final String checkBox_countPsukim_true = "<html>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</html>";
+	private static final String checkBox_countPsukim_false = "ספירת מציאות";
+
+	private static Boolean methodCancelRequest = false;
+	private static Boolean methodRunning = false;
 	private JFrame frame;
 	private static JButton button;
 	private static JTextField textField_Search;
@@ -77,18 +86,17 @@ public class frame {
 	private static JCheckBox checkBox_countPsukim;
 	static public int panelWidth;
 	private JButton btnNewButton;
-	private static final String checkBox_gimatriaSofiot_text = "<html>" + "חישוב מיוחד" + "<br/>" + "לסופיות"
-			+ "</html>";
-	private static final String checkBox_countPsukim_true = "<html>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</html>";
-	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 	private JPanel panel_1;
 	private JPopupMenu popupMenu;
 	private static JProgressBar progressBar;
-	private JLabel label_offset;
-	private JLabel label_padding;
+	private static JLabel label_offset;
+	private static JLabel label_padding;
 	private static JLabel label_dProgress;
 	private static JLabel label_countMatch;
-
+	private static JLabel label_dilugMin;
+	private static JLabel label_dilugMax;
+	private static JComboBox<?> comboBox_sub;
+	
 	class PopUpTextPane extends JPopupMenu {
 		/**
 		 * 
@@ -384,6 +392,50 @@ public class frame {
 		textPane.setText("");
 	}
 
+	
+	private static void changeLayout(String str) {
+		switch (str) {
+		case combo_strSearch:
+		case combo_strGimatriaSearch:
+		case combo_strGimatriaCalculate:
+			label_dilugMax.setVisible(false);
+			label_dilugMin.setVisible(false);
+			textField_dilugMax.setVisible(false);
+			textField_dilugMin.setVisible(false);
+			checkBox_advancedOptions.setVisible(false);
+			label_offset.setVisible(false);
+			label_padding.setVisible(false);
+			textField_offset.setVisible(false);
+			textField_padding.setVisible(false);
+			switch (str) {
+			case combo_strSearch:
+			case combo_strGimatriaSearch:
+				comboBox_sub.setVisible(true);
+				checkBox_countPsukim.setVisible(true);
+				checkBox_wholeWord.setVisible(true);
+				break;
+			case combo_strGimatriaCalculate:
+				comboBox_sub.setVisible(false);
+				checkBox_countPsukim.setVisible(false);
+				checkBox_wholeWord.setVisible(false);
+			}
+			break;
+		case combo_strDilugim:
+			label_dilugMax.setVisible(true);
+			label_dilugMin.setVisible(true);
+			textField_dilugMax.setVisible(true);
+			textField_dilugMin.setVisible(true);
+			checkBox_advancedOptions.setVisible(false);
+			label_offset.setVisible(true);
+			label_padding.setVisible(true);
+			textField_offset.setVisible(true);
+			textField_padding.setVisible(true);
+			comboBox_sub.setVisible(true);
+			checkBox_countPsukim.setVisible(true);
+			checkBox_wholeWord.setVisible(true);
+		}
+	}
+	
 	/**
 	 * Launch the application.
 	 */
@@ -443,11 +495,7 @@ public class frame {
 
 		btnNewButton = new JButton("קבע ברירת מחדל");
 		panel_1.add(btnNewButton);
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				saveValues();
-			}
-		});
+
 		btnNewButton.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
 
 		comboBox_main = new JComboBox();
@@ -455,8 +503,8 @@ public class frame {
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		comboBox_main.setModel(
-				new DefaultComboBoxModel(new String[] { "חיפוש רגיל", "חיפוש גימטריה", "חישוב גימטריה", "דילוגים" }));
+		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
+				combo_strGimatriaCalculate, combo_strDilugim }));
 
 		comboBox_main.setBackground(new java.awt.Color(255, 240, 240));
 
@@ -495,7 +543,7 @@ public class frame {
 		panel.add(textField_Search, gbc_textField_Search);
 		textField_Search.setColumns(10);
 
-		JLabel label_dilugMin = new JLabel("דילוג מינימום");
+		label_dilugMin = new JLabel("דילוג מינימום");
 		label_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		GridBagConstraints gbc_label_dilugMin = new GridBagConstraints();
 		gbc_label_dilugMin.anchor = GridBagConstraints.EAST;
@@ -503,7 +551,7 @@ public class frame {
 		gbc_label_dilugMin.gridx = 0;
 		gbc_label_dilugMin.gridy = 1;
 		panel.add(label_dilugMin, gbc_label_dilugMin);
-
+		
 		textField_dilugMin = new JTextField();
 		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
@@ -515,8 +563,8 @@ public class frame {
 		gbc_textField_dilugMin.gridy = 1;
 		panel.add(textField_dilugMin, gbc_textField_dilugMin);
 		textField_dilugMin.setColumns(10);
-
-		JLabel label_dilugMax = new JLabel("דילוג מקסימום");
+		
+		label_dilugMax = new JLabel("דילוג מקסימום");
 		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		GridBagConstraints gbc_label_dilugMax = new GridBagConstraints();
 		gbc_label_dilugMax.anchor = GridBagConstraints.EAST;
@@ -569,23 +617,7 @@ public class frame {
 
 		button = new JButton("חפש");
 		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// button.setEnabled(false);
-				if (!methodRunning) {
-					methodRunning = true;
-					button.setText(buttonCancelText);
-					textPane.setText("");
-					activity = SwingActivity.getInstance();
-					activity.execute();
-				} else {
-					methodCancelRequest = true;
-					button.setText(buttonCancelRequestText);
-				}
-			}
-		});
-
-		JComboBox comboBox_sub = new JComboBox();
+		comboBox_sub = new JComboBox();
 		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		comboBox_sub.setModel(new DefaultComboBoxModel(new String[] { "אותיות", "מילים", "פסוקים" }));
@@ -628,17 +660,8 @@ public class frame {
 		gbc_checkBox_countPsukim.insets = new Insets(0, 0, 5, 5);
 		gbc_checkBox_countPsukim.gridx = 0;
 		gbc_checkBox_countPsukim.gridy = 6;
-		checkBox_countPsukim.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JCheckBox cb = (JCheckBox) event.getSource();
-				cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
-			}
-		});
-
 		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
 		checkBox_countPsukim.setBackground(color1);
-
 		checkBox_advancedOptions = new JCheckBox("אפשרויות מתקדמות");
 		checkBox_advancedOptions.setSelected(true);
 		checkBox_advancedOptions.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
@@ -649,7 +672,6 @@ public class frame {
 		gbc_checkBox_advancedOptions.gridx = 0;
 		gbc_checkBox_advancedOptions.gridy = 7;
 		panel.add(checkBox_advancedOptions, gbc_checkBox_advancedOptions);
-
 		label_padding = new JLabel("מספר אותיות");
 		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		GridBagConstraints gbc_label_padding = new GridBagConstraints();
@@ -658,7 +680,6 @@ public class frame {
 		gbc_label_padding.gridx = 0;
 		gbc_label_padding.gridy = 8;
 		panel.add(label_padding, gbc_label_padding);
-
 		textField_padding = new JTextField();
 		textField_padding.setText((String) null);
 		textField_padding.setMinimumSize(new Dimension(150, 25));
@@ -729,7 +750,49 @@ public class frame {
 		panel.add(label_countMatch, gbc_label_dCountMatch);
 
 		panel.add(button, gbc_button);
+		// Button to save settings
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				saveValues();
+			}
+		});
+		// Button to start search
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// button.setEnabled(false);
+				if (!methodRunning) {
+					methodRunning = true;
+					button.setText(buttonCancelText);
+					textPane.setText("");
+					activity = SwingActivity.getInstance();
+					activity.execute();
+				} else {
+					methodCancelRequest = true;
+					button.setText(buttonCancelRequestText);
+				}
+			}
+		});
+		// Change countPsukim checkbox text when changing selected state
+		checkBox_countPsukim.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JCheckBox cb = (JCheckBox) event.getSource();
+				cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
+			}
+		});
+		// Change frame layout depending on comboBox choice
+		comboBox_main.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox comboBox = (JComboBox) e.getSource();
+				Object selected = comboBox.getSelectedItem();
+				changeLayout(selected.toString());
+			}
+		});
+		// Setup Method Array
+		// and Create Table for Torah Lookup
 		ToraApp.starter();
+		// Retrieve saved values for frame components
 		initValues();
+		changeLayout(comboBox_main.getSelectedItem().toString());
 	}
 }
