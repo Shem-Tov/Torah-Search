@@ -20,7 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -39,13 +39,15 @@ public class ExcelFunctions {
 		DataFormatter dataFormatter = new DataFormatter();
 		for (int dloop = 0; dloop < inputFiles.length; dloop++) {
 			try {
+				InputStream excelFile;
 				File file;
 				if ((dloop == 0) && (inputFiles.length > 1)) {
-					file = new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
+					//file = new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
+					excelFile = ExcelFunctions.class.getClassLoader().getResourceAsStream(inputFiles[dloop]);
 				} else {
 					file = new File(inputFiles[dloop]);
+					excelFile = new FileInputStream(file);
 				}
-				FileInputStream excelFile = new FileInputStream(file);
 				workbook = new HSSFWorkbook(excelFile);
 				Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
 				Iterator<Row> iterator = datatypeSheet.iterator();
@@ -78,7 +80,7 @@ public class ExcelFunctions {
 				frame.frame.setButtonEnabled(true);
 				Output.printText("Imported XLS", 2);
 				break;
-			} catch (URISyntaxException | IOException | NullPointerException e) {
+			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
 					try {
 						frame.frame.clearText();

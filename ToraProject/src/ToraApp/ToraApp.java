@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import extras.testResource;
-
 //import java.util.Formatter;
 //import java.util.Locale;
 
@@ -165,7 +163,7 @@ public class ToraApp {
 		BufferedReader bReader = null;
 		try {
 			bReader = new BufferedReader(
-					new InputStreamReader(testResource.class.getClassLoader().getResourceAsStream(fileName1)));
+					new InputStreamReader(ToraApp.class.getClassLoader().getResourceAsStream(fileName1)));
 		} catch (Exception e) {
 			try {
 				File file = new File(fileName2);

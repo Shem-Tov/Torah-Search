@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -29,26 +28,23 @@ public class PropStore {
 	public static final String subTorahLettersFile = "subTorahLettersFile";
 
 	public static void addNotNull(String key, String value) {
-	   if (value != null) {
-		map.put(key, value);
-	   }
+		if (value != null) {
+			map.put(key, value);
+		}
 	}
-	
+
 	public static void store() {
 		Properties prop = new Properties();
 		OutputStream output = null;
 		try {
 			File outputFile;
 			try {
-				outputFile = new File(ClassLoader.getSystemResource(fileName).toURI());
-				outputFile.createNewFile(); // if file already exists will do nothing
-				output = new FileOutputStream(outputFile);
-			} catch (URISyntaxException | NullPointerException e) {
 				outputFile = new File(fileName);
 				outputFile.createNewFile(); // if file already exists will do nothing
 				output = new FileOutputStream(outputFile);
+			} catch (NullPointerException e) {
 				// TODO Auto-generated catch block
-				// e.printStackTrace();
+				e.printStackTrace();
 			}
 			// set the properties value
 			prop.putAll(map);
@@ -56,7 +52,7 @@ public class PropStore {
 			// save properties to project root folder
 			// prop.putAll(map);
 			prop.store(output, null);
-		} catch (IOException | NullPointerException  io) {
+		} catch (IOException | NullPointerException io) {
 			io.printStackTrace();
 		} finally {
 			if (output != null) {
@@ -72,16 +68,15 @@ public class PropStore {
 	public static void load() {
 
 		Properties prop = new Properties();
-		InputStream input = null;
-		for (int i = 0; i < 2; i++) {
+		InputStreamReader input = null;
+		for (int i = 1; i < 2; i++) {
 			try {
-				File file;
-				if (i==0) {
-					file=new File(ClassLoader.getSystemResource(fileName).toURI());
+				if (i == 0) {
+					//file = new File(ClassLoader.getSystemResource(fileName).toURI());
+					input = new InputStreamReader(PropStore.class.getClassLoader().getResourceAsStream(fileName));
 				} else {
-					file=new File(fileName);
+					input = new InputStreamReader(new FileInputStream(fileName));
 				}
-				input = new FileInputStream(file);
 				// load a properties file from class path, inside static method
 				prop.load(input);
 				map = prop.entrySet().stream()
@@ -89,21 +84,20 @@ public class PropStore {
 				// get the property value and print it out
 				// System.out.println(prop.getProperty("database"));
 				break;
-			} catch (IOException | URISyntaxException | NullPointerException ex) {
+			} catch (IOException | IllegalArgumentException | NullPointerException ex) {
+				
 				if (i == 1) {
 					Output.printText("Could not open config file", 1);
 					// ex.printStackTrace();
 				}
-			} finally {
-				if (input != null) {
-					try {
-						input.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
 			}
 		}
-
+		if (input != null) {
+			try {
+				input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
