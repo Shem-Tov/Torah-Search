@@ -119,10 +119,13 @@ public class Dilugim {
 		if (bReader == null) {
 			return;
 		}
-		File file2 = ToraApp.checkFile(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
-		if (file2 == null) {
+		BufferedReader tempReader = ToraApp.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
+		if (tempReader == null) {
 			bool_filePaddingFound = false;
+		} else {
+			tempReader.close();
 		}
+		
 		try {
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
