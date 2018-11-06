@@ -51,6 +51,7 @@ import javax.swing.JPopupMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
+import javax.swing.JMenuBar;
 
 public class frame {
 	static final String combo_strSearch = "חיפוש רגיל";
@@ -59,6 +60,10 @@ public class frame {
 	static final String combo_strDilugim = "דילוגים";
 	static final String combo_strLetterSearch = "חיפוש אותיות";
 	
+	private static int fontSize=16;
+	private static int fontSizeBig=fontSize+2;
+	private static int fontSizeSmall=fontSize-2;
+	private static int fontSizeSmaller=fontSize-3;
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
@@ -87,7 +92,6 @@ public class frame {
 	private static JCheckBox checkBox_wholeWord;
 	private static JCheckBox checkBox_countPsukim;
 	static public int panelWidth;
-	private JButton btnNewButton;
 	private JPanel panel_1;
 	private JPopupMenu popupMenu;
 	private static JProgressBar progressBar;
@@ -98,6 +102,11 @@ public class frame {
 	private static JLabel label_dilugMin;
 	private static JLabel label_dilugMax;
 	private static JComboBox<?> comboBox_sub;
+	private static JMenuItem menuItem_bgColor;
+	private static JMenuItem menuItem_textColor;
+	private static JMenuItem menuItem_textSize;
+	private static JMenuBar menuBar;
+	private static JMenu menuSettings;
 	
 	class PopUpTextPane extends JPopupMenu {
 		/**
@@ -487,8 +496,8 @@ public class frame {
 		ToraApp.setGuiMode((byte) 1);
 		frame = new JFrame();
 		frame.setTitle("חיפוש בתורה");
-		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, 16));
-		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, 16));
+		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
+		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
 		frame.setBounds(100, 100, 1600, 887);
 		frame.setMinimumSize(new Dimension(550, 420));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -501,20 +510,16 @@ public class frame {
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 
-		btnNewButton = new JButton("קבע ברירת מחדל");
-		panel_1.add(btnNewButton);
-
-		btnNewButton.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
-
 		comboBox_main = new JComboBox();
 		panel_1.add(comboBox_main);
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
-		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
+		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
 				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch }));
-
 		comboBox_main.setBackground(new java.awt.Color(255, 240, 240));
+		((JLabel)comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
+		((JLabel)comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
 
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(300, 10));
@@ -531,7 +536,7 @@ public class frame {
 		panel.setLayout(gbl_panel);
 
 		JLabel label = new JLabel("חיפוש: ");
-		label.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		label.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.insets = new Insets(0, 0, 5, 5);
 		gbc_label.anchor = GridBagConstraints.EAST;
@@ -541,7 +546,7 @@ public class frame {
 
 		textField_Search = new JTextField();
 		textField_Search.setMinimumSize(new Dimension(150, 25));
-		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_Search.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_textField_Search = new GridBagConstraints();
 		gbc_textField_Search.anchor = GridBagConstraints.NORTHEAST;
@@ -552,7 +557,7 @@ public class frame {
 		textField_Search.setColumns(10);
 
 		label_dilugMin = new JLabel("דילוג מינימום");
-		label_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		label_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label_dilugMin = new GridBagConstraints();
 		gbc_label_dilugMin.anchor = GridBagConstraints.EAST;
 		gbc_label_dilugMin.insets = new Insets(0, 0, 5, 5);
@@ -562,7 +567,7 @@ public class frame {
 		
 		textField_dilugMin = new JTextField();
 		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
-		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_textField_dilugMin = new GridBagConstraints();
 		gbc_textField_dilugMin.anchor = GridBagConstraints.EAST;
@@ -573,7 +578,7 @@ public class frame {
 		textField_dilugMin.setColumns(10);
 		
 		label_dilugMax = new JLabel("דילוג מקסימום");
-		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label_dilugMax = new GridBagConstraints();
 		gbc_label_dilugMax.anchor = GridBagConstraints.EAST;
 		gbc_label_dilugMax.insets = new Insets(0, 0, 5, 5);
@@ -583,7 +588,7 @@ public class frame {
 
 		textField_dilugMax = new JTextField();
 		textField_dilugMax.setMinimumSize(new Dimension(150, 25));
-		textField_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		textField_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_dilugMax.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_dilugMax.setColumns(10);
 		GridBagConstraints gbc_textField_dilugMax = new GridBagConstraints();
@@ -602,7 +607,7 @@ public class frame {
 		// Then on your component(s)
 
 		textPane = new JTextPane();
-		textPane.setFont(new Font("Miriam CLM", Font.BOLD, 18));
+		textPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		textPane.setEditable(false);
 		scrollPane = new JScrollPane(textPane);
 		panelWidth = scrollPane.getWidth();
@@ -624,11 +629,13 @@ public class frame {
 		internalFrame.setVisible(true);
 
 		button = new JButton("חפש");
-		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
+		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		comboBox_sub = new JComboBox();
 		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		comboBox_sub.setModel(new DefaultComboBoxModel(new String[] { "אותיות", "מילים", "פסוקים" }));
+		((JLabel)comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
+		((JLabel)comboBox_sub.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_comboBox_sub = new GridBagConstraints();
 		gbc_comboBox_sub.anchor = GridBagConstraints.EAST;
 		gbc_comboBox_sub.insets = new Insets(0, 0, 5, 5);
@@ -639,7 +646,7 @@ public class frame {
 
 		checkBox_wholeWord = new JCheckBox("מילים שלמות");
 		checkBox_wholeWord.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_checkBox_wholeWord = new GridBagConstraints();
 		gbc_checkBox_wholeWord.anchor = GridBagConstraints.EAST;
 		gbc_checkBox_wholeWord.insets = new Insets(0, 0, 5, 5);
@@ -650,7 +657,7 @@ public class frame {
 
 		checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
 		checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_checkBox_gimatriaSofiot = new GridBagConstraints();
 		gbc_checkBox_gimatriaSofiot.anchor = GridBagConstraints.EAST;
 		gbc_checkBox_gimatriaSofiot.insets = new Insets(0, 0, 5, 5);
@@ -662,7 +669,7 @@ public class frame {
 		checkBox_countPsukim = new JCheckBox(checkBox_countPsukim_true);
 		checkBox_countPsukim.setSelected(true);
 		checkBox_countPsukim.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_checkBox_countPsukim = new GridBagConstraints();
 		gbc_checkBox_countPsukim.anchor = GridBagConstraints.EAST;
 		gbc_checkBox_countPsukim.insets = new Insets(0, 0, 5, 5);
@@ -672,7 +679,7 @@ public class frame {
 		checkBox_countPsukim.setBackground(color1);
 		checkBox_advancedOptions = new JCheckBox("אפשרויות מתקדמות");
 		checkBox_advancedOptions.setSelected(true);
-		checkBox_advancedOptions.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		checkBox_advancedOptions.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		checkBox_advancedOptions.setBackground(new Color(240, 240, 255));
 		checkBox_advancedOptions.setAlignmentX(1.0f);
 		GridBagConstraints gbc_checkBox_advancedOptions = new GridBagConstraints();
@@ -681,7 +688,7 @@ public class frame {
 		gbc_checkBox_advancedOptions.gridy = 7;
 		panel.add(checkBox_advancedOptions, gbc_checkBox_advancedOptions);
 		label_padding = new JLabel("מספר אותיות");
-		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label_padding = new GridBagConstraints();
 		gbc_label_padding.anchor = GridBagConstraints.EAST;
 		gbc_label_padding.insets = new Insets(0, 0, 5, 5);
@@ -692,7 +699,7 @@ public class frame {
 		textField_padding.setText((String) null);
 		textField_padding.setMinimumSize(new Dimension(150, 25));
 		textField_padding.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_padding.setColumns(10);
 		GridBagConstraints gbc_textField_padding = new GridBagConstraints();
 		gbc_textField_padding.anchor = GridBagConstraints.EAST;
@@ -702,7 +709,7 @@ public class frame {
 		panel.add(textField_padding, gbc_textField_padding);
 
 		label_offset = new JLabel("קיזוז");
-		label_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		label_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label_offset = new GridBagConstraints();
 		gbc_label_offset.anchor = GridBagConstraints.EAST;
 		gbc_label_offset.insets = new Insets(0, 0, 5, 5);
@@ -714,7 +721,7 @@ public class frame {
 		textField_offset.setText((String) null);
 		textField_offset.setMinimumSize(new Dimension(150, 25));
 		textField_offset.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_offset.setColumns(10);
 		GridBagConstraints gbc_textField_offset = new GridBagConstraints();
 		gbc_textField_offset.anchor = GridBagConstraints.EAST;
@@ -726,7 +733,7 @@ public class frame {
 		progressBar = new JProgressBar();
 		progressBar.setMinimumSize(new Dimension(150, 30));
 		progressBar.setVisible(false);
-		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		progressBar.setStringPainted(true);
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(100);
@@ -742,14 +749,14 @@ public class frame {
 
 		label_dProgress = new JLabel("dilug progress");
 		label_dProgress.setVisible(false);
-		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label_dProgress = new GridBagConstraints();
 		gbc_label_dProgress.anchor = GridBagConstraints.EAST;
 		gbc_label_dProgress.insets = new Insets(0, 0, 5, 0);
 		gbc_label_dProgress.gridx = 1;
 		gbc_label_dProgress.gridy = 14;
 		panel.add(label_dProgress, gbc_label_dProgress);
-		label_countMatch.setFont(new Font("Miriam Mono CLM", Font.BOLD, 12));
+		label_countMatch.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
 		GridBagConstraints gbc_label_dCountMatch = new GridBagConstraints();
 		gbc_label_dCountMatch.anchor = GridBagConstraints.EAST;
 		gbc_label_dCountMatch.insets = new Insets(0, 0, 5, 0);
@@ -758,6 +765,43 @@ public class frame {
 		panel.add(label_countMatch, gbc_label_dCountMatch);
 
 		panel.add(button, gbc_button);
+		
+		menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		menuSettings = new JMenu("הגדרות");
+		menuSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuSettings.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuBar.add(menuSettings);
+		menuItem_bgColor = new JMenuItem("צבע רקע");
+		menuItem_bgColor.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuItem_bgColor.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuItem_bgColor.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textColor = new JMenuItem("צבע טקסט");
+		menuItem_textColor.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuItem_textColor.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuItem_textColor.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textSize = new JMenuItem("גודל טקסט");
+		menuItem_textSize.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuItem_textSize.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuItem_textSize.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuSettings.add(menuItem_bgColor);
+		menuSettings.add(menuItem_textColor);
+		menuSettings.add(menuItem_textSize);
+		
+				JButton btnNewButton = new JButton("קבע ברירת מחדל");
+				btnNewButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+				btnNewButton.setPreferredSize(new Dimension(63, 25));
+				btnNewButton.setMargin(new Insets(2, 2, 2, 2));
+				btnNewButton.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
+				btnNewButton.setHorizontalAlignment(SwingConstants.RIGHT);
+				menuSettings.add(btnNewButton);
+				
+						btnNewButton.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
 		// Button to save settings
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
