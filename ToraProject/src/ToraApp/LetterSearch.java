@@ -140,7 +140,7 @@ public class LetterSearch {
 			String fileName = "LT_"+searchSTR;
 			String sheet = ("אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(searchSTR,fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true);
+				ExcelFunctions.writeXLS(searchSTR,fileName, sheet, 3, Title, results, true);
 			}
 		} catch (Exception e) {
 			Output.printText("Error with at line "+ countLines, 1);
