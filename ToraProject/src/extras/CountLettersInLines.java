@@ -18,9 +18,9 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 
-import ToraApp.ToraApp;
+import torahApp.ToraApp;
 
-public class countLettersInLines {
+public class CountLettersInLines {
 
 	public static ArrayList<Integer[]> countLetters() {
 		ArrayList<Integer[]> letterCount = new ArrayList<Integer[]>();

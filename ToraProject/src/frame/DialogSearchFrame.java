@@ -15,21 +15,21 @@ import java.awt.event.ActionEvent;
 import java.awt.Font;
 
 
-public class dialogFrame extends JDialog {
+public class DialogSearchFrame extends JDialog {
 
 	/**
 	 * 
 	 */
-	private static dialogFrame instance;
+	private static DialogSearchFrame instance;
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
 	private static String lastSearch = null;
 	private static Boolean isOpen = false;
 
-	public static dialogFrame getInstance() {
+	public static DialogSearchFrame getInstance() {
 		if (instance == null) {
-			instance = new dialogFrame();
+			instance = new DialogSearchFrame();
 		}
 		return instance;
 	}
@@ -47,7 +47,7 @@ public class dialogFrame extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			dialogFrame dialog = new dialogFrame();
+			DialogSearchFrame dialog = new DialogSearchFrame();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -58,7 +58,7 @@ public class dialogFrame extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public dialogFrame() {
+	public DialogSearchFrame() {
 		isOpen = true;
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -104,7 +104,7 @@ public class dialogFrame extends JDialog {
 				JButton buttonNext = new JButton("הבא");
 				buttonNext.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						HighLighter.scrollWords(frame.textPane);
+						HighLighter.scrollWords(Frame.textPane);
 					}
 				});
 				buttonNext.setActionCommand("Next");
@@ -118,7 +118,7 @@ public class dialogFrame extends JDialog {
 						String searchTerm = textField.getText();
 						if ((searchTerm != null) && (searchTerm.length() > 0)) {
 							lastSearch = searchTerm;
-							HighLighter.highlight(frame.textPane, searchTerm);
+							HighLighter.highlight(Frame.textPane, searchTerm);
 						}
 					}
 				});

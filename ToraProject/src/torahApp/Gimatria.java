@@ -1,11 +1,12 @@
-package ToraApp;
+package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import org.apache.commons.lang3.StringUtils;
 
-import StringFormatting.StringAlignUtils;
+import ioManagement.Output;
+import stringFormatting.StringAlignUtils;
 
 public class Gimatria {
 	private static Gimatria instance;
@@ -124,14 +125,14 @@ public class Gimatria {
 				// \u202B - Right to Left Formatting
 				// \u202C - Pop Directional Formatting
 				String str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
-				Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
+				Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 				if (bool_wholeWords) {
-					Output.printText("\u202B" + Output.markText("חיפוש מילים שלמות", frame.frame.headerStyleHTML));
+					Output.printText("\u202B" + Output.markText("חיפוש מילים שלמות", frame.Frame.headerStyleHTML));
 				} else {
-					Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.frame.headerStyleHTML));
+					Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.Frame.headerStyleHTML));
 				}
 				Output.printText(Output.markText(String.format("%1$-" + (str.length() + 1) + "s", "").replace(' ', '-'),
-						frame.frame.headerStyleHTML));
+						frame.Frame.headerStyleHTML));
 				// System.out.println(formatter.locale());
 				while ((line = inputStream.readLine()) != null) {
 					countLines++;
@@ -145,12 +146,12 @@ public class Gimatria {
 							if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
 								count++;
 								ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-								String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML)
+								String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.Frame.markupStyleHTML)
 										+ "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
 										+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 								wCounter.addWord(s);
 								Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  "
-										+ Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML,
+										+ Output.markMatchesInLine(line, s, frame.Frame.markupStyleHTML,
 												bool_gimatriaSofiot, bool_wholeWords));
 							}
 						}
@@ -174,12 +175,12 @@ public class Gimatria {
 								count += 1;
 								ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 								String s = line.substring(lineCountStart, lineCountEnd);
-								String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.frame.markupStyleHTML)
+								String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.Frame.markupStyleHTML)
 										+ "\" " + "נמצא ב" + pBookInstance.getBookName() + " "
 										+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 								wCounter.addWord(s);
 								Output.printText(StringAlignUtils.padRight(tempStr1, 32) + "  =  "
-										+ Output.markMatchesInLine(line, s, frame.frame.markupStyleHTML,
+										+ Output.markMatchesInLine(line, s, frame.Frame.markupStyleHTML,
 												bool_gimatriaSofiot, bool_wholeWords));
 								if (bool_countPsukim) {
 									break;
@@ -187,7 +188,7 @@ public class Gimatria {
 							}
 						}
 					}
-					if (frame.frame.getMethodCancelRequest()) {
+					if (frame.Frame.getMethodCancelRequest()) {
 						Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 						// break is redundant, because for loop will end anyway because maxDilug has
 						// changed to current loop index

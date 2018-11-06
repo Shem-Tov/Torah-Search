@@ -31,7 +31,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import ToraApp.ToraApp;
+import ioManagement.ExcelFunctions;
+import ioManagement.PropStore;
+import torahApp.ToraApp;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -42,8 +45,6 @@ import javax.swing.JTextPane;
 import java.awt.Font;
 import java.awt.Dimension;
 
-import ToraApp.ExcelFunctions;
-import ToraApp.PropStore;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.BoxLayout;
@@ -53,7 +54,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 import javax.swing.JMenuBar;
 
-public class frame {
+public class Frame {
 	static final String combo_strSearch = "חיפוש רגיל";
 	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
 	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
@@ -120,7 +121,7 @@ public class frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					dialogFrame dFrame = dialogFrame.getInstance();
+					DialogSearchFrame dFrame = DialogSearchFrame.getInstance();
 					Point p = frame.getLocation();
 					dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
 							(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
@@ -132,7 +133,7 @@ public class frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					dialogFrame.clearLastSearch();
+					DialogSearchFrame.clearLastSearch();
 					HighLighter.removeHighlights(textPane);
 				}
 			});
@@ -350,18 +351,18 @@ public class frame {
 	}
 
 	private final static int textHtmlSize = 5;
-	private static StringFormatting.HtmlGenerator attentionHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 250,
+	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, 250,
 			40, 40, 0b111);
-	private static StringFormatting.HtmlGenerator mainStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize, 128,
+	private static stringFormatting.HtmlGenerator mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, 128,
 			88, 255, 0b111);
 	// public static StringFormatting.HtmlGenerator markupStyleHTML = new
 	// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
-	public static StringFormatting.HtmlGenerator markupStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize + 1,
+	public static stringFormatting.HtmlGenerator markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
 			245, 195, 92, 0b100);
 
-	public static StringFormatting.HtmlGenerator headerStyleHTML = new StringFormatting.HtmlGenerator(textHtmlSize + 1,
+	public static stringFormatting.HtmlGenerator headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
 			58, 124, 240, 0b100);
-	public static StringFormatting.HtmlGenerator footerStyleHTML = new StringFormatting.HtmlGenerator(0, 255, 144, 180,
+	public static stringFormatting.HtmlGenerator footerStyleHTML = new stringFormatting.HtmlGenerator(0, 255, 144, 180,
 			0b100);
 
 	public static void appendText(String str) throws BadLocationException {
@@ -460,7 +461,7 @@ public class frame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frame window = new frame();
+					Frame window = new Frame();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -475,7 +476,7 @@ public class frame {
 	 * @throws IOException
 	 * @throws BadLocationException
 	 */
-	public frame() throws IOException, BadLocationException {
+	public Frame() throws IOException, BadLocationException {
 		initialize();
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {

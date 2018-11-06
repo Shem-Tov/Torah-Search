@@ -1,4 +1,4 @@
-package ToraApp;
+package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,8 +6,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
-import HebrewLetters.HebrewLetters;
-import StringFormatting.StringAlignUtils;
+import hebrewLetters.HebrewLetters;
+import ioManagement.ExcelFunctions;
+import ioManagement.Output;
+import stringFormatting.StringAlignUtils;
 
 public class ToraSearch {
 	private static ToraSearch instance;
@@ -60,13 +62,13 @@ public class ToraSearch {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
-			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
-			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
-					frame.frame.headerStyleHTML));
+					frame.Frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
-			frame.frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
 				if (countLines % 25 == 0) {
@@ -74,7 +76,7 @@ public class ToraSearch {
 				}
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
-						frame.frame.clearText();
+						frame.Frame.clearText();
 						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
 						if (inputStream != null) {
 							inputStream.close();
@@ -94,10 +96,10 @@ public class ToraSearch {
 						// Do your stuff here
 						if (s.equals(searchConvert)) {
 							count++;
-							frame.frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.frame.markupStyleHTML,
+							results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
 						}
 					}
@@ -105,15 +107,15 @@ public class ToraSearch {
 					if (((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line).contains(searchConvert)) {
 						int countMatch = StringUtils.countMatches(line, searchSTR);
 						count = count + countMatch;
-						frame.frame.setLabel_countMatch("נמצא " + count + " פעמים");
+						frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.frame.markupStyleHTML,
+						results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
 								bool_sofiot, bool_wholeWords));
 					}
 				}
-				if (frame.frame.getMethodCancelRequest()) {
+				if (frame.Frame.getMethodCancelRequest()) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
@@ -134,9 +136,9 @@ public class ToraSearch {
 							"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
 									+ ((bool_wholeWords) ? "."
 											: (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")),
-							frame.frame.footerStyleHTML));
+							frame.Frame.footerStyleHTML));
 			Output.printText("");
-			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.frame.footerStyleHTML));
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}

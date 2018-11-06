@@ -1,9 +1,12 @@
-package ToraApp;
+package extras;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+
+import ioManagement.Output;
+import torahApp.ToraApp;
 
 public class extraFunctions {
 	public static void findWords() throws IOException {
@@ -24,7 +27,7 @@ public class extraFunctions {
 			int c;
 			char chInt = 0;
 			char lastChar = 0;
-			for (char let : ToraApp.hLetters) {
+			for (char let : ToraApp.getHLetters()) {
 				count = 0;
 				lastCount = 0;
 				outputStream.getBuffer().setLength(0);
@@ -109,7 +112,7 @@ public class extraFunctions {
 			inputStream.mark(640000);
 			int c;
 			char chInt = 0;
-			for (char let : ToraApp.hLetters) {
+			for (char let : ToraApp.getHLetters()) {
 				while ((c = inputStream.read()) != -1) {
 					chInt = (char) c;
 					outputStream.write(c);

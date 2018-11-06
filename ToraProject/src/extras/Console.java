@@ -3,8 +3,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
-import ToraApp.Methods;
-import ToraApp.PropStore;
+
+import ioManagement.Methods;
+import ioManagement.PropStore;
 public class Console {
 	static Scanner input = new Scanner(System.in);
 

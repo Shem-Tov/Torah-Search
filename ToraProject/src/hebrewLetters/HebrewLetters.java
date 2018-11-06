@@ -1,4 +1,4 @@
-package HebrewLetters;
+package hebrewLetters;
 
 public class HebrewLetters {
 	private static char switchSofiot(char ch) {

@@ -1,4 +1,4 @@
-package ToraApp;
+package torahApp;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import extras.Console;
+import ioManagement.ExcelFunctions;
+import ioManagement.Methods;
+import ioManagement.Output;
+import ioManagement.PropStore;
 
 //import java.util.Formatter;
 //import java.util.Locale;
@@ -33,7 +37,7 @@ public class ToraApp {
 	public static String subTorahLetterFile = "";
 
 	private static byte guiMode = 0;
-	static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ',
+	private static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ',
 			'ק', 'ר', 'ש', 'ת' };
 	// static char[] endLetters = { 'ך', 'ם', 'ן', 'ף', 'ץ' };
 	static char[] otherLetters = { '-' };
@@ -153,7 +157,7 @@ public class ToraApp {
 			}
 			if ((file == null) || (!file.exists())) {
 				// throw new IOException("Could not find file for TorahLetters");
-				frame.frame.clearText();
+				frame.Frame.clearText();
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;
 			}
@@ -173,7 +177,7 @@ public class ToraApp {
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				//e1.printStackTrace();
-				frame.frame.clearText();
+				frame.Frame.clearText();
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;
 			}
@@ -193,5 +197,13 @@ public class ToraApp {
 		// printText("One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve
 		// Thirteen Fourteen Fifteen Sixteen Seventeen Eighteen Nineteen Twenty
 		// TwentyOne TwentyTwo");
+	}
+
+	public static char[] getHLetters() {
+		return hLetters;
+	}
+
+	public static void setHLetters(char[] hLetters) {
+		ToraApp.hLetters = hLetters;
 	}
 }

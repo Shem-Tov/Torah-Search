@@ -1,7 +1,9 @@
-package ToraApp;
+package torahApp;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import ioManagement.Output;
 
 
 public class WordCounter {

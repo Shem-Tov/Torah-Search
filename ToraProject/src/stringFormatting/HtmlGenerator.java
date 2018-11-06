@@ -1,4 +1,4 @@
-package StringFormatting;
+package stringFormatting;
 
 public class HtmlGenerator {
 	String[] htmlCode;

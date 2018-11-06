@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-public class copyFiles {
+public class CopyFiles {
 	private static void copyFileBytes(String src, String dest) throws IOException {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;

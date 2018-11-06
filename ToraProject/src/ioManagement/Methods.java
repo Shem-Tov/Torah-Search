@@ -1,9 +1,14 @@
-package ToraApp;
+package ioManagement;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import extras.Console;
+import extras.extraFunctions;
+import torahApp.Dilugim;
+import torahApp.Gimatria;
+import torahApp.LetterSearch;
+import torahApp.ToraSearch;
 
 public class Methods {
 	public interface MethodRunner {

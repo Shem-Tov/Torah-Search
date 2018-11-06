@@ -1,4 +1,4 @@
-package ToraApp;
+package ioManagement;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
+import torahApp.ToraApp;
 
 public class PropStore {
 	private static final String fileName = ToraApp.resourceFolder + "config.properties";

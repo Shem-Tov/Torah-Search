@@ -1,4 +1,4 @@
-package ToraApp;
+package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import HebrewLetters.HebrewLetters;
-import StringFormatting.StringAlignUtils;
+import hebrewLetters.HebrewLetters;
+import ioManagement.ExcelFunctions;
+import ioManagement.Output;
+import stringFormatting.StringAlignUtils;
 
 public class LetterSearch {
 	private static LetterSearch instance;
@@ -90,11 +92,11 @@ public class LetterSearch {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
-			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
-					frame.frame.headerStyleHTML));
+					frame.Frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
-			frame.frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
 				if (countLines % 25 == 0) {
@@ -102,7 +104,7 @@ public class LetterSearch {
 				}
 
 				if (searchSTR.contains(" ")) {
-					frame.frame.clearText();
+					frame.Frame.clearText();
 					Output.printText("לא ניתן לחפש עם רווחים", 1);
 					if (inputStream != null) {
 						inputStream.close();
@@ -123,15 +125,15 @@ public class LetterSearch {
 					}
 					if (containsLetters(sConvert,searchMap)) {
 						count++;
-						frame.frame.setLabel_countMatch("נמצא " + count + " פעמים");
+						frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
-						results.add(Output.printPasukInfo(countLines, s, line, frame.frame.markupStyleHTML,
+						results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
 								bool_sofiot, true));
 					}
 				}
 
-				if (frame.frame.getMethodCancelRequest()) {
+				if (frame.Frame.getMethodCancelRequest()) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
@@ -150,9 +152,9 @@ public class LetterSearch {
 			Output.printText(
 					Output.markText(
 							"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
-							+ ".", frame.frame.footerStyleHTML));
+							+ ".", frame.Frame.footerStyleHTML));
 			Output.printText("");
-			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.frame.footerStyleHTML));
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}

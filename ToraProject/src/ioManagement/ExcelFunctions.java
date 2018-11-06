@@ -1,4 +1,4 @@
-package ToraApp;
+package ioManagement;
 
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
@@ -13,7 +13,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import HebrewLetters.HebrewLetters;
+import hebrewLetters.HebrewLetters;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,14 +76,14 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
-				frame.frame.clearText();
-				frame.frame.setButtonEnabled(true);
+				frame.Frame.clearText();
+				frame.Frame.setButtonEnabled(true);
 				Output.printText("Imported XLS", 2);
 				break;
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
 					try {
-						frame.frame.clearText();
+						frame.Frame.clearText();
 					} catch (NullPointerException ex) {
 						// safe to ignore
 					}
@@ -91,7 +91,7 @@ public class ExcelFunctions {
 					Output.printText("Program can not work without TorahTables Excel file", 1);
 					tableLoaded = false;
 					try {
-						frame.frame.setButtonEnabled(false);
+						frame.Frame.setButtonEnabled(false);
 					} catch (NullPointerException ex) {
 						// safe to ignore
 					}

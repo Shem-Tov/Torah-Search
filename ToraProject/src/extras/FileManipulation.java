@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import ToraApp.Output;
-import ToraApp.ToraApp;
+import ioManagement.Output;
+import torahApp.ToraApp;
 
-public class fileManipulation {
+public class FileManipulation {
 	static final Integer ONE = 1;
 	static Hashtable<Integer, Integer> charCodeMap = new Hashtable<Integer, Integer>();
 

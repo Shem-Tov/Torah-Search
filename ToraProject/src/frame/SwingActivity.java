@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import ToraApp.Methods;
+import ioManagement.Methods;
 
 public class SwingActivity extends SwingWorker<Void,Integer>{
 
@@ -41,47 +41,47 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		// TODO Auto-generated method stub
 		Object[] args = { null };
 		int selection = 0;
-		switch (frame.getComboBox_main()) {
-		case frame.combo_strSearch:
-			frame.showProgressBar(true,0b01);
+		switch (Frame.getComboBox_main()) {
+		case Frame.combo_strSearch:
+			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 3);
-			args[0] = frame.getTextField_Search();
-			args[1] = frame.getCheckBox_wholeWord();
-			args[2] = frame.getCheckBox_gimatriaSofiot();
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_wholeWord();
+			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			selection = Methods.id_searchWords;
 			break;
-		case frame.combo_strGimatriaSearch:
-			frame.showProgressBar(true,0b01);
+		case Frame.combo_strGimatriaSearch:
+			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 4);
-			args[0] = frame.getTextField_Search();
-			args[1] = frame.getCheckBox_wholeWord();
-			args[2] = frame.getCheckBox_gimatriaSofiot();
-			args[3] = frame.getCheckBox_countPsukim();
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_wholeWord();
+			args[2] = Frame.getCheckBox_gimatriaSofiot();
+			args[3] = Frame.getCheckBox_countPsukim();
 			selection = Methods.id_searchGimatria;
 			break;
-		case frame.combo_strGimatriaCalculate:
+		case Frame.combo_strGimatriaCalculate:
 			args = Arrays.copyOf(args, 2);
-			args[0] = frame.getTextField_Search();
-			args[1] = frame.getCheckBox_gimatriaSofiot();
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			selection = Methods.id_calculateGimatria;
 			break;
-		case frame.combo_strDilugim:
-			frame.showProgressBar(true,0b11);
+		case Frame.combo_strDilugim:
+			Frame.showProgressBar(true,0b11);
 			args = Arrays.copyOf(args, 6);
-			args[0] = frame.getTextField_Search();
-			args[1] = frame.getCheckBox_gimatriaSofiot();
-			args[2] = frame.getTextField_dilugMin();
-			args[3] = frame.getTextField_dilugMax();
-			args[4] = frame.getTextField_padding();
-			String offset1 = frame.getTextField_offset();
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_gimatriaSofiot();
+			args[2] = Frame.getTextField_dilugMin();
+			args[3] = Frame.getTextField_dilugMax();
+			args[4] = Frame.getTextField_padding();
+			String offset1 = Frame.getTextField_offset();
 			args[5] = ((offset1==null)||(offset1.length()==0)) ? "0":offset1;
 			selection = Methods.id_searchDilugim;
 			break;
-		case frame.combo_strLetterSearch:
-			frame.showProgressBar(true,0b01);
+		case Frame.combo_strLetterSearch:
+			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 3);
-			args[0] = frame.getTextField_Search();
-			args[1] = frame.getCheckBox_gimatriaSofiot();
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			selection = Methods.id_searchLetters;
 			break;
 		}
@@ -101,16 +101,16 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 	{
 		for (int chunk:chunks) {
 			//System.out.println(chunk+"%");
-			frame.setProgressBar(chunk);
+			Frame.setProgressBar(chunk);
 		}
 	}
 	
 	protected void done()
 	{
 		currentProgress=0;
-		frame.showProgressBar(false,0b11);
+		Frame.showProgressBar(false,0b11);
 		//frame.setButtonEnabled();
-		frame.setMethodRunning(false);
+		Frame.setMethodRunning(false);
 		instance=null;
 	}
 }

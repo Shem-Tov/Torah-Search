@@ -1,16 +1,17 @@
-package ToraApp;
+package ioManagement;
 
 import java.util.ArrayList;
 
-import HebrewLetters.HebrewLetters;
-import StringFormatting.HtmlGenerator;
-import StringFormatting.StringAlignUtils;
-import StringFormatting.StringAlignUtils.Alignment;
-import frame.frame;
+import frame.Frame;
+import hebrewLetters.HebrewLetters;
+import stringFormatting.HtmlGenerator;
+import stringFormatting.StringAlignUtils;
+import stringFormatting.StringAlignUtils.Alignment;
+import torahApp.ToraApp;
 
 public class Output {
 	public static String markMatchPOS(String line, int indexOfArray, int[][] charPOSArray,
-			StringFormatting.HtmlGenerator htmlFormat) {
+			stringFormatting.HtmlGenerator htmlFormat) {
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		String lineHtml = "";
 		for (int[] i : charPOSArray) {
@@ -38,7 +39,7 @@ public class Output {
 		return lineHtml;
 	}
 
-	public static String markMatchesInLine(String line, String searchSTR, StringFormatting.HtmlGenerator htmlFormat,
+	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
 		Boolean bool_sofiot, Boolean bool_wholeWords) {
 		String lineHtml = "";
 		String lineConvert;
@@ -161,13 +162,13 @@ public class Output {
 		// mode 0 = regular
 		// mode 1 = attention
 		// mode 2 = silence on GUI
-		StringAlignUtils util = new StringAlignUtils(frame.panelWidth, Alignment.RIGHT);
+		StringAlignUtils util = new StringAlignUtils(Frame.panelWidth, Alignment.RIGHT);
 		switch (ToraApp.getGuiMode()) {
 		case 1: // GUI Mode
 			switch (mode) {
 			case 0:
 			case 1:
-				frame.appendText(util.format(text), mode);
+				Frame.appendText(util.format(text), mode);
 				break;
 			case 2:
 				break;
