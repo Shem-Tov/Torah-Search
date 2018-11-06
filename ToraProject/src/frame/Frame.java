@@ -76,7 +76,9 @@ public class Frame {
 	private static Boolean methodCancelRequest = false;
 	private static Boolean methodRunning = false;
 	private JFrame frame;
-	private static JButton button;
+	private static JButton button_Search;
+	private static JButton button_defaultSettings;
+	private static JLabel label_textfield_Search;
 	private static JTextField textField_Search;
 	private static JTextField textField_dilugMin;
 	private static JTextField textField_dilugMax;
@@ -282,15 +284,15 @@ public class Frame {
 	}
 
 	public static void setButtonEnabled(Boolean bool) {
-		button.setEnabled(bool);
+		button_Search.setEnabled(bool);
 	}
 
 	public static void setMethodRunning(Boolean bool) {
 		methodRunning = bool;
 		if (bool) {
-			button.setText(buttonCancelText);
+			button_Search.setText(buttonCancelText);
 		} else {
-			button.setText(buttonRunText);
+			button_Search.setText(buttonRunText);
 			methodCancelRequest = false;
 		}
 	}
@@ -404,6 +406,37 @@ public class Frame {
 		textPane.setText("");
 	}
 
+	
+	private static void setFonts() {
+		//frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
+		//frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
+		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		label_textfield_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		textField_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		textPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		button_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		checkBox_advancedOptions.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_countMatch.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
+		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
+	}
 	
 	private static void changeLayout(String str) {
 		switch (str) {
@@ -536,14 +569,14 @@ public class Frame {
 				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		JLabel label = new JLabel("חיפוש: ");
-		label.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		label_textfield_Search = new JLabel("חיפוש: ");
+		label_textfield_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.insets = new Insets(0, 0, 5, 5);
 		gbc_label.anchor = GridBagConstraints.EAST;
 		gbc_label.gridx = 0;
 		gbc_label.gridy = 0;
-		panel.add(label, gbc_label);
+		panel.add(label_textfield_Search, gbc_label);
 
 		textField_Search = new JTextField();
 		textField_Search.setMinimumSize(new Dimension(150, 25));
@@ -629,8 +662,8 @@ public class Frame {
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
-		button = new JButton("חפש");
-		button.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		button_Search = new JButton("חפש");
+		button_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		comboBox_sub = new JComboBox();
 		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
@@ -765,7 +798,7 @@ public class Frame {
 		gbc_label_dCountMatch.gridy = 15;
 		panel.add(label_countMatch, gbc_label_dCountMatch);
 
-		panel.add(button, gbc_button);
+		panel.add(button_Search, gbc_button);
 		
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -793,35 +826,33 @@ public class Frame {
 		menuSettings.add(menuItem_bgColor);
 		menuSettings.add(menuItem_textColor);
 		menuSettings.add(menuItem_textSize);
-		
-				JButton btnNewButton = new JButton("קבע ברירת מחדל");
-				btnNewButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-				btnNewButton.setPreferredSize(new Dimension(63, 25));
-				btnNewButton.setMargin(new Insets(2, 2, 2, 2));
-				btnNewButton.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
-				btnNewButton.setHorizontalAlignment(SwingConstants.RIGHT);
-				menuSettings.add(btnNewButton);
-				
-						btnNewButton.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
+		button_defaultSettings = new JButton("קבע ברירת מחדל");
+		button_defaultSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		button_defaultSettings.setPreferredSize(new Dimension(63, 25));
+		button_defaultSettings.setMargin(new Insets(2, 2, 2, 2));
+		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
+		button_defaultSettings.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuSettings.add(button_defaultSettings);
+		button_defaultSettings.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
 		// Button to save settings
-		btnNewButton.addActionListener(new ActionListener() {
+		button_defaultSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				saveValues();
 			}
 		});
 		// Button to start search
-		button.addActionListener(new ActionListener() {
+		button_Search.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// button.setEnabled(false);
 				if (!methodRunning) {
 					methodRunning = true;
-					button.setText(buttonCancelText);
+					button_Search.setText(buttonCancelText);
 					textPane.setText("");
 					activity = SwingActivity.getInstance();
 					activity.execute();
 				} else {
 					methodCancelRequest = true;
-					button.setText(buttonCancelRequestText);
+					button_Search.setText(buttonCancelRequestText);
 				}
 			}
 		});
@@ -839,6 +870,36 @@ public class Frame {
 				JComboBox comboBox = (JComboBox) e.getSource();
 				Object selected = comboBox.getSelectedItem();
 				changeLayout(selected.toString());
+			}
+		});
+		menuItem_textSize.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				CustomDialog cDialog = new CustomDialog();
+				cDialog.setTitle("שינוי גודל פונט");
+				JComboBox comboBox_fontSize = new JComboBox();
+				String[] textSizes = new String[] { "8", "9", "10","11","12","13","14","15","16","17","18","19","20","21"};
+				comboBox_fontSize.setModel(new DefaultComboBoxModel(textSizes));
+				//find the index of fontSize in textSizes
+				int index = 0;
+				for (int i=0;i<textSizes.length;i++) {
+				    if (textSizes[i].equals(String.valueOf(fontSize))) {
+				        index = i;
+				        break;
+				    }
+				}
+				cDialog.addComponent(comboBox_fontSize,true,index);
+				Object obj = cDialog.show();
+				if (obj != null) {
+					fontSize = Integer.valueOf((String)obj);
+				}
+				setFonts();
+				frame.repaint();
+				frame.revalidate();
+				/*	Point p = frame.getLocation();
+				dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
+						(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
+				dFrame.setVisible(true);*/
 			}
 		});
 		// Setup Method Array

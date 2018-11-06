@@ -3,30 +3,32 @@ package frame;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
+import javax.swing.JTextField;
 
 public class CustomDialog
 {
     private List<JComponent> components;
-
+    private int getComponentIndex = 0;
     private String title;
     private int messageType;
     private JRootPane rootPane;
     private String[] options;
-    private int optionIndex;
-
+    private int optionIndex = 1;
+    
     public CustomDialog()
     {
         components = new ArrayList<>();
-
         setTitle("Custom dialog");
         setMessageType(JOptionPane.PLAIN_MESSAGE);
         setRootPane(null);
-        setOptions(new String[] { "OK", "Cancel" });
-        setOptionSelection(0);
+        setOptions(new String[] { "בטל", "אשר" });
+        setOptionSelection(1);
     }
 
     public void setTitle(String title)
@@ -41,9 +43,26 @@ public class CustomDialog
 
     public void addComponent(JComponent component)
     {
-        components.add(component);
+        addComponent(component,false,0);
     }
-
+    
+    public void addComponent(JComponent component, Boolean getComponent)
+    {
+    	addComponent(component,getComponent,0);
+    }
+    
+    public void addComponent(JComponent component, Boolean getComponent, int index)
+    {
+        //getComponent = true  => will return the value of the component;
+    	if (component instanceof JComboBox) {
+    		((JComboBox<?>)component).setSelectedIndex(index);
+    	}
+    	components.add(component);
+    	if (getComponent) {
+    		getComponentIndex = components.size()-1;
+    	}
+    }
+    
     public void addMessageText(String messageText)
     {
         JLabel label = new JLabel("<html>" + messageText + "</html>");
@@ -66,7 +85,12 @@ public class CustomDialog
         this.optionIndex = optionIndex;
     }
 
-    public int show()
+    public void setOptions(String[] options,int optionIndex) {
+    	setOptions(options);
+    	setOptionSelection(optionIndex);
+    }
+    
+    public Object show()
     {
         int optionType = JOptionPane.OK_CANCEL_OPTION;
         Object optionSelection = null;
@@ -80,7 +104,26 @@ public class CustomDialog
                 components.toArray(), title, optionType, messageType, null,
                 options, optionSelection);
 
-        return selection;
+        if (selection==optionIndex) {
+        	JComponent indexedComponent = components.get(getComponentIndex);
+         	if (indexedComponent instanceof JTextField) {
+         	      //JTextField returns String
+        		  return ((JTextField) indexedComponent).getText();
+          	} else if (indexedComponent instanceof JComboBox) {
+         	      //JComboBox returns String
+          		  return ((JComboBox<?>) indexedComponent).getSelectedItem().toString();
+           	} else if  (indexedComponent instanceof JCheckBox) {
+      	      //JCheckBox returns Boolean
+      		  return ((JCheckBox) indexedComponent).isSelected();
+       	} else {
+         		// If different JComponent returns int
+        		return selection;
+        	}
+        } else
+        {
+        	// If not selected returns null
+        	return null;
+        }
     }
 
     public static String getLineBreak()
