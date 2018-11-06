@@ -42,7 +42,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		Object[] args = { null };
 		int selection = 0;
 		switch (frame.getComboBox_main()) {
-		case 0:
+		case frame.combo_strSearch:
 			frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 3);
 			args[0] = frame.getTextField_Search();
@@ -50,7 +50,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[2] = frame.getCheckBox_gimatriaSofiot();
 			selection = Methods.id_searchWords;
 			break;
-		case 1:
+		case frame.combo_strGimatriaSearch:
 			frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 4);
 			args[0] = frame.getTextField_Search();
@@ -59,13 +59,13 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[3] = frame.getCheckBox_countPsukim();
 			selection = Methods.id_searchGimatria;
 			break;
-		case 2:
+		case frame.combo_strGimatriaCalculate:
 			args = Arrays.copyOf(args, 2);
 			args[0] = frame.getTextField_Search();
 			args[1] = frame.getCheckBox_gimatriaSofiot();
 			selection = Methods.id_calculateGimatria;
 			break;
-		case 3:
+		case frame.combo_strDilugim:
 			frame.showProgressBar(true,0b11);
 			args = Arrays.copyOf(args, 6);
 			args[0] = frame.getTextField_Search();
@@ -76,6 +76,13 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			String offset1 = frame.getTextField_offset();
 			args[5] = ((offset1==null)||(offset1.length()==0)) ? "0":offset1;
 			selection = Methods.id_searchDilugim;
+			break;
+		case frame.combo_strLetterSearch:
+			frame.showProgressBar(true,0b01);
+			args = Arrays.copyOf(args, 3);
+			args[0] = frame.getTextField_Search();
+			args[1] = frame.getCheckBox_gimatriaSofiot();
+			selection = Methods.id_searchLetters;
 			break;
 		}
 		try {

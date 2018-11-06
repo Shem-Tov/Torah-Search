@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import extras.Console;
+
 public class Methods {
 	public interface MethodRunner {
 		public void run(Object... args) throws IOException;
@@ -12,15 +14,16 @@ public class Methods {
 	public static final int id_searchGimatria=2;
 	public static final int id_calculateGimatria=3;
 	public static final int id_searchDilugim=4;
+	public static final int id_searchLetters=5;
 	public static final int id_settings=7;
 	
 	// Add method references here
 	public static List<MethodRunner> arrayMethods = new ArrayList<>();
-	static List<String> arrayMethodTitle = new ArrayList<>();
-	static List<Integer> arrayMethodID = new ArrayList<>();
+	private static List<String> arrayMethodTitle = new ArrayList<>();
+	private static List<Integer> arrayMethodID = new ArrayList<>();
 	public static void arrayMethodCreator() throws IOException {
-		arrayMethodID.add(id_searchWords);
-		arrayMethodTitle.add("Search Words");
+		getArrayMethodID().add(id_searchWords);
+		getArrayMethodTitle().add("Search Words");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -28,8 +31,8 @@ public class Methods {
 				tora.searchWords(args);
 			}
 		});
-		arrayMethodID.add(id_searchGimatria);
-		arrayMethodTitle.add("Search Gimatria");
+		getArrayMethodID().add(id_searchGimatria);
+		getArrayMethodTitle().add("Search Gimatria");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -37,16 +40,16 @@ public class Methods {
 				gim.searchGimatria(args);
 			}
 		});
-		arrayMethodID.add(id_calculateGimatria);
-		arrayMethodTitle.add("Calculate Gimatria");
+		getArrayMethodID().add(id_calculateGimatria);
+		getArrayMethodTitle().add("Calculate Gimatria");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
 				Gimatria.callCalculateGimatria(args);
 			}
 		});
-		arrayMethodID.add(id_searchDilugim);
-		arrayMethodTitle.add("Search Dilugim");
+		getArrayMethodID().add(id_searchDilugim);
+		getArrayMethodTitle().add("Search Dilugim");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -54,24 +57,33 @@ public class Methods {
 				dilug.searchWordsDilugim(args);
 			}
 		});
-		arrayMethodID.add(5);
-		arrayMethodTitle.add("Find Words");
+		getArrayMethodID().add(id_searchLetters);
+		getArrayMethodTitle().add("Search Letters");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				LetterSearch letter = LetterSearch.getInstance();
+				letter.searchForLetters(args);
+			}
+		});
+		getArrayMethodID().add(8);
+		getArrayMethodTitle().add("Find Words");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
 				extraFunctions.findWords();
 			}
 		});
-		arrayMethodID.add(6);
-		arrayMethodTitle.add("Find First Letters");
+		getArrayMethodID().add(9);
+		getArrayMethodTitle().add("Find First Letters");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
 				extraFunctions.findFirstLetters();
 			}
 		});
-		arrayMethodID.add(id_settings);
-		arrayMethodTitle.add("Settings");
+		getArrayMethodID().add(id_settings);
+		getArrayMethodTitle().add("Settings");
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -79,6 +91,18 @@ public class Methods {
 			}
 		});
 		
+	}
+	public static List<String> getArrayMethodTitle() {
+		return arrayMethodTitle;
+	}
+	public static void setArrayMethodTitle(List<String> arrayMethodTitle) {
+		Methods.arrayMethodTitle = arrayMethodTitle;
+	}
+	public static List<Integer> getArrayMethodID() {
+		return arrayMethodID;
+	}
+	public static void setArrayMethodID(List<Integer> arrayMethodID) {
+		Methods.arrayMethodID = arrayMethodID;
 	}
 
 }

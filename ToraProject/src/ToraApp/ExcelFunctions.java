@@ -115,11 +115,14 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
+	public static void writeXLS(String etc,String fileName, String sheetName, int mode, String Title,
 			ArrayList<String[][]> results, boolean bool_Padding) {
-		// mode=0 regular search
-		// mode=1 dilugim search
+		// mode=0 regular search sofiot considered
+		// mode=1 regular search sofiot not considered
+		// mode=2 dilugim search
+		// mode=3 letters search
 
+		// etc - additional information
 		// fileName - name of excel file, can have multiple sheets
 		// sheetName - sheetName, depends on search settings
 		// mode - explained above
@@ -192,6 +195,11 @@ public class ExcelFunctions {
 		row.setHeightInPoints(60);
 		cell.setCellStyle(styleTitle);// Apply style to cell
 		cell.setCellValue(Title);
+		if (mode==3) {
+			cell = row.createCell(1);
+			cell.setCellStyle(styleTitle);
+			cell.setCellValue(etc);
+		}
 		rowNum++;
 		int colNum = 0;
 		int index;
@@ -217,6 +225,7 @@ public class ExcelFunctions {
 		// [4] = Torah of the Pasuk
 		case 0:
 		case 1:
+		case 3:
 			Boolean bool_sofiot = (mode == 0) ? true : false;
 			for (String field : header) {
 				if (field == dilugWord) {
@@ -452,7 +461,7 @@ public class ExcelFunctions {
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
-		writeXLS("בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
+		writeXLS("","בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
 				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })), true);
 
 	}

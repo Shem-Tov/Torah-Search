@@ -1,9 +1,10 @@
-package ToraApp;
+package extras;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
-
+import ToraApp.Methods;
+import ToraApp.PropStore;
 public class Console {
 	static Scanner input = new Scanner(System.in);
 
@@ -195,7 +196,7 @@ public class Console {
 			System.out.println("\nChoose from these choices");
 			System.out.println("-------------------------");
 			int i = 0;
-			for (String str : Methods.arrayMethodTitle) {
+			for (String str : Methods.getArrayMethodTitle()) {
 				i += 1;
 				System.out.println(i + " - " + str);
 			}
@@ -205,7 +206,7 @@ public class Console {
 				selection = input.nextInt();
 				input.nextLine();
 				if ((selection > 0) && (selection <= Methods.arrayMethods.size())) {
-					switch (Methods.arrayMethodID.get(selection - 1)) {
+					switch (Methods.getArrayMethodID().get(selection - 1)) {
 					case 1:
 						args = Arrays.copyOf(args, 2);
 						printSettings(PropStore.searchWord, PropStore.bool_wholeWord);

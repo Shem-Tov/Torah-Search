@@ -4,45 +4,75 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import org.apache.commons.lang3.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
 
 import HebrewLetters.HebrewLetters;
 import StringFormatting.StringAlignUtils;
 
-public class ToraSearch {
-	private static ToraSearch instance;
+public class LetterSearch {
+	private static LetterSearch instance;
 
-	public static ToraSearch getInstance() {
+	public static LetterSearch getInstance() {
 		if (instance == null) {
-			instance = new ToraSearch();
+			instance = new LetterSearch();
 		}
 		return instance;
 	}
 
-	public void searchWords(Object[] args) throws IOException {
+	static public Map<Character,Integer> toMap(String searchSTR){
+		ArrayList<Character> lst = new ArrayList<Character>();
+		for(char c : searchSTR.toCharArray()) {
+		    lst.add(c);
+		}
+	    return lst.stream()
+	        .collect(HashMap<Character,Integer>::new,
+	                 (map,str) ->{
+	                     if(!map.containsKey(str)){
+	                         map.put(str,1);
+	                     }else{
+	                         map.put(str,map.get(str)+1);
+	                     }
+	                 },
+	                 HashMap<Character,Integer>::putAll);
+	} 
+
+	
+	private Boolean containsLetters(String pLine,Map<Character,Integer> searchMap) {
+		Map<Character,Integer> pLineMap = toMap(pLine);
+		Boolean foundMatch=true;
+		for (Character key : searchMap.keySet()) {
+		    if ((!pLineMap.containsKey(key)) || (searchMap.get(key) > pLineMap.get(key))) {
+		    	foundMatch = false;
+		    	break;
+		    }
+		}
+		
+		return foundMatch;
+	}
+	
+	public void searchForLetters(Object[] args) throws IOException {
 		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		StringWriter outputStream = null;
 		String searchSTR;
 		String searchConvert;
-		boolean bool_wholeWords;
 		boolean bool_sofiot;
 		// FileWriter outputStream2 = null;
 		try {
 			searchSTR = (String) args[0];
-			bool_wholeWords = (args[1] != null) ? (Boolean) args[1] : true;
-			bool_sofiot = (args[2] != null) ? (Boolean) args[2] : true;
+			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
 		}
-		int countPsukim = 0;
+		Map<Character,Integer> searchMap = toMap(searchConvert);
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
+		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
 		}
@@ -61,8 +91,6 @@ public class ToraSearch {
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
 			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
-			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
-			Output.printText(Output.markText(str, frame.frame.headerStyleHTML));
 			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
 					frame.frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
@@ -72,69 +100,57 @@ public class ToraSearch {
 				if (countLines % 25 == 0) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
-				if (bool_wholeWords) {
-					if (searchSTR.contains(" ")) {
-						frame.frame.clearText();
-						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
-						if (inputStream != null) {
-							inputStream.close();
-						}
-						if (outputStream != null) {
-							outputStream.close();
-						}
-						return;
+
+				if (searchSTR.contains(" ")) {
+					frame.frame.clearText();
+					Output.printText("לא ניתן לחפש עם רווחים", 1);
+					if (inputStream != null) {
+						inputStream.close();
 					}
-					String[] splitStr;
+					if (outputStream != null) {
+						outputStream.close();
+					}
+					return;
+				}
+				String[] splitStr= line.trim().split("\\s+");
+				for (String s : splitStr) {
+					// Do your stuff here
+					String sConvert;
 					if (!bool_sofiot) {
-						splitStr = HebrewLetters.switchSofiotStr(line).trim().split("\\s+");
+						sConvert = HebrewLetters.switchSofiotStr(s);
 					} else {
-						splitStr = line.trim().split("\\s+");
+						sConvert = s;
 					}
-					for (String s : splitStr) {
-						// Do your stuff here
-						if (s.equals(searchConvert)) {
-							count++;
-							frame.frame.setLabel_countMatch("נמצא " + count + " פעמים");
-							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
-							// fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.frame.markupStyleHTML,
-									bool_sofiot, bool_wholeWords));
-						}
-					}
-				} else {
-					if (((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line).contains(searchConvert)) {
-						int countMatch = StringUtils.countMatches(line, searchSTR);
-						count = count + countMatch;
+					if (containsLetters(sConvert,searchMap)) {
+						count++;
 						frame.frame.setLabel_countMatch("נמצא " + count + " פעמים");
-						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.frame.markupStyleHTML,
-								bool_sofiot, bool_wholeWords));
+						results.add(Output.printPasukInfo(countLines, s, line, frame.frame.markupStyleHTML,
+								bool_sofiot, true));
 					}
 				}
+
 				if (frame.frame.getMethodCancelRequest()) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
 			}
-			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
-			String fileName = searchSTR;
-			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
+			String Title = ("חיפוש אותיות במילים בתורה");
+			String fileName = "LT_"+searchSTR;
+			String sheet = ("אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS("",fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true);
+				ExcelFunctions.writeXLS(searchSTR,fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true);
 			}
 		} catch (Exception e) {
-			Output.printText("Error with loading Lines.txt", 1);
+			Output.printText("Error with at line "+ countLines, 1);
 			e.printStackTrace();
 		} finally {
 			Output.printText("");
 			Output.printText(
 					Output.markText(
 							"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
-									+ ((bool_wholeWords) ? "."
-											: (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")),
-							frame.frame.footerStyleHTML));
+							+ ".", frame.frame.footerStyleHTML));
 			Output.printText("");
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.frame.footerStyleHTML));
 			if (inputStream != null) {

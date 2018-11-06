@@ -53,10 +53,12 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
 public class frame {
-	private static final String combo_strSearch = "חיפוש רגיל";
-	private static final String combo_strGimatriaSearch = "חיפוש גימטריה";
-	private static final String combo_strGimatriaCalculate = "חישוב גימטריה";
-	private static final String combo_strDilugim = "דילוגים";
+	static final String combo_strSearch = "חיפוש רגיל";
+	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
+	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
+	static final String combo_strDilugim = "דילוגים";
+	static final String combo_strLetterSearch = "חיפוש אותיות";
+	
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
@@ -261,8 +263,8 @@ public class frame {
 		return checkBox_countPsukim.isSelected();
 	}
 
-	public static int getComboBox_main() {
-		return comboBox_main.getSelectedIndex();
+	public static String getComboBox_main() {
+		return comboBox_main.getSelectedItem().toString();
 	}
 
 	public static Boolean getMethodCancelRequest() {
@@ -398,6 +400,7 @@ public class frame {
 		case combo_strSearch:
 		case combo_strGimatriaSearch:
 		case combo_strGimatriaCalculate:
+		case combo_strLetterSearch:
 			label_dilugMax.setVisible(false);
 			label_dilugMin.setVisible(false);
 			textField_dilugMax.setVisible(false);
@@ -413,6 +416,11 @@ public class frame {
 				comboBox_sub.setVisible(true);
 				checkBox_countPsukim.setVisible(true);
 				checkBox_wholeWord.setVisible(true);
+				break;
+			case combo_strLetterSearch:
+				comboBox_sub.setVisible(true);
+				checkBox_countPsukim.setVisible(false);
+				checkBox_wholeWord.setVisible(false);
 				break;
 			case combo_strGimatriaCalculate:
 				comboBox_sub.setVisible(false);
@@ -504,7 +512,7 @@ public class frame {
 		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, 18));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
-				combo_strGimatriaCalculate, combo_strDilugim }));
+				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch }));
 
 		comboBox_main.setBackground(new java.awt.Color(255, 240, 240));
 
