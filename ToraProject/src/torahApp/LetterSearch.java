@@ -2,7 +2,6 @@ package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +9,7 @@ import java.util.Map;
 import frame.Frame;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
 
@@ -54,7 +54,6 @@ public class LetterSearch {
 		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
-		StringWriter outputStream = null;
 		String searchSTR;
 		String searchConvert;
 		boolean bool_sofiot;
@@ -78,7 +77,7 @@ public class LetterSearch {
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
 		}
@@ -86,7 +85,6 @@ public class LetterSearch {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
 			inputStream = bReader;
-			outputStream = new StringWriter();
 			// outputStream2 = new FileWriter("/myText.txt", false);
 			inputStream.mark(640000);
 			count = 0;
@@ -120,9 +118,6 @@ public class LetterSearch {
 					Output.printText("לא ניתן לחפש עם רווחים", 1);
 					if (inputStream != null) {
 						inputStream.close();
-					}
-					if (outputStream != null) {
-						outputStream.close();
 					}
 					return;
 				}
@@ -172,9 +167,6 @@ public class LetterSearch {
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
-			}
-			if (outputStream != null) {
-				outputStream.close();
 			}
 		}
 	}

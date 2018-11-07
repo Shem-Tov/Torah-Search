@@ -2,13 +2,13 @@ package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import frame.Frame;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
 
@@ -48,7 +48,7 @@ public class Dilugim {
 		BufferedReader inputStream = null;
 		StringBuilder str = null;
 		int countJumps = 0, newpadding = 0;
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
 		if (bReader == null) {
 			return null;
 		}
@@ -105,7 +105,6 @@ public class Dilugim {
 	public void searchWordsDilugim(Object[] args) throws IOException {
 		// String[][] results=null;
 		BufferedReader inputStream = null;
-		StringWriter outputStream = null;
 		String searchSTR;
 		String searchOriginal;
 		Boolean bool_sofiot;
@@ -117,11 +116,11 @@ public class Dilugim {
 		@SuppressWarnings("unused")
 		int offset;
 		// FileWriter outputStream2 = null;
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
 		}
-		BufferedReader tempReader = ToraApp.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
+		BufferedReader tempReader = ManageIO.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
 		if (tempReader == null) {
 			bool_filePaddingFound = false;
 		} else {
@@ -156,11 +155,7 @@ public class Dilugim {
 		try {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
-			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("/myText.txt", false);
-
 			final int markInt = 640000;
-			// outputStream.getBuffer().setLength(0);
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
@@ -183,7 +178,7 @@ public class Dilugim {
 					frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
 				}
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
-				inputStream = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+				inputStream = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
 				int[][] lineForChar = new int[searchSTR.length()][3]; // Holds line and | position of Char found on
@@ -261,7 +256,7 @@ public class Dilugim {
 									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
-									try (BufferedReader bReader2 = ToraApp.getBufferedReader(ToraApp.ToraLineFile,
+									try (BufferedReader bReader2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile,
 											ToraApp.subTorahLineFile); Stream<String> lines = bReader2.lines()) {
 										// Recieves words of Pasuk
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
@@ -351,13 +346,6 @@ public class Dilugim {
 			if (inputStream != null) {
 				inputStream.close();
 			}
-			if (outputStream != null) {
-				outputStream.close();
-			}
-
-			/*
-			 * if (outputStream2 != null) { outputStream2.close(); }
-			 */
 		}
 	}
 }

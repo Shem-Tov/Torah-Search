@@ -2,13 +2,13 @@ package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
 
@@ -26,7 +26,8 @@ public class ToraSearch {
 		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
-		StringWriter outputStream = null;
+		BufferedReader inputStream2 = null;
+		// StringWriter outputStream = null;
 		String searchSTR;
 		String searchConvert;
 		boolean bool_wholeWords;
@@ -36,7 +37,7 @@ public class ToraSearch {
 			if (args.length < 3) {
 				throw new IllegalArgumentException("Missing Arguments in ToraSearch.searchWords");
 			}
-			searchSTR = (String) args[0];
+			searchSTR = ((String) args[0]).trim();
 			bool_wholeWords = (args[1] != null) ? (Boolean) args[1] : true;
 			bool_sofiot = (args[2] != null) ? (Boolean) args[2] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
@@ -51,7 +52,7 @@ public class ToraSearch {
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
 		}
@@ -59,12 +60,18 @@ public class ToraSearch {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
 			inputStream = bReader;
-			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("/myText.txt", false);
-			inputStream.mark(640000);
+			String line="";
+			String line2="";
+			int searchSTRinLine2=0;
+			if ((!bool_wholeWords) && (searchConvert.contains(" "))) {
+				inputStream2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+				searchSTRinLine2 = searchConvert.length()-searchConvert.indexOf(' ');
+				//inputStream2.mark(640000);
+				line2 = inputStream2.readLine();
+			}
+			//inputStream.mark(640000);
 			count = 0;
 //				outputStream.getBuffer().setLength(0);
-			String line;
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
@@ -96,9 +103,6 @@ public class ToraSearch {
 						if (inputStream != null) {
 							inputStream.close();
 						}
-						if (outputStream != null) {
-							outputStream.close();
-						}
 						return;
 					}
 					String[] splitStr;
@@ -121,8 +125,26 @@ public class ToraSearch {
 						}
 					}
 				} else {
-					if (((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line).contains(searchConvert)) {
-						int countMatch = StringUtils.countMatches(line, searchSTR);
+					String combineConvertedLines="";
+					if (searchSTRinLine2>0) {
+						line2 = (inputStream2.readLine());
+						if (line2!=null) {
+							line2=line2.substring(0, searchSTRinLine2);
+							combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line+" "+line2) : (line+" "+line2));
+						} else {
+							combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line);
+						}
+					} else {
+						combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line);
+					}
+					if (combineConvertedLines.contains(searchConvert)) {
+						boolean foundInLine2=false;
+						if (searchSTRinLine2>0) {
+							if ((combineConvertedLines.lastIndexOf(searchConvert)+searchConvert.length())>line.length()) {
+								foundInLine2=true;
+							}
+						}
+						int countMatch = StringUtils.countMatches(combineConvertedLines, searchConvert);
 						count = count + countMatch;
 						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
@@ -130,7 +152,8 @@ public class ToraSearch {
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
+						results.add(Output.printPasukInfo(countLines, searchSTR, 
+								((foundInLine2)?(line+" "+line2):line), frame.Frame.markupStyleHTML,
 								bool_sofiot, bool_wholeWords));
 					}
 				}
@@ -160,9 +183,6 @@ public class ToraSearch {
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
-			}
-			if (outputStream != null) {
-				outputStream.close();
 			}
 		}
 	}

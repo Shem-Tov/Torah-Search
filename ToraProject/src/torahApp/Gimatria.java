@@ -2,10 +2,10 @@ package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
+import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
 
@@ -79,12 +79,11 @@ public class Gimatria {
 	public void searchGimatria(Object[] args) throws IOException {
 		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
-		StringWriter outputStream = null;
 		String searchSTR;
 		boolean bool_wholeWords;
 		boolean bool_gimatriaSofiot;
 		boolean bool_countPsukim;
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
 		}
@@ -122,8 +121,6 @@ public class Gimatria {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
 			inputStream = bReader;
-			outputStream = new StringWriter();
-			// outputStream2 = new FileWriter("/myText.txt", false);
 			inputStream.mark(640000);
 			count = 0;
 //				outputStream.getBuffer().setLength(0);
@@ -219,13 +216,6 @@ public class Gimatria {
 			if (inputStream != null) {
 				inputStream.close();
 			}
-			if (outputStream != null) {
-				outputStream.close();
-			}
-
-			/*
-			 * if (outputStream2 != null) { outputStream2.close(); }
-			 */
 		}
 	}
 }
