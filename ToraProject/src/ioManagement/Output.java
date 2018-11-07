@@ -25,18 +25,23 @@ public class Output {
 		}
 		int lastIndex = 0;
 		for (Integer thisIndex : indexes) {
-			Boolean wasSpace = false;
+			//Boolean wasSpace = false;
 			String tempStr = "";
 			if (thisIndex > 0) {
 				tempStr = line.substring(lastIndex, thisIndex);
+				/*
 				if (tempStr.charAt(tempStr.length() - 1) == ' ') {
 					wasSpace = true;
 					// removes whitespace from the end
 					tempStr = tempStr.replaceFirst("\\s++$", "");
 				}
+				*/
 			}
-			lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
-					+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
+			//lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
+			//		+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
+			lineHtml += tempStr + htmlFormat.getHtml(0)
+			+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
+	
 			lastIndex = thisIndex + 1;
 		}
 		lineHtml += line.substring(lastIndex);
@@ -112,18 +117,25 @@ public class Output {
 		}
 		int lastIndex = 0;
 		for (Integer thisIndex : indexes) {
-			Boolean wasSpace = false;
+			
+			//Boolean wasSpace = false;
 			String tempStr = "";
 			if (thisIndex > 0) {
 				tempStr = line.substring(lastIndex, thisIndex);
-				if ((tempStr.length() >= 1) && (tempStr.charAt(tempStr.length() - 1) == ' ')) {
+			/*	if ((tempStr.length() >= 1) && (tempStr.charAt(tempStr.length() - 1) == ' ')) {
 					wasSpace = true;
 					// removes whitespace from the end
 					tempStr = tempStr.replaceFirst("\\s++$", "");
 				}
+			*/
 			}
-			lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
-					+ line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
+			
+			//lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
+			//		+ line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
+			
+			lineHtml += tempStr + htmlFormat.getHtml(0)
+			+ line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
+
 			lastIndex = thisIndex + STRLength;
 		}
 		lineHtml += line.substring(lastIndex);

@@ -600,7 +600,8 @@ public class Frame {
 		frame.setMinimumSize(new Dimension(550, 520));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-
+		frame.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		
 		JInternalFrame internalFrame = new JInternalFrame("חיפוש בתורה");
 		frame.getContentPane().add(internalFrame, BorderLayout.NORTH);
 

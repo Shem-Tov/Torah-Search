@@ -54,7 +54,8 @@ public class ToraApp {
 	public static String cSpace(int count) {
 		String str = "";
 		for (int i = 1; i <= count; i++) {
-			str += "\u00A0";
+			str += " ";
+			//str += "\u00A0";
 		}
 		return str;
 	}
