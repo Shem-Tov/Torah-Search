@@ -426,8 +426,8 @@ public class Frame {
 				break;
 			}
 
-			scrollPane.getHorizontalScrollBar().setValue(0);
-			scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
+			//scrollPane.getHorizontalScrollBar().setValue(0);
+			//scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println(e + " in Code of frame.appendText()");
