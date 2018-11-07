@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import frame.Frame;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
 import ioManagement.Output;
@@ -126,8 +127,11 @@ public class Dilugim {
 		} else {
 			tempReader.close();
 		}
-		
+
 		try {
+			if (args.length < 6) {
+				throw new IllegalArgumentException("Missing Arguments in Dilugim.searchWordsDilugim");
+			}
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
 			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
@@ -143,6 +147,9 @@ public class Dilugim {
 			}
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
+			return;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
 			return;
 		}
 
@@ -161,13 +168,20 @@ public class Dilugim {
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
-			Output.printText("");
-			//Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
-			//		frame.Frame.headerStyleHTML));
+			// Output.printText("");
+			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
+			} else {
+				Output.printText(Frame.HtmlHRLine);
+			}
 			// System.out.println(formatter.locale());
-			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+			}
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
-				frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
+				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
+				}
 				ArrayList<String[][]> results = new ArrayList<String[][]>();
 				inputStream = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 				inputStream.mark(markInt);
@@ -197,7 +211,7 @@ public class Dilugim {
 					lastCharIndex = (searchIndex == 0) ? 0 : lastCharIndex + 1;
 					countPOS++;
 					countChar++;
-					if (countChar % 250 == 0) {
+					if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
 						frame.SwingActivity.getInstance().callProcess(countLines, thisDilug, minDilug, maxDilug);
 					}
 					if ((searchIndex == 0) || (lastCharIndex % thisDilug == 0)) {
@@ -216,15 +230,20 @@ public class Dilugim {
 							if (searchIndex == searchSTR.length()) {
 								count++;
 								countAll++;
-								frame.Frame.setLabel_countMatch("נמצא " + countAll + " פעמים");
+								if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+									frame.Frame.setLabel_countMatch("נמצא " + countAll + " פעמים");
+								}
 								if (count == 1) {
 									Output.printText("");
 									Output.printText(str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug),
 											frame.Frame.headerStyleHTML));
-									Output.printText("");
-									//Output.printText(Output.markText(
-									//		StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
-									//		frame.Frame.headerStyleHTML));
+									// Output.printText("");
+									if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+										Output.printText(
+												StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
+									} else {
+										Output.printText(Output.markText("<hr size=5>", frame.Frame.headerStyleHTML));
+									}
 								}
 								Output.printText(
 										"\u202B" + "\"" + Output.markText(searchOriginal, frame.Frame.markupStyleHTML)
@@ -242,8 +261,8 @@ public class Dilugim {
 									reportLine += ((boolRepeat) ? ", " : "") + String.valueOf(searchOriginal.charAt(i));
 									ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(lineForChar[i][0]);
 									String lineText;
-									try (	BufferedReader bReader2 = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
-											Stream<String> lines = bReader2.lines()){
+									try (BufferedReader bReader2 = ToraApp.getBufferedReader(ToraApp.ToraLineFile,
+											ToraApp.subTorahLineFile); Stream<String> lines = bReader2.lines()) {
 										// Recieves words of Pasuk
 										lineText = lines.skip(lineForChar[i][0] - 1).findFirst().get();
 									}
@@ -310,9 +329,9 @@ public class Dilugim {
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
-					ExcelFunctions.writeXLS("",fileName, sheet, 2, Title, results,bool_filePaddingFound);
+					ExcelFunctions.writeXLS("", fileName, sheet, 2, Title, results, bool_filePaddingFound);
 				}
-				if (frame.Frame.getMethodCancelRequest()) {
+				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
 					maxDilug = thisDilug;
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					// break is redundant, because for loop will end anyway because maxDilug has

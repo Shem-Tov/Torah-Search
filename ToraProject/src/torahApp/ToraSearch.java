@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
+import frame.Frame;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
 import ioManagement.Output;
@@ -32,6 +33,9 @@ public class ToraSearch {
 		boolean bool_sofiot;
 		// FileWriter outputStream2 = null;
 		try {
+			if (args.length < 3) {
+				throw new IllegalArgumentException("Missing Arguments in ToraSearch.searchWords");
+			}
 			searchSTR = (String) args[0];
 			bool_wholeWords = (args[1] != null) ? (Boolean) args[1] : true;
 			bool_sofiot = (args[2] != null) ? (Boolean) args[2] : true;
@@ -39,12 +43,15 @@ public class ToraSearch {
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return;
 		}
 		int countPsukim = 0;
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile,ToraApp.subTorahLineFile);
+		BufferedReader bReader = ToraApp.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
 		}
@@ -65,19 +72,26 @@ public class ToraSearch {
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
-			Output.printText("");
-			//Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
-			//		frame.Frame.headerStyleHTML));
+			// Output.printText("");
+			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
+			} else {
+				Output.printText(Frame.HtmlHRLine);
+			}
 			// System.out.println(formatter.locale());
-			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
-				if (countLines % 25 == 0) {
+				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
-						frame.Frame.clearText();
+						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+							frame.Frame.clearText();
+						}
 						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
 						if (inputStream != null) {
 							inputStream.close();
@@ -97,7 +111,9 @@ public class ToraSearch {
 						// Do your stuff here
 						if (s.equals(searchConvert)) {
 							count++;
-							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							}
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
 							results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
@@ -108,7 +124,9 @@ public class ToraSearch {
 					if (((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line).contains(searchConvert)) {
 						int countMatch = StringUtils.countMatches(line, searchSTR);
 						count = count + countMatch;
-						frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+						}
 						countPsukim++;
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
@@ -116,7 +134,7 @@ public class ToraSearch {
 								bool_sofiot, bool_wholeWords));
 					}
 				}
-				if (frame.Frame.getMethodCancelRequest()) {
+				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
@@ -125,7 +143,7 @@ public class ToraSearch {
 			String fileName = searchSTR;
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS("",fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true);
+				ExcelFunctions.writeXLS("", fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true);
 			}
 		} catch (Exception e) {
 			Output.printText("Error with loading Lines.txt", 1);

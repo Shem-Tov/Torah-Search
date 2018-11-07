@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import hebrewLetters.HebrewLetters;
+import torahApp.ToraApp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +43,7 @@ public class ExcelFunctions {
 				InputStream excelFile;
 				File file;
 				if ((dloop == 0) && (inputFiles.length > 1)) {
-					//file = new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
+					// file = new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
 					excelFile = ExcelFunctions.class.getClassLoader().getResourceAsStream(inputFiles[dloop]);
 				} else {
 					file = new File(inputFiles[dloop]);
@@ -76,16 +77,16 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
-				frame.Frame.clearText();
-				frame.Frame.setButtonEnabled(true);
+				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					frame.Frame.clearText();
+					frame.Frame.setButtonEnabled(true);
+				}
 				Output.printText("Imported XLS", 2);
 				break;
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
-					try {
+					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 						frame.Frame.clearText();
-					} catch (NullPointerException ex) {
-						// safe to ignore
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
 					Output.printText("Program can not work without TorahTables Excel file", 1);
@@ -95,7 +96,7 @@ public class ExcelFunctions {
 					} catch (NullPointerException ex) {
 						// safe to ignore
 					}
-						// e.printStackTrace();
+					// e.printStackTrace();
 				}
 			} finally {
 				try {
@@ -115,7 +116,7 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static void writeXLS(String etc,String fileName, String sheetName, int mode, String Title,
+	public static void writeXLS(String etc, String fileName, String sheetName, int mode, String Title,
 			ArrayList<String[][]> results, boolean bool_Padding) {
 		// mode=0 regular search sofiot considered
 		// mode=1 regular search sofiot not considered
@@ -195,7 +196,7 @@ public class ExcelFunctions {
 		row.setHeightInPoints(60);
 		cell.setCellStyle(styleTitle);// Apply style to cell
 		cell.setCellValue(Title);
-		if (mode==3) {
+		if (mode == 3) {
 			cell = row.createCell(1);
 			cell.setCellStyle(styleTitle);
 			cell.setCellValue(etc);
@@ -461,7 +462,7 @@ public class ExcelFunctions {
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
-		writeXLS("","בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
+		writeXLS("", "בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
 				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })), true);
 
 	}

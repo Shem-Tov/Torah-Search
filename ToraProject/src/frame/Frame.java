@@ -81,6 +81,9 @@ public class Frame {
 	private static int fontSizeSmaller = fontSize - 3;
 
 	private static int textHtmlSize = 5;
+	public static final String HtmlHRLine = 
+			"<div style=\"height:5px; font-size:0; background-color:blue;\"></div>";
+	
 	private static int[] color_attentionHTML = new int[] { 250, 40, 40 };
 	private static int[] color_mainStyleHTML = new int[] { 128, 88, 255 };
 	private static int[] color_markupStyleHTML = new int[] { 245, 195, 92 };
@@ -574,7 +577,7 @@ public class Frame {
 		initialize();
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
-				panelWidth = (int) (scrollPane.getWidth() / 5);
+				panelWidth = (int) (scrollPane.getWidth() / 10);
 				// do stuff
 			}
 		});
@@ -588,7 +591,7 @@ public class Frame {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void initialize() throws IOException, BadLocationException {
-		ToraApp.setGuiMode((byte) 1);
+		ToraApp.setGuiMode(ToraApp.id_guiMode_Frame);
 		frame = new JFrame();
 		frame.setTitle("חיפוש בתורה");
 		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));

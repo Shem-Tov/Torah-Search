@@ -37,8 +37,11 @@ public class ToraApp {
 	public static String subTorahLetterFile = "";
 
 	private static byte guiMode = 0;
-	private static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ',
-			'ק', 'ר', 'ש', 'ת' };
+	public static final byte id_guiMode_Console = 0;
+	public static final byte id_guiMode_Frame = 1;
+
+	private static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע',
+			'פ', 'צ', 'ק', 'ר', 'ש', 'ת' };
 	// static char[] endLetters = { 'ך', 'ם', 'ן', 'ף', 'ץ' };
 	static char[] otherLetters = { '-' };
 	public static String[][] tablePerekBooks;
@@ -157,7 +160,9 @@ public class ToraApp {
 			}
 			if ((file == null) || (!file.exists())) {
 				// throw new IOException("Could not find file for TorahLetters");
-				frame.Frame.clearText();
+				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					frame.Frame.clearText();
+				}
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;
 			}
@@ -176,8 +181,10 @@ public class ToraApp {
 				bReader = new BufferedReader(new FileReader(file));
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
-				//e1.printStackTrace();
-				frame.Frame.clearText();
+				// e1.printStackTrace();
+				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					frame.Frame.clearText();
+				}
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;
 			}
@@ -190,6 +197,7 @@ public class ToraApp {
 	public static void main(String[] args) throws IOException {
 		// findFirstLetters();
 		// findWords();
+		ToraApp.setGuiMode(ToraApp.id_guiMode_Console);
 		starter();
 		Console.menu();
 		Output.printText("Program Exited...");

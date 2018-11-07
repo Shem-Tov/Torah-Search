@@ -12,6 +12,10 @@ import torahApp.ToraApp;
 public class Output {
 	public static String markMatchPOS(String line, int indexOfArray, int[][] charPOSArray,
 			stringFormatting.HtmlGenerator htmlFormat) {
+		// Does not mark, if in console mode
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return line;
+		}
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		String lineHtml = "";
 		for (int[] i : charPOSArray) {
@@ -40,7 +44,12 @@ public class Output {
 	}
 
 	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
-		Boolean bool_sofiot, Boolean bool_wholeWords) {
+			Boolean bool_sofiot, Boolean bool_wholeWords) {
+
+		// Does not mark, if in console mode
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return line;
+		}
 		String lineHtml = "";
 		String lineConvert;
 		String searchConvert;
@@ -54,23 +63,24 @@ public class Output {
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		indexes.add(lineConvert.indexOf(searchConvert, 0));
 		try {
-		if (indexes.get(0)==-1) {
-			throw new IllegalArgumentException();
-		} } catch (IllegalArgumentException e) {
+			if (indexes.get(0) == -1) {
+				throw new IllegalArgumentException();
+			}
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 		int STRLength = searchSTR.length();
 		int newIndex = 0;
 		int startPOS = indexes.get(0);
 		if (bool_wholeWords) {
-			//checks for spaces before and after word
+			// checks for spaces before and after word
 			boolean cancel = false;
-			if ((indexes.get(0)>0) && (lineConvert.charAt(indexes.get(0)-1)!=' ')){
-				cancel =true;
+			if ((indexes.get(0) > 0) && (lineConvert.charAt(indexes.get(0) - 1) != ' ')) {
+				cancel = true;
 			}
-			if (((indexes.get(0)+searchConvert.length()<lineConvert.length()) && 
-					(lineConvert.charAt(indexes.get(0)+searchConvert.length())!=' '))) {
-				cancel =true;
+			if (((indexes.get(0) + searchConvert.length() < lineConvert.length())
+					&& (lineConvert.charAt(indexes.get(0) + searchConvert.length()) != ' '))) {
+				cancel = true;
 			}
 			if (cancel) {
 				startPOS += 1;
@@ -80,14 +90,14 @@ public class Output {
 		// find all occurences of searchSTR in Line and Color them
 		while ((newIndex = lineConvert.indexOf(searchConvert, startPOS + 1)) != -1) {
 			if (bool_wholeWords) {
-				//checks for spaces before and after word
-				Boolean cancel =false;
-				if ((newIndex>0) && (lineConvert.charAt(newIndex-1)!=' ')){
-					cancel =true;
+				// checks for spaces before and after word
+				Boolean cancel = false;
+				if ((newIndex > 0) && (lineConvert.charAt(newIndex - 1) != ' ')) {
+					cancel = true;
 				}
-				if (((newIndex+searchConvert.length()<lineConvert.length()) && 
-						(lineConvert.charAt(newIndex+searchConvert.length())!=' '))) {
-					cancel =true;
+				if (((newIndex + searchConvert.length() < lineConvert.length())
+						&& (lineConvert.charAt(newIndex + searchConvert.length()) != ' '))) {
+					cancel = true;
 				}
 				if (!cancel) {
 					startPOS = newIndex;
@@ -106,7 +116,7 @@ public class Output {
 			String tempStr = "";
 			if (thisIndex > 0) {
 				tempStr = line.substring(lastIndex, thisIndex);
-				if ((tempStr.length()>=1) && (tempStr.charAt(tempStr.length() - 1) == ' ')) {
+				if ((tempStr.length() >= 1) && (tempStr.charAt(tempStr.length() - 1) == ' ')) {
 					wasSpace = true;
 					// removes whitespace from the end
 					tempStr = tempStr.replaceFirst("\\s++$", "");
@@ -121,10 +131,18 @@ public class Output {
 	}
 
 	public static String markText(String str, HtmlGenerator markupStyle) {
+		// Does not mark, if in console mode
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return str;
+		}
 		return (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
 	}
 
 	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
+		// Does not mark, if in console mode
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return str;
+		}
 		String[] strArray = new String[] { "", "", "" };
 		strArray[0] = str.substring(0, startMark);
 		strArray[1] = markupStyle.getHtml(0) + str.substring(startMark, finishMark) + markupStyle.getHtml(1);
@@ -162,19 +180,21 @@ public class Output {
 		// mode 0 = regular
 		// mode 1 = attention
 		// mode 2 = silence on GUI
-		StringAlignUtils util = new StringAlignUtils(Frame.panelWidth, Alignment.RIGHT);
 		switch (ToraApp.getGuiMode()) {
-		case 1: // GUI Mode
+		case ToraApp.id_guiMode_Frame: // GUI Mode
 			switch (mode) {
 			case 0:
 			case 1:
-				Frame.appendText(util.format(text), mode);
+				Frame.appendText(text, mode);
+				// util.format is not needed because document is html and auto wraps text
+				// Frame.appendText(util.format(text), mode);
 				break;
 			case 2:
 				break;
 			}
 			break;
 		default: // Console Mode - Reserved guiMode=0
+			StringAlignUtils util = new StringAlignUtils(Frame.panelWidth, Alignment.RIGHT);
 			switch (mode) {
 			case 0: // user text
 				System.out.println(util.format(text));
@@ -186,5 +206,4 @@ public class Output {
 			}
 		}
 	}
-
 }
