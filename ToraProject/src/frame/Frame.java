@@ -646,6 +646,7 @@ public class Frame {
 		textField_Search.setMinimumSize(new Dimension(150, 25));
 		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_Search.setHorizontalAlignment(SwingConstants.RIGHT);
+		textField_Search.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		GridBagConstraints gbc_textField_Search = new GridBagConstraints();
 		gbc_textField_Search.anchor = GridBagConstraints.NORTHEAST;
 		gbc_textField_Search.insets = new Insets(0, 0, 5, 0);
@@ -667,6 +668,7 @@ public class Frame {
 		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
+		textField_dilugMin.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		GridBagConstraints gbc_textField_dilugMin = new GridBagConstraints();
 		gbc_textField_dilugMin.anchor = GridBagConstraints.EAST;
 		gbc_textField_dilugMin.insets = new Insets(0, 0, 5, 0);
@@ -689,6 +691,7 @@ public class Frame {
 		textField_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_dilugMax.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_dilugMax.setColumns(10);
+		textField_dilugMax.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		GridBagConstraints gbc_textField_dilugMax = new GridBagConstraints();
 		gbc_textField_dilugMax.anchor = GridBagConstraints.EAST;
 		gbc_textField_dilugMax.insets = new Insets(0, 0, 5, 0);
@@ -799,6 +802,7 @@ public class Frame {
 		textField_padding.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_padding.setColumns(10);
+		textField_padding.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		GridBagConstraints gbc_textField_padding = new GridBagConstraints();
 		gbc_textField_padding.anchor = GridBagConstraints.EAST;
 		gbc_textField_padding.insets = new Insets(0, 0, 5, 0);
@@ -821,6 +825,7 @@ public class Frame {
 		textField_offset.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_offset.setColumns(10);
+		textField_offset.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		GridBagConstraints gbc_textField_offset = new GridBagConstraints();
 		gbc_textField_offset.anchor = GridBagConstraints.EAST;
 		gbc_textField_offset.insets = new Insets(0, 0, 5, 0);

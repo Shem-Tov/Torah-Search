@@ -1,6 +1,7 @@
 package frame;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -79,6 +80,7 @@ public class DialogSearchFrame extends JDialog {
 		{
 			textField = new JTextField();
 			textField.setHorizontalAlignment(SwingConstants.RIGHT);
+			textField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 			if ((lastSearch != null) && (lastSearch.length() > 0)) {
 				textField.setText(lastSearch);
 			}

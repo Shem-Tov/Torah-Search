@@ -1,5 +1,6 @@
 package frame;
 
+import java.awt.ComponentOrientation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,8 @@ public class CustomDialog
     	if (component instanceof JComboBox) {
     		((JComboBox<?>)component).setSelectedIndex(index);
     	}
-    	components.add(component);
+    	component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+     	components.add(component);
     	if (getComponent) {
     		getComponentIndex = components.size()-1;
     	}
