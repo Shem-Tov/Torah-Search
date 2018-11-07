@@ -714,6 +714,9 @@ public class Frame {
 		panelWidth = scrollPane.getWidth();
 		textPane.setBackground(ColorBG_textPane);
 		textPane.addMouseListener(new PopClickListener());
+		//Better support for right to left languages
+		textPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		
 		// textPane.setContentType( "text/html" );
 
 		panel.setBackground(ColorBG_Panel);
