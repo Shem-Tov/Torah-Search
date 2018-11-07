@@ -93,8 +93,9 @@ public class LetterSearch {
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
-			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
-					frame.Frame.headerStyleHTML));
+			Output.printText("");
+			//Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
+			//		frame.Frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
 			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 			while ((line = inputStream.readLine()) != null) {

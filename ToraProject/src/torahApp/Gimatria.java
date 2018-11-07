@@ -131,8 +131,9 @@ public class Gimatria {
 				} else {
 					Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.Frame.headerStyleHTML));
 				}
-				Output.printText(Output.markText(String.format("%1$-" + (str.length() + 1) + "s", "").replace(' ', '-'),
-						frame.Frame.headerStyleHTML));
+				Output.printText("");
+				//Output.printText(Output.markText(String.format("%1$-" + (str.length() + 1) + "s", "").replace(' ', '-'),
+				//		frame.Frame.headerStyleHTML));
 				// System.out.println(formatter.locale());
 				while ((line = inputStream.readLine()) != null) {
 					countLines++;

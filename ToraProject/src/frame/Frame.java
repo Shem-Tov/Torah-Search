@@ -55,16 +55,61 @@ import javax.swing.JProgressBar;
 import javax.swing.JMenuBar;
 
 public class Frame {
+	private static Frame frame_instance;
+
+	public static Frame getInstance() {
+		if (frame_instance == null) {
+			try {
+				frame_instance = new Frame();
+			} catch (IOException | BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return frame_instance;
+	}
+
 	static final String combo_strSearch = "חיפוש רגיל";
 	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
 	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
 	static final String combo_strDilugim = "דילוגים";
 	static final String combo_strLetterSearch = "חיפוש אותיות";
-	
-	private static int fontSize=16;
-	private static int fontSizeBig=fontSize+2;
-	private static int fontSizeSmall=fontSize-2;
-	private static int fontSizeSmaller=fontSize-3;
+
+	private static int fontSize = 16;
+	private static int fontSizeBig = fontSize + 2;
+	private static int fontSizeSmall = fontSize - 2;
+	private static int fontSizeSmaller = fontSize - 3;
+
+	private static int textHtmlSize = 5;
+	private static int[] color_attentionHTML = new int[] { 250, 40, 40 };
+	private static int[] color_mainStyleHTML = new int[] { 128, 88, 255 };
+	private static int[] color_markupStyleHTML = new int[] { 245, 195, 92 };
+	private static int[] color_headerStyleHTML = new int[] { 58, 124, 240 };
+	private static int[] color_footerStyleHTML = new int[] { 255, 144, 180 };
+
+	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
+			color_attentionHTML[0], color_attentionHTML[1], color_attentionHTML[2], 0b111);
+	private static stringFormatting.HtmlGenerator mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_mainStyleHTML[0],
+			color_mainStyleHTML[1], color_mainStyleHTML[2], 0b111);
+	// public static StringFormatting.HtmlGenerator markupStyleHTML = new
+	// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
+	public static stringFormatting.HtmlGenerator markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+			color_markupStyleHTML[0], color_markupStyleHTML[1], color_markupStyleHTML[2], 0b100);
+
+	public static stringFormatting.HtmlGenerator headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+			color_headerStyleHTML[0], color_headerStyleHTML[1], color_headerStyleHTML[2], 0b100);
+	public static stringFormatting.HtmlGenerator footerStyleHTML = new stringFormatting.HtmlGenerator(0, color_footerStyleHTML[0], color_footerStyleHTML[1], color_footerStyleHTML[2],
+			0b100);
+
+	private static Color ColorBG_comboBox_main = new Color(255, 240, 240);
+	private static Color ColorBG_textPane = new Color(251, 255, 253);
+	private static Color ColorBG_Panel = new Color(240, 240, 255);
+	private static Color ColorBG_comboBox_sub = ColorBG_Panel;
+	private static Color ColorBG_checkBox_wholeWord = ColorBG_Panel;
+	private static Color ColorBG_checkBox_gimatriaSofiot = ColorBG_Panel;
+	private static Color ColorBG_checkBox_countPsukim = ColorBG_Panel;
+	private static Color ColorBG_checkBox_advancedOptions = ColorBG_Panel;
+
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
@@ -75,7 +120,10 @@ public class Frame {
 
 	private static Boolean methodCancelRequest = false;
 	private static Boolean methodRunning = false;
+
 	private JFrame frame;
+	private static JPanel panel;
+	private static GridBagLayout gbl_panel;
 	private static JButton button_Search;
 	private static JButton button_defaultSettings;
 	private static JLabel label_textfield_Search;
@@ -110,7 +158,7 @@ public class Frame {
 	private static JMenuItem menuItem_textSize;
 	private static JMenuBar menuBar;
 	private static JMenu menuSettings;
-	
+
 	class PopUpTextPane extends JPopupMenu {
 		/**
 		 * 
@@ -352,21 +400,6 @@ public class Frame {
 		PropStore.store();
 	}
 
-	private final static int textHtmlSize = 5;
-	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, 250,
-			40, 40, 0b111);
-	private static stringFormatting.HtmlGenerator mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, 128,
-			88, 255, 0b111);
-	// public static StringFormatting.HtmlGenerator markupStyleHTML = new
-	// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
-	public static stringFormatting.HtmlGenerator markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
-			245, 195, 92, 0b100);
-
-	public static stringFormatting.HtmlGenerator headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
-			58, 124, 240, 0b100);
-	public static stringFormatting.HtmlGenerator footerStyleHTML = new stringFormatting.HtmlGenerator(0, 255, 144, 180,
-			0b100);
-
 	public static void appendText(String str) throws BadLocationException {
 		appendText(str, (byte) 0);
 	}
@@ -406,10 +439,13 @@ public class Frame {
 		textPane.setText("");
 	}
 
-	
 	private static void setFonts() {
-		//frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
-		//frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
+		// frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN,
+		// fontSize));
+		// frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
+		fontSizeBig = fontSize + 2;
+		fontSizeSmall = fontSize - 2;
+		fontSizeSmaller = fontSize - 3;
 		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		label_textfield_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
@@ -436,8 +472,33 @@ public class Frame {
 		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
+
+		// panel.setPreferredSize(new Dimension(300, 10));
+		// gbl_panel.columnWidths = new int[] { 124, 42, 0 };
+		panel.setPreferredSize(new Dimension((int) (100 + 200 * ((float) fontSize / 16)), 10));
+		gbl_panel.columnWidths = new int[] { (int) (100 + 24 * ((float) fontSize / 16)), 42, 0 };
+		// textHtmlSize = 5;
+		textHtmlSize = (int) (5 * ((float) fontSize / 16));
+		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
+				color_attentionHTML[0], color_attentionHTML[1], color_attentionHTML[2], 0b111);
+		mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_mainStyleHTML[0],
+				color_mainStyleHTML[1], color_mainStyleHTML[2], 0b111);
+		markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+				color_markupStyleHTML[0], color_markupStyleHTML[1], color_markupStyleHTML[2], 0b100);
+
+		headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+				color_headerStyleHTML[0], color_headerStyleHTML[1], color_headerStyleHTML[2], 0b100);
+		footerStyleHTML = new stringFormatting.HtmlGenerator(0, color_footerStyleHTML[0], color_footerStyleHTML[1], color_footerStyleHTML[2],
+				0b100);
+
+		Frame thisFrame = Frame.getInstance();
+//		thisFrame.frame.setMinimumSize(new Dimension(550, 520));
+		thisFrame.frame.setMinimumSize(new Dimension((int) (300 + 250 * ((float) fontSize / 16)),
+				(int) (300 + 220 * ((float) fontSize / 16))));
+		thisFrame.frame.repaint();
+		thisFrame.frame.revalidate();
 	}
-	
+
 	private static void changeLayout(String str) {
 		switch (str) {
 		case combo_strSearch:
@@ -486,7 +547,7 @@ public class Frame {
 			checkBox_wholeWord.setVisible(true);
 		}
 	}
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -494,7 +555,7 @@ public class Frame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Frame window = new Frame();
+					Frame window = Frame.getInstance();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -513,7 +574,7 @@ public class Frame {
 		initialize();
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
-				panelWidth = (int) (scrollPane.getWidth() / 10);
+				panelWidth = (int) (scrollPane.getWidth() / 5);
 				// do stuff
 			}
 		});
@@ -533,7 +594,7 @@ public class Frame {
 		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
 		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
 		frame.setBounds(100, 100, 1600, 887);
-		frame.setMinimumSize(new Dimension(550, 420));
+		frame.setMinimumSize(new Dimension(550, 520));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -551,16 +612,16 @@ public class Frame {
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
 				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch }));
-		comboBox_main.setBackground(new java.awt.Color(255, 240, 240));
-		((JLabel)comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
-		((JLabel)comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
+		comboBox_main.setBackground(ColorBG_comboBox_main);
+		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
+		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
 
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setPreferredSize(new Dimension(300, 10));
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		frame.getContentPane().add(panel, BorderLayout.EAST);
-		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 124, 42, 0 };
 		gbl_panel.rowHeights = new int[] { 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0 };
@@ -598,7 +659,7 @@ public class Frame {
 		gbc_label_dilugMin.gridx = 0;
 		gbc_label_dilugMin.gridy = 1;
 		panel.add(label_dilugMin, gbc_label_dilugMin);
-		
+
 		textField_dilugMin = new JTextField();
 		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
@@ -610,7 +671,7 @@ public class Frame {
 		gbc_textField_dilugMin.gridy = 1;
 		panel.add(textField_dilugMin, gbc_textField_dilugMin);
 		textField_dilugMin.setColumns(10);
-		
+
 		label_dilugMax = new JLabel("דילוג מקסימום");
 		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		GridBagConstraints gbc_label_dilugMax = new GridBagConstraints();
@@ -645,11 +706,11 @@ public class Frame {
 		textPane.setEditable(false);
 		scrollPane = new JScrollPane(textPane);
 		panelWidth = scrollPane.getWidth();
-		textPane.setBackground(new java.awt.Color(251, 255, 253));
+		textPane.setBackground(ColorBG_textPane);
 		textPane.addMouseListener(new PopClickListener());
 		// textPane.setContentType( "text/html" );
-		Color color1 = new java.awt.Color(240, 240, 255);
-		panel.setBackground(color1);
+
+		panel.setBackground(ColorBG_Panel);
 		GroupLayout groupLayout = new GroupLayout(internalFrame.getContentPane());
 		groupLayout.setHorizontalGroup(
 				groupLayout.createParallelGroup(Alignment.LEADING).addGap(0, 1598, Short.MAX_VALUE));
@@ -668,15 +729,15 @@ public class Frame {
 		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		comboBox_sub.setModel(new DefaultComboBoxModel(new String[] { "אותיות", "מילים", "פסוקים" }));
-		((JLabel)comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
-		((JLabel)comboBox_sub.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
+		((JLabel) comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
+		((JLabel) comboBox_sub.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_comboBox_sub = new GridBagConstraints();
 		gbc_comboBox_sub.anchor = GridBagConstraints.EAST;
 		gbc_comboBox_sub.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBox_sub.gridx = 0;
 		gbc_comboBox_sub.gridy = 3;
 		panel.add(comboBox_sub, gbc_comboBox_sub);
-		comboBox_sub.setBackground(color1);
+		comboBox_sub.setBackground(ColorBG_comboBox_sub);
 
 		checkBox_wholeWord = new JCheckBox("מילים שלמות");
 		checkBox_wholeWord.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -687,7 +748,7 @@ public class Frame {
 		gbc_checkBox_wholeWord.gridx = 0;
 		gbc_checkBox_wholeWord.gridy = 4;
 		panel.add(checkBox_wholeWord, gbc_checkBox_wholeWord);
-		checkBox_wholeWord.setBackground(color1);
+		checkBox_wholeWord.setBackground(ColorBG_checkBox_wholeWord);
 
 		checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
 		checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -698,7 +759,7 @@ public class Frame {
 		gbc_checkBox_gimatriaSofiot.gridx = 0;
 		gbc_checkBox_gimatriaSofiot.gridy = 5;
 		panel.add(checkBox_gimatriaSofiot, gbc_checkBox_gimatriaSofiot);
-		checkBox_gimatriaSofiot.setBackground(color1);
+		checkBox_gimatriaSofiot.setBackground(ColorBG_checkBox_gimatriaSofiot);
 
 		checkBox_countPsukim = new JCheckBox(checkBox_countPsukim_true);
 		checkBox_countPsukim.setSelected(true);
@@ -710,11 +771,11 @@ public class Frame {
 		gbc_checkBox_countPsukim.gridx = 0;
 		gbc_checkBox_countPsukim.gridy = 6;
 		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
-		checkBox_countPsukim.setBackground(color1);
+		checkBox_countPsukim.setBackground(ColorBG_checkBox_countPsukim);
 		checkBox_advancedOptions = new JCheckBox("אפשרויות מתקדמות");
 		checkBox_advancedOptions.setSelected(true);
 		checkBox_advancedOptions.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		checkBox_advancedOptions.setBackground(new Color(240, 240, 255));
+		checkBox_advancedOptions.setBackground(ColorBG_checkBox_advancedOptions);
 		checkBox_advancedOptions.setAlignmentX(1.0f);
 		GridBagConstraints gbc_checkBox_advancedOptions = new GridBagConstraints();
 		gbc_checkBox_advancedOptions.insets = new Insets(0, 0, 5, 5);
@@ -799,10 +860,10 @@ public class Frame {
 		panel.add(label_countMatch, gbc_label_dCountMatch);
 
 		panel.add(button_Search, gbc_button);
-		
+
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		
+
 		menuSettings = new JMenu("הגדרות");
 		menuSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuSettings.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -878,28 +939,29 @@ public class Frame {
 				CustomDialog cDialog = new CustomDialog();
 				cDialog.setTitle("שינוי גודל פונט");
 				JComboBox comboBox_fontSize = new JComboBox();
-				String[] textSizes = new String[] { "8", "9", "10","11","12","13","14","15","16","17","18","19","20","21"};
+				String[] textSizes = new String[] { "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18",
+						"19", "20", "21" };
 				comboBox_fontSize.setModel(new DefaultComboBoxModel(textSizes));
-				//find the index of fontSize in textSizes
+				// find the index of fontSize in textSizes
 				int index = 0;
-				for (int i=0;i<textSizes.length;i++) {
-				    if (textSizes[i].equals(String.valueOf(fontSize))) {
-				        index = i;
-				        break;
-				    }
+				for (int i = 0; i < textSizes.length; i++) {
+					if (textSizes[i].equals(String.valueOf(fontSize))) {
+						index = i;
+						break;
+					}
 				}
-				cDialog.addComponent(comboBox_fontSize,true,index);
+				cDialog.addComponent(comboBox_fontSize, true, index);
 				Object obj = cDialog.show();
 				if (obj != null) {
-					fontSize = Integer.valueOf((String)obj);
+					fontSize = Integer.valueOf((String) obj);
 				}
 				setFonts();
-				frame.repaint();
-				frame.revalidate();
-				/*	Point p = frame.getLocation();
-				dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
-						(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
-				dFrame.setVisible(true);*/
+
+				/*
+				 * Point p = frame.getLocation(); dFrame.setLocation((int) (p.getX() +
+				 * frame.getWidth() - dFrame.getWidth()), (int) (p.getY() + frame.getHeight() -
+				 * dFrame.getHeight())); dFrame.setVisible(true);
+				 */
 			}
 		});
 		// Setup Method Array

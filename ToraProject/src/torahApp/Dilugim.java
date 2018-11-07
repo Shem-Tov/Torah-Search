@@ -161,8 +161,9 @@ public class Dilugim {
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
-			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
-					frame.Frame.headerStyleHTML));
+			Output.printText("");
+			//Output.printText(Output.markText(StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
+			//		frame.Frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
 			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
@@ -220,9 +221,10 @@ public class Dilugim {
 									Output.printText("");
 									Output.printText(str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug),
 											frame.Frame.headerStyleHTML));
-									Output.printText(Output.markText(
-											StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
-											frame.Frame.headerStyleHTML));
+									Output.printText("");
+									//Output.printText(Output.markText(
+									//		StringAlignUtils.padRight("", str.length()).replace(' ', '-'),
+									//		frame.Frame.headerStyleHTML));
 								}
 								Output.printText(
 										"\u202B" + "\"" + Output.markText(searchOriginal, frame.Frame.markupStyleHTML)

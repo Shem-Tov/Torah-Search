@@ -65,8 +65,9 @@ public class ToraSearch {
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
-			Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
-					frame.Frame.headerStyleHTML));
+			Output.printText("");
+			//Output.printText(Output.markText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'),
+			//		frame.Frame.headerStyleHTML));
 			// System.out.println(formatter.locale());
 			frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 			while ((line = inputStream.readLine()) != null) {
