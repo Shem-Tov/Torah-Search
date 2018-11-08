@@ -323,6 +323,14 @@ public class Frame {
 		return textField_dilugMax.getText();
 	}
 
+	public static int[] get_searchRange() {
+		if (checkBox_searchRange.isSelected()) {
+			return searchRange;
+		} else {
+			return new int[] {0,0};
+		}
+	}
+	
 	public static Boolean getCheckBox_gimatriaSofiot() {
 		return checkBox_gimatriaSofiot.isSelected();
 	}

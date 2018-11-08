@@ -107,6 +107,7 @@ public class Dilugim {
 		BufferedReader inputStream = null;
 		String searchSTR;
 		String searchOriginal;
+		int[] searchRange;
 		Boolean bool_sofiot;
 		Boolean bool_filePaddingFound = true;
 		int minDilug;
@@ -140,7 +141,7 @@ public class Dilugim {
 					: 2;
 			padding = ((args[4] != null) && (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
 			offset = ((args[5] != null) && (((String) args[5]).length() > 0)) ? Integer.parseInt((String) args[5]) : 0;
-
+			searchRange = (args[6] != null) ?(int[])(args[6]) : (new int[] {0,0});
 			if (!bool_sofiot) {
 				searchSTR = HebrewLetters.switchSofiotStr(searchSTR);
 			}
@@ -201,6 +202,19 @@ public class Dilugim {
 						} else {
 							countPOS++;
 						}
+						continue;
+					}
+					if ((searchRange[1]!=0) && 
+							((countLines<searchRange[0]) ||
+									(countLines>searchRange[1]))) {
+						if (searchIndex != 0) {
+							searchIndex = 0;
+							inputStream.reset();
+							lastCharIndex = 0;
+							countLines = backup_countLines;
+							countPOS = backup_countPOS;
+							countChar = backup_countChar;
+						} 
 						continue;
 					}
 					lastCharIndex = (searchIndex == 0) ? 0 : lastCharIndex + 1;

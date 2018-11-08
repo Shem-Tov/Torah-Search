@@ -56,6 +56,7 @@ public class LetterSearch {
 		BufferedReader inputStream = null;
 		String searchSTR;
 		String searchConvert;
+		int[] searchRange;
 		boolean bool_sofiot;
 		// FileWriter outputStream2 = null;
 		try {
@@ -65,6 +66,7 @@ public class LetterSearch {
 			searchSTR = (String) args[0];
 			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
+			searchRange = (args[2] != null) ?(int[])(args[2]) : (new int[] {0,0});
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
@@ -107,6 +109,11 @@ public class LetterSearch {
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
+				if ((searchRange[1]!=0) && 
+						((countLines<searchRange[0]) ||
+								(countLines>searchRange[1]))) {
+					continue;
+				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}

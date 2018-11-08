@@ -44,19 +44,21 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		switch (Frame.getComboBox_main()) {
 		case Frame.combo_strSearch:
 			Frame.showProgressBar(true,0b01);
-			args = Arrays.copyOf(args, 3);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_wholeWord();
-			args[2] = Frame.getCheckBox_gimatriaSofiot();
-			selection = Methods.id_searchWords;
-			break;
-		case Frame.combo_strGimatriaSearch:
-			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
+			args[3] = Frame.get_searchRange();
+			selection = Methods.id_searchWords;
+			break;
+		case Frame.combo_strGimatriaSearch:
+			Frame.showProgressBar(true,0b01);
+			args = Arrays.copyOf(args, 5);
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_wholeWord();
+			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.getCheckBox_countPsukim();
+			args[4] = Frame.get_searchRange();
 			selection = Methods.id_searchGimatria;
 			break;
 		case Frame.combo_strGimatriaCalculate:
@@ -67,7 +69,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			break;
 		case Frame.combo_strDilugim:
 			Frame.showProgressBar(true,0b11);
-			args = Arrays.copyOf(args, 6);
+			args = Arrays.copyOf(args, 7);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			args[2] = Frame.getTextField_dilugMin();
@@ -75,6 +77,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[4] = Frame.getTextField_padding();
 			String offset1 = Frame.getTextField_offset();
 			args[5] = ((offset1==null)||(offset1.length()==0)) ? "0":offset1;
+			args[6] = Frame.get_searchRange();
 			selection = Methods.id_searchDilugim;
 			break;
 		case Frame.combo_strLetterSearch:
@@ -82,6 +85,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args = Arrays.copyOf(args, 3);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
+			args[2] = Frame.get_searchRange();
 			selection = Methods.id_searchLetters;
 			break;
 		}

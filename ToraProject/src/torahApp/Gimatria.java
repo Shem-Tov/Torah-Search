@@ -80,6 +80,7 @@ public class Gimatria {
 		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
 		String searchSTR;
+		int[] searchRange;
 		boolean bool_wholeWords;
 		boolean bool_gimatriaSofiot;
 		boolean bool_countPsukim;
@@ -96,6 +97,7 @@ public class Gimatria {
 			bool_wholeWords = (Boolean) args[1];
 			bool_gimatriaSofiot = (Boolean) args[2];
 			bool_countPsukim = (Boolean) args[3];
+			searchRange = (args[4] != null) ?(int[])(args[4]) : (new int[] {0,0});
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
 			e.printStackTrace();
@@ -143,6 +145,11 @@ public class Gimatria {
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
+				if ((searchRange[1]!=0) && 
+						((countLines<searchRange[0]) ||
+								(countLines>searchRange[1]))) {
+					continue;
+				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
