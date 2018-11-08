@@ -16,21 +16,21 @@ import java.awt.event.ActionEvent;
 import java.awt.Font;
 
 
-public class DialogSearchFrame extends JDialog {
+public class DialogFindWordFrame extends JDialog {
 
 	/**
 	 * 
 	 */
-	private static DialogSearchFrame instance;
+	private static DialogFindWordFrame instance;
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
 	private static String lastSearch = null;
 	private static Boolean isOpen = false;
 
-	public static DialogSearchFrame getInstance() {
+	public static DialogFindWordFrame getInstance() {
 		if (instance == null) {
-			instance = new DialogSearchFrame();
+			instance = new DialogFindWordFrame();
 		}
 		return instance;
 	}
@@ -48,7 +48,7 @@ public class DialogSearchFrame extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			DialogSearchFrame dialog = new DialogSearchFrame();
+			DialogFindWordFrame dialog = new DialogFindWordFrame();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -59,7 +59,7 @@ public class DialogSearchFrame extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public DialogSearchFrame() {
+	public DialogFindWordFrame() {
 		isOpen = true;
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
