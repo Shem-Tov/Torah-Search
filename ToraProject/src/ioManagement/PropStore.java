@@ -28,6 +28,8 @@ public class PropStore {
 	public static final String subTorahTablesFile = "subTorahTables";
 	public static final String subTorahLineFile = "subTorahLineFile";
 	public static final String subTorahLettersFile = "subTorahLettersFile";
+	public static final String fontSize = "fontSize";
+	public static final String bgColor = "bgColor";
 
 	public static void addNotNull(String key, String value) {
 		if (value != null) {
