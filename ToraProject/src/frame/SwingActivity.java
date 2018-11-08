@@ -12,10 +12,16 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 
 	private static SwingActivity instance;
 	private static int currentProgress;
-	private static int finalProgress = 5846;
+	private static final int finalProgress_hardCoded = 5846;
+	private static int finalProgress = finalProgress_hardCoded;
 	
-	public static void setFinalProgress(int num) {
-		finalProgress = num;
+	public static void setFinalProgress(int[] range) {
+		if (range[1]==0) {
+			finalProgress = finalProgress_hardCoded;
+		} else {
+			finalProgress = range[1]-range[0];		
+		}
+	
 	}
 
 	public static SwingActivity getInstance() {

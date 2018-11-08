@@ -138,10 +138,12 @@ public class Gimatria {
 				Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.Frame.headerStyleHTML));
 			}
 			// Output.printText("");
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
-			} else {
+			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+				frame.SwingActivity.setFinalProgress(searchRange);
 				Output.printText(Frame.HtmlHRLine);
+			} else {
+				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;

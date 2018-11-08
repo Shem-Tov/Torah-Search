@@ -244,28 +244,38 @@ public class DialogSearchRangeFrame extends JDialog {
 
 			public void actionPerformed(ActionEvent arg0) {
 				int start = 0, end = 0;
+				String strRange1 = "", strRange2 = "";
 				if (checkBox_label1.isSelected()) {
 					start = ToraApp.lookupLineNumberFromParasha(cBox_Book1.getSelectedIndex());
+					strRange1 = "פר' " + cBox_Book1.getSelectedItem().toString();
 				} else {
 					start = ToraApp.lookupLineNumberFromPerek(cBox_Book1.getSelectedIndex(),
 							cBox_Perek1.getSelectedIndex());
+					strRange1 = cBox_Book1.getSelectedItem().toString() + " "
+							+ cBox_Perek1.getSelectedItem().toString();
 				}
 				if (checkBox_label2.isSelected()) {
 					end = ToraApp.lookupLineNumberFromParasha(cBox_Book2.getSelectedIndex());
+					// Missing the Book, will be added conditionally below
+					strRange2 = "פר' " + cBox_Book2.getSelectedItem().toString();
 				} else {
 					end = ToraApp.lookupLineNumberFromPerek(cBox_Book2.getSelectedIndex(),
 							cBox_Perek2.getSelectedIndex());
+					strRange2 = cBox_Perek2.getSelectedItem().toString();
 				}
 				if (end - start <= 0) {
 					JOptionPane.showMessageDialog(getInstance(), "טווח לא תקין", "שגיאה", JOptionPane.ERROR_MESSAGE);
 				} else {
 
-					String str = "<html>" + cBox_Book1.getSelectedItem().toString() + " "
-							+ cBox_Perek1.getSelectedItem().toString() + " : ";
-					if (cBox_Book1.getSelectedIndex() != cBox_Book2.getSelectedIndex()) {
-						str += "<br>" + cBox_Book2.getSelectedItem().toString() + " ";
+					String str = "<html>" + strRange1 + " : ";
+					if ((!checkBox_label2.isSelected() && (cBox_Book1.getSelectedIndex() != cBox_Book2.getSelectedIndex()))
+							|| (!checkBox_label2.isSelected() && checkBox_label1.isSelected())) {
+							// Book added conditionally
+							str += "<br>" + cBox_Book2.getSelectedItem().toString() + " ";
+					} else if (checkBox_label2.isSelected()) {
+						str += "<br>";
 					}
-					str += cBox_Perek2.getSelectedItem().toString() + "</html>";
+					str += strRange2 + "</html>";
 					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 						Frame.setSearchRange(start, end, str);
 					}

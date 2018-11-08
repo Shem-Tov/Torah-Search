@@ -90,6 +90,7 @@ public class ToraSearch {
 			// System.out.println(formatter.locale());
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
+				frame.SwingActivity.setFinalProgress(searchRange);
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
