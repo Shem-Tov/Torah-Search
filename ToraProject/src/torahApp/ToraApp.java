@@ -50,6 +50,19 @@ public class ToraApp {
 	public static int[] pereksPerBook;
 	public static String[][] tablePerekParashot;
 
+	
+	public static void starter() throws IOException {
+		PropStore.load();
+		Methods.arrayMethodCreator();
+		// There are identical calls like this, one here the another in
+		// frame.PopupTextMenu())
+		tablePerekBooks = ExcelFunctions
+				.readBookTableXLS(new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 0, 0, 1, 6, 53);
+		pereksPerBook = getPereksPerBook(tablePerekBooks);
+		tablePerekParashot = ExcelFunctions
+				.readBookTableXLS(new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 1, 0, 1, 2, 56);
+	}
+
 	public static String cSpace() {
 		return cSpace(1);
 	}
@@ -69,18 +82,27 @@ public class ToraApp {
 		return bookNames;
 	}
 	
+	public static String[] getParashaNames() {
+		return tablePerekParashot[0];
+	}
+	
 	// Find end of Line Count in Tora
 	public static int lookupLineEnd() {
-		return lookupLineNumber(6,0);
+		return lookupLineNumberFromPerek(6,0);
 	}
 	
 	//Find Line Number
-	public static int lookupLineNumber(int bookNum, int perekNum) {
+	public static int lookupLineNumberFromPerek(int bookNum, int perekNum) {
 		if (bookNum==5) {
 			return Integer.parseInt(tablePerekBooks[bookNum+1][(tablePerekBooks[bookNum+1].length-1)]);
 		} else {
 			return Integer.parseInt(tablePerekBooks[bookNum+1][perekNum]);
 		}
+	}
+	//Find Line Number
+	public static int lookupLineNumberFromParasha(int parasha) {
+		//System.out.println(tablePerekParashot[1][parasha]);
+		return Integer.parseInt(tablePerekParashot[1][parasha]);
 	}
 	
 	//Get array of Chapters for Book
@@ -92,17 +114,6 @@ public class ToraApp {
 		return perekArray;
 	}
 	
-	public static void starter() throws IOException {
-		PropStore.load();
-		Methods.arrayMethodCreator();
-		// There are identical calls like this, one here the another in
-		// frame.PopupTextMenu())
-		tablePerekBooks = ExcelFunctions
-				.readXLS(new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 0, 0, 1, 6, 53);
-
-		pereksPerBook = getPereksPerBook(tablePerekBooks);
-	}
-
 	public static byte getGuiMode() {
 		return guiMode;
 	}

@@ -226,7 +226,7 @@ public class Frame {
 						ToraApp.subTorahTableFile = chooser.getSelectedFile().getAbsolutePath();
 						// There are identical calls like this, one here the another in
 						// ToraApp.starter()
-						ToraApp.tablePerekBooks = ExcelFunctions.readXLS(new String[] { ToraApp.subTorahTableFile }, 0,
+						ToraApp.tablePerekBooks = ExcelFunctions.readBookTableXLS(new String[] { ToraApp.subTorahTableFile }, 0,
 								0, 1, 6, 53);
 						PropStore.map.put(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
 						PropStore.store();
@@ -803,7 +803,7 @@ public class Frame {
 		panel.add(checkBox_wholeWord, gbc_checkBox_wholeWord);
 		checkBox_wholeWord.setBackground(ColorBG_checkBox_wholeWord);
 
-		checkBox_gimatriaSofiot = new JCheckBox("<html>חישוב מיוחד<br>לסופיות</html>");
+		checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
 		checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
 		checkBox_gimatriaSofiot.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);

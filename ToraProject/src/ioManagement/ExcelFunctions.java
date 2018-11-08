@@ -34,7 +34,83 @@ public class ExcelFunctions {
 	public static final int id_charPOS = 5;
 	public static final int id_lineNum = 6;
 
-	public static String[][] readXLS(String[] inputFiles, int sheetNUM, int X, int Y, int posX, int posY) {
+	public static String[][] readBookTableXLS(String[] inputFiles, int sheetNUM, int startColumn, int startRow, int endColumn, int endRow) {
+		String[][] data = null;
+		Workbook workbook = null;
+		DataFormatter dataFormatter = new DataFormatter();
+		for (int dloop = 0; dloop < inputFiles.length; dloop++) {
+			try {
+				InputStream excelFile;
+				File file;
+				if ((dloop == 0) && (inputFiles.length > 1)) {
+					// file = new File(ClassLoader.getSystemResource(inputFiles[dloop]).toURI());
+					excelFile = ExcelFunctions.class.getClassLoader().getResourceAsStream(inputFiles[dloop]);
+				} else {
+					file = new File(inputFiles[dloop]);
+					excelFile = new FileInputStream(file);
+				}
+				workbook = new HSSFWorkbook(excelFile);
+				Sheet datatypeSheet = workbook.getSheetAt(sheetNUM);
+				Iterator<Row> iterator = datatypeSheet.iterator();
+				data = new String[endColumn - startColumn][endRow - startRow];
+				int i = 0;
+				int j = 0;
+				Row currentRow;
+				while (j < startRow) {
+					currentRow = iterator.next();
+					j++;
+				}
+				while (iterator.hasNext()) {
+					currentRow = iterator.next();
+					Iterator<Cell> cellIterator = currentRow.iterator();
+					i = startColumn;
+					while (cellIterator.hasNext()) {
+						Cell currentCell = cellIterator.next();
+						data[i++ - startColumn][(j) - startRow] = dataFormatter.formatCellValue(currentCell);
+						if (i >= (endColumn)) {
+							break;
+						}
+					}
+					j++;
+					if (j >= (endRow)) {
+						break;
+					}
+				}
+				tableLoaded = true;
+				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					frame.Frame.clearText();
+					frame.Frame.setButtonEnabled(true);
+				}
+				Output.printText("Imported XLS", 2);
+				break;
+			} catch (IOException | NullPointerException e) {
+				if (dloop == inputFiles.length - 1) {
+					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+						frame.Frame.clearText();
+					}
+					Output.printText("Error importing from EXCEL Sheet", 1);
+					Output.printText("Program can not work without TorahTables Excel file", 1);
+					tableLoaded = false;
+					try {
+						frame.Frame.setButtonEnabled(false);
+					} catch (NullPointerException ex) {
+						// safe to ignore
+					}
+					// e.printStackTrace();
+				}
+			} finally {
+				try {
+					if (workbook != null) {
+						workbook.close();
+					}
+				} catch (IOException e) {
+
+				}
+			}
+		}
+		return data;
+	}
+	public static String[][] readParashaTableXLS(String[] inputFiles, int sheetNUM, int X, int Y, int posX, int posY) {
 		String[][] data = null;
 		Workbook workbook = null;
 		DataFormatter dataFormatter = new DataFormatter();
@@ -110,7 +186,8 @@ public class ExcelFunctions {
 		}
 		return data;
 	}
-// End Excel Tables
+
+	// End Excel Tables
 
 	// private static final String FILE_NAME = "/MyFirstExcel.xlsx";
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
