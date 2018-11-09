@@ -72,12 +72,11 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			selection = Methods.id_searchWords;
 			break;
 		case Frame.combo_strGimatriaSearch:
-			args = Arrays.copyOf(args, 5);
+			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
-			args[3] = Frame.getCheckBox_countPsukim();
-			args[4] = Frame.get_searchRange();
+			args[3] = Frame.get_searchRange();
 			Frame.showProgressBar(true,0b01);
 			selection = Methods.id_searchGimatria;
 			break;
@@ -116,10 +115,15 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			selection = Methods.id_searchDilugim;
 			break;
 		case Frame.combo_strLetterSearch:
-			args = Arrays.copyOf(args, 3);
+			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			args[2] = Frame.get_searchRange();
+			if (Frame.getComboBox_sub()==Frame.comboBox_sub_Strings[0]) {
+				args[3] = false;
+			} else {
+				args[3] = true;
+			}
 			Frame.showProgressBar(true,0b01);
 			selection = Methods.id_searchLetters;
 			break;

@@ -56,6 +56,9 @@ public class LetterSearch {
 		BufferedReader inputStream = null;
 		String searchSTR;
 		String searchConvert;
+		// modePsukim - false = checks letters in words
+		// true = checks letters in psukim
+		boolean modePsukim = false;
 		int[] searchRange;
 		boolean bool_sofiot;
 		// FileWriter outputStream2 = null;
@@ -66,7 +69,8 @@ public class LetterSearch {
 			searchSTR = (String) args[0];
 			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
-			searchRange = (args[2] != null) ?(int[])(args[2]) : (new int[] {0,0});
+			searchRange = (args[2] != null) ? (int[]) (args[2]) : (new int[] { 0, 0 });
+			modePsukim = (args[3] != null) ? (Boolean) args[3] : false;
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
@@ -110,9 +114,7 @@ public class LetterSearch {
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
-				if ((searchRange[1]!=0) && 
-						((countLines<searchRange[0]) ||
-								(countLines>searchRange[1]))) {
+				if ((searchRange[1] != 0) && ((countLines < searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
@@ -129,7 +131,13 @@ public class LetterSearch {
 					}
 					return;
 				}
-				String[] splitStr = line.trim().split("\\s+");
+				String[] splitStr;
+				if (modePsukim) {
+					splitStr = new String[1];
+					splitStr[0] = line.trim();
+				} else {
+					splitStr = line.trim().split("\\s+");
+				}
 				for (String s : splitStr) {
 					// Do your stuff here
 					String sConvert;
@@ -145,8 +153,19 @@ public class LetterSearch {
 						}
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
-						results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML, bool_sofiot,
-								true));
+						if (modePsukim) {
+							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
+							String tempStr1 = "\u202B" + "\"" + searchSTR + "\" " + "נמצא ב"
+									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
+									+ ":" + pBookInstance.getPasukLetters();
+							// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
+							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
+							results.add(new String[][] { { s, pBookInstance.getBookName(),
+									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } });
+						} else {
+							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
+									bool_sofiot, true));
+						}
 					}
 				}
 

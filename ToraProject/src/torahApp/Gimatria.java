@@ -2,9 +2,12 @@ package torahApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
+import ioManagement.ExcelFunctions;
 import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
@@ -77,13 +80,13 @@ public class Gimatria {
 	}
 
 	public void searchGimatria(Object[] args) throws IOException {
+		ArrayList<String[][]> results = new ArrayList<String[][]>();
 		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
 		String searchSTR;
 		int[] searchRange;
 		boolean bool_wholeWords;
-		boolean bool_gimatriaSofiot;
-		boolean bool_countPsukim;
+		boolean bool_sofiot;
 		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
 			return;
@@ -95,9 +98,8 @@ public class Gimatria {
 			}
 			searchSTR = (String) args[0];
 			bool_wholeWords = (Boolean) args[1];
-			bool_gimatriaSofiot = (Boolean) args[2];
-			bool_countPsukim = (Boolean) args[3];
-			searchRange = (args[4] != null) ?(int[])(args[4]) : (new int[] {0,0});
+			bool_sofiot = (Boolean) args[2];
+			searchRange = (args[3] != null) ?(int[])(args[3]) : (new int[] {0,0});
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
 			e.printStackTrace();
@@ -111,7 +113,7 @@ public class Gimatria {
 		if (StringUtils.isNumeric(searchSTR)) {
 			searchGmt = Integer.parseInt(searchSTR);
 		} else {
-			searchGmt = calculateGimatria(searchSTR, bool_gimatriaSofiot);
+			searchGmt = calculateGimatria(searchSTR, bool_sofiot);
 		}
 		if (searchGmt == 0) {
 			Output.printText("Can not search for a Gimatria of 0");
@@ -159,7 +161,7 @@ public class Gimatria {
 					String[] splitStr = line.trim().split("\\s+");
 					for (String s : splitStr) {
 						// Do your stuff here
-						if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
+						if (searchGmt == calculateGimatria(s, bool_sofiot)) {
 							count++;
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
@@ -171,7 +173,9 @@ public class Gimatria {
 							wCounter.addWord(s);
 							Output.printText(
 									StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line,
-											s, frame.Frame.markupStyleHTML, bool_gimatriaSofiot, bool_wholeWords));
+											s, frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
+									bool_sofiot, bool_wholeWords));
 						}
 					}
 				} else {
@@ -180,12 +184,12 @@ public class Gimatria {
 					int lineCountStart = 0;
 					for (char ch : line.toCharArray()) {
 						lineCountEnd += 1;
-						sumGimatria += calculateGimatriaLetter(ch, bool_gimatriaSofiot);
+						sumGimatria += calculateGimatriaLetter(ch, bool_sofiot);
 						if (sumGimatria > searchGmt) {
 							while ((sumGimatria > searchGmt)
 									|| ((line.length() > lineCountStart) && (line.charAt(lineCountStart) == ' '))) {
 								sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart),
-										bool_gimatriaSofiot);
+										bool_sofiot);
 								lineCountStart += 1;
 							}
 						}
@@ -203,10 +207,9 @@ public class Gimatria {
 							wCounter.addWord(s);
 							Output.printText(
 									StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line,
-											s, frame.Frame.markupStyleHTML, bool_gimatriaSofiot, bool_wholeWords));
-							if (bool_countPsukim) {
-								break;
-							}
+											s, frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
+									bool_sofiot, bool_wholeWords));
 						}
 					}
 				}
@@ -222,6 +225,12 @@ public class Gimatria {
 			Output.printText("");
 			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
 			Output.printText("");
+			String Title = ((bool_wholeWords) ? "גימטריה: מילים שלמות" : "גימטריה: צירוף אותיות");
+			String fileName = String.valueOf(searchGmt);
+			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
+			if (count > 0) {
+				ExcelFunctions.writeXLS(fileName, fileName, sheet, 3, Title, results, true);
+			}
 			Output.printText("\u202B" + "סיים חיפוש");
 		} catch (Exception e) {
 			Output.printText("");

@@ -71,6 +71,7 @@ public class Frame {
 		return frame_instance;
 	}
 
+	public static final String[] comboBox_sub_Strings = new String[] { "מילים", "פסוקים" };
 	static final String combo_strSearch = "חיפוש רגיל";
 	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
 	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
@@ -115,12 +116,6 @@ public class Frame {
 	private static Color ColorBG_comboBox_main = new Color(255, 240, 240);
 	private static Color ColorBG_textPane = new Color(251, 255, 253);
 	private static Color ColorBG_Panel = new Color(240, 240, 255);
-	private static Color ColorBG_comboBox_sub = ColorBG_Panel;
-	private static Color ColorBG_checkBox_wholeWord = ColorBG_Panel;
-	private static Color ColorBG_checkBox_gimatriaSofiot = ColorBG_Panel;
-	private static Color ColorBG_checkBox_countPsukim = ColorBG_Panel;
-	private static Color ColorBG_checkBox_advancedOptions = ColorBG_Panel;
-	private static Color ColorBG_checkBox_searchRange = ColorBG_Panel;
 	private static Color customBGColor = ColorBG_Panel;
 	
 	private static final String buttonRunText = "חפש";
@@ -350,6 +345,9 @@ public class Frame {
 		return comboBox_main.getSelectedItem().toString();
 	}
 
+	public static String getComboBox_sub() {
+		return comboBox_sub.getSelectedItem().toString();
+	}
 	public static Boolean getMethodCancelRequest() {
 		return methodCancelRequest;
 	}
@@ -574,9 +572,14 @@ public class Frame {
 			textField_padding.setVisible(false);
 			switch (str) {
 			case combo_strSearch:
-			case combo_strGimatriaSearch:
-				comboBox_sub.setVisible(true);
+				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(true);
+				checkBox_wholeWord.setVisible(true);
+				checkBox_advancedOptions.setVisible(true);
+				break;
+			case combo_strGimatriaSearch:
+				comboBox_sub.setVisible(false);
+				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(true);
 				checkBox_advancedOptions.setVisible(true);
 				break;
@@ -603,7 +606,7 @@ public class Frame {
 			label_padding.setVisible(true);
 			textField_offset.setVisible(true);
 			textField_padding.setVisible(true);
-			comboBox_sub.setVisible(true);
+			comboBox_sub.setVisible(false);
 			checkBox_countPsukim.setVisible(true);
 			checkBox_wholeWord.setVisible(true);
 		}
@@ -782,7 +785,7 @@ public class Frame {
 		button_search = new JButton("חפש");
 		comboBox_sub = new JComboBox();
 		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		comboBox_sub.setModel(new DefaultComboBoxModel(new String[] { "אותיות", "מילים", "פסוקים" }));
+		comboBox_sub.setModel(new DefaultComboBoxModel(comboBox_sub_Strings));
 		comboBox_sub.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
