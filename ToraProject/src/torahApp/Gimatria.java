@@ -161,6 +161,9 @@ public class Gimatria {
 						// Do your stuff here
 						if (searchGmt == calculateGimatria(s, bool_gimatriaSofiot)) {
 							count++;
+							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							}
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.Frame.markupStyleHTML) + "\" "
 									+ "נמצא ב" + pBookInstance.getBookName() + " " + pBookInstance.getPerekLetters()
@@ -188,7 +191,10 @@ public class Gimatria {
 						}
 						if ((sumGimatria == searchGmt)
 								&& ((line.length() > lineCountEnd) && (line.charAt(lineCountEnd) != ' '))) {
-							count += 1;
+							count ++;
+							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							}
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 							String s = line.substring(lineCountStart, lineCountEnd);
 							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.Frame.markupStyleHTML) + "\" "
