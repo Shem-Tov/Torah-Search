@@ -193,8 +193,8 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION = "./Reports/";
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static void writeXLS(String etc, String fileName, String sheetName, int mode, String Title,
-			ArrayList<String[][]> results, boolean bool_Padding) {
+	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
+			ArrayList<String[][]> results, boolean bool_Padding, String...etc ) {
 		// mode=0 regular search sofiot considered
 		// mode=1 regular search sofiot not considered
 		// mode=2 dilugim search
@@ -270,14 +270,20 @@ public class ExcelFunctions {
 		Row row = sheet.createRow(rowNum++);
 		Cell cell = row.createCell(0);
 		// row.setRowStyle(style);
-		row.setHeightInPoints(60);
+		row.setHeightInPoints(80);
 		cell.setCellStyle(styleTitle);// Apply style to cell
 		cell.setCellValue(Title);
-		if (mode == 3) {
-			cell = row.createCell(1);
+		//if (mode == 3) {
+		int countETC=1;
+		for (String e:etc) {
+			if (countETC==1) {
+				sheet.setColumnWidth(1, 6000);
+			}
+			cell = row.createCell(countETC++);
 			cell.setCellStyle(styleTitle);
-			cell.setCellValue(etc);
+			cell.setCellValue(e);
 		}
+		//}
 		rowNum++;
 		int colNum = 0;
 		int index;
@@ -539,7 +545,7 @@ public class ExcelFunctions {
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
 
-		writeXLS("", "בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
+		writeXLS("בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
 				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })), true);
 
 	}

@@ -174,7 +174,9 @@ public class ToraSearch {
 			String fileName = searchSTR;
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS("", fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true);
+				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true
+						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
+						);
 			}
 		} catch (Exception e) {
 			Output.printText("Error with loading Lines.txt", 1);

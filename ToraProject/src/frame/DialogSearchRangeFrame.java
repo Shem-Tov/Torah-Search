@@ -266,18 +266,24 @@ public class DialogSearchRangeFrame extends JDialog {
 				if (end - start <= 0) {
 					JOptionPane.showMessageDialog(getInstance(), "טווח לא תקין", "שגיאה", JOptionPane.ERROR_MESSAGE);
 				} else {
-
-					String str = "<html>" + strRange1 + " : ";
-					if ((!checkBox_label2.isSelected() && (cBox_Book1.getSelectedIndex() != cBox_Book2.getSelectedIndex()))
+					String strHTML = "<html>" + strRange1 + " : ";
+					if ((!checkBox_label2.isSelected()
+							&& (cBox_Book1.getSelectedIndex() != cBox_Book2.getSelectedIndex()))
 							|| (!checkBox_label2.isSelected() && checkBox_label1.isSelected())) {
-							// Book added conditionally
-							str += "<br>" + cBox_Book2.getSelectedItem().toString() + " ";
+						// Book added conditionally
+						strHTML += "<br>" + cBox_Book2.getSelectedItem().toString() + " ";
 					} else if (checkBox_label2.isSelected()) {
-						str += "<br>";
+						strHTML += "<br>";
 					}
-					str += strRange2 + "</html>";
+					String str = "טווח חיפוש: \n" + strRange1 + " - ";
+					if (checkBox_label2.isSelected()) {
+						str += strRange2;
+					} else {
+						str += cBox_Book2.getSelectedItem().toString() + " " + cBox_Perek2.getSelectedItem().toString();
+					}
+					strHTML += strRange2 + "</html>";
 					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-						Frame.setSearchRange(start, end, str);
+						Frame.setSearchRange(start, end, str, strHTML);
 					}
 					dispose();
 				}

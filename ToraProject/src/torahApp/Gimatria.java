@@ -229,7 +229,9 @@ public class Gimatria {
 			String fileName = String.valueOf(searchGmt);
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, fileName, sheet, 3, Title, results, true);
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true,fileName
+						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
+						);
 			}
 			Output.printText("\u202B" + "סיים חיפוש");
 		} catch (Exception e) {

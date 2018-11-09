@@ -97,6 +97,7 @@ public class Frame {
 	private static int[] searchRange = new int[] { 0, 0 };
 	private static final String searchRangeAll = "הכול";
 	private static String searchRangeString = searchRangeAll;
+	private static String searchRangeStringHTML = searchRangeAll;
 
 	// JTextPane Formatting
 	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
@@ -328,6 +329,15 @@ public class Frame {
 			return new int[] { 0, 0 };
 		}
 	}
+	
+	public static String get_searchRangeText() {
+		//checks if frame exists
+		if ((frame_instance != null) && (checkBox_searchRange.isSelected())) {
+			return searchRangeString;
+		}else {
+			return "";
+		}
+	}
 
 	public static Boolean getCheckBox_gimatriaSofiot() {
 		return checkBox_gimatriaSofiot.isSelected();
@@ -352,10 +362,12 @@ public class Frame {
 		return methodCancelRequest;
 	}
 
-	public static void setSearchRange(int start, int end, String str) {
+	public static void setSearchRange(int start, int end, String str, 
+			String strHTML) {
 		searchRange = new int[] { start, end };
 		searchRangeString = str;
-		checkBox_searchRange.setText(str);
+		searchRangeStringHTML = strHTML;
+		checkBox_searchRange.setText(strHTML);
 		checkBox_searchRange.setSelected(true);
 	}
 
@@ -1056,7 +1068,7 @@ public class Frame {
 		checkBox_searchRange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (checkBox_searchRange.isSelected()) {
-					checkBox_searchRange.setText(searchRangeString);
+					checkBox_searchRange.setText(searchRangeStringHTML);
 				} else {
 					checkBox_searchRange.setText(searchRangeAll);
 				}

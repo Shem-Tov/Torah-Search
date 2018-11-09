@@ -178,7 +178,9 @@ public class LetterSearch {
 			String fileName = "LT_" + searchSTR;
 			String sheet = ("אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(searchSTR, fileName, sheet, 3, Title, results, true);
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true,searchSTR
+						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
+						);
 			}
 		} catch (
 
