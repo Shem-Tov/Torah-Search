@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import frame.Frame;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
@@ -135,12 +137,12 @@ public class Dilugim {
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
 			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
-			minDilug = ((args[2] != null) && (((String) args[2]).length() > 0)) ? Integer.parseInt((String) args[2])
+			minDilug = ((args[2] != null) && (StringUtils.isNumeric((String)args[2])) && (((String) args[2]).length() > 0)) ? Integer.parseInt((String) args[2])
 					: 2;
-			maxDilug = ((args[3] != null) && (((String) args[3]).length() > 0)) ? Integer.parseInt((String) args[3])
+			maxDilug = ((args[3] != null) && (StringUtils.isNumeric((String)args[3])) && (((String) args[3]).length() > 0)) ? Integer.parseInt((String) args[3])
 					: 2;
-			padding = ((args[4] != null) && (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
-			offset = ((args[5] != null) && (((String) args[5]).length() > 0)) ? Integer.parseInt((String) args[5]) : 0;
+			padding = ((args[4] != null) && (StringUtils.isNumeric((String)args[4])) && (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
+			offset = ((args[5] != null) && (StringUtils.isNumeric((String)args[5])) && (((String) args[5]).length() > 0)) ? Integer.parseInt((String) args[5]) : 0;
 			searchRange = (args[6] != null) ? (int[]) (args[6]) : (new int[] { 0, 0 });
 			if (!bool_sofiot) {
 				searchSTR = HebrewLetters.switchSofiotStr(searchSTR);

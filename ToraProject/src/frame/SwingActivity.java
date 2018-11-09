@@ -6,7 +6,11 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
+import org.apache.commons.lang3.StringUtils;
+
+import hebrewLetters.HebrewLetters;
 import ioManagement.Methods;
+import ioManagement.Output;
 
 public class SwingActivity extends SwingWorker<Void,Integer>{
 
@@ -45,26 +49,36 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 	@Override
 	protected Void doInBackground() throws Exception {
 		// TODO Auto-generated method stub
+		String tempStr = Frame.getTextField_Search();
+		if ((tempStr==null) || (tempStr.length()==0)){
+			Output.printText("חסר מילת חיפוש", 1);
+			return null;
+		}
+		if ((Frame.getComboBox_main()!=Frame.combo_strGimatriaSearch)
+			&& !HebrewLetters.checkHebrew(tempStr)) {
+			Output.printText("מילת חיפוש לא בעברית", 1);
+			return null;			
+		}
 		Object[] args = { null };
 		int selection = 0;
 		switch (Frame.getComboBox_main()) {
 		case Frame.combo_strSearch:
-			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.get_searchRange();
+			Frame.showProgressBar(true,0b01);
 			selection = Methods.id_searchWords;
 			break;
 		case Frame.combo_strGimatriaSearch:
-			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 5);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.getCheckBox_countPsukim();
 			args[4] = Frame.get_searchRange();
+			Frame.showProgressBar(true,0b01);
 			selection = Methods.id_searchGimatria;
 			break;
 		case Frame.combo_strGimatriaCalculate:
@@ -74,24 +88,39 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			selection = Methods.id_calculateGimatria;
 			break;
 		case Frame.combo_strDilugim:
-			Frame.showProgressBar(true,0b11);
 			args = Arrays.copyOf(args, 7);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
-			args[2] = Frame.getTextField_dilugMin();
-			args[3] = Frame.getTextField_dilugMax();
-			args[4] = Frame.getTextField_padding();
-			String offset1 = Frame.getTextField_offset();
+			Boolean exitCode = false;
+			Output.printText("");
+			if (!StringUtils.isNumeric(Frame.getTextField_dilugMin().trim())) {
+				Output.printText("שדה 'דילוג מינימים' צריך להיות מספר", 1);
+				exitCode = true;			
+			}
+			if (!StringUtils.isNumeric(Frame.getTextField_dilugMax().trim())) {
+				Output.printText("שדה 'דילוג מקסימים' צריך להיות מספר", 1);
+				exitCode = true;			
+			}
+			if (!StringUtils.isNumeric(Frame.getTextField_padding().trim())) {
+				Output.printText("שדה 'מספר אותיות' צריך להיות מספר", 1);
+				exitCode = true;			
+			}
+			if (exitCode) return null;
+			args[2] = Frame.getTextField_dilugMin().trim();
+			args[3] = Frame.getTextField_dilugMax().trim();
+			args[4] = Frame.getTextField_padding().trim();
+			String offset1 = Frame.getTextField_offset().trim();
 			args[5] = ((offset1==null)||(offset1.length()==0)) ? "0":offset1;
 			args[6] = Frame.get_searchRange();
+			Frame.showProgressBar(true,0b11);
 			selection = Methods.id_searchDilugim;
 			break;
 		case Frame.combo_strLetterSearch:
-			Frame.showProgressBar(true,0b01);
 			args = Arrays.copyOf(args, 3);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			args[2] = Frame.get_searchRange();
+			Frame.showProgressBar(true,0b01);
 			selection = Methods.id_searchLetters;
 			break;
 		}

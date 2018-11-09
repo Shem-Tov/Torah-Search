@@ -1,6 +1,29 @@
 package hebrewLetters;
 
 public class HebrewLetters {
+	private static char[] letters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע',
+			'פ', 'צ', 'ק', 'ר', 'ש', 'ת','ך', 'ם', 'ן', 'ף', 'ץ' };
+	
+	public static Boolean checkHebrew(String str) {
+		Boolean finalBool = true;
+		for (char ch:str.toCharArray()) {
+			Boolean bool = false;
+			if (ch==' ') continue;
+			for (char letter:letters) {
+				if (ch==letter) {
+					bool = true;
+					break;
+				}
+			}
+			if (!bool) {
+				finalBool = false;
+				break;
+			}
+		}
+		return finalBool;
+	}
+
+	
 	private static char switchSofiot(char ch) {
 		switch (ch) {
 		case 'ך':
