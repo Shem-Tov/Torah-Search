@@ -79,6 +79,9 @@ public class Frame {
 	static final String combo_strLetterSearch = "חיפוש אותיות";
 
 	private static final int fontSize_hardCoded = 16;
+	private static final int fontSizeSmall_hardCoded = fontSize_hardCoded - 2;
+	private static int fontSizeBig_hardCoded = fontSize_hardCoded + 2;
+	
 	private static int fontSize = fontSize_hardCoded;
 	private static int fontSizeBig = fontSize + 2;
 	private static int fontSizeSmall = fontSize - 2;
@@ -128,8 +131,8 @@ public class Frame {
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
-	private static final String checkBox_gimatriaSofiot_text = "<html>" + "חישוב מיוחד" + "<br/>" + "לסופיות"
-			+ "</html>";
+	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">"+ "חישוב מיוחד" + "<br/>" + "לסופיות"
+			+ "</p> </html>";
 	private static final String checkBox_countPsukim_true = "<html>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
@@ -559,7 +562,12 @@ public class Frame {
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		button_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		checkBox_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
+		int temp =(int)(95*((float)fontSizeSmall/fontSizeSmall_hardCoded));
+		button_defaultSettings.setPreferredSize(new Dimension(temp, 25));
+		temp = (int)(200*((float)fontSizeBig/fontSizeBig_hardCoded));
+		comboBox_main.setMaximumSize(new Dimension(temp, 32767));
 
+		//comboBox_main
 		// panel.setPreferredSize(new Dimension(300, 10));
 		// gbl_panel.columnWidths = new int[] { 124, 42, 0 };
 		panel.setPreferredSize(new Dimension((int) (100 + 200 * ((float) fontSize / 16)), 10));
@@ -996,6 +1004,7 @@ public class Frame {
 		menuSettings.add(menuItem_textSize);
 		button_defaultSettings = new JButton("קבע ברירת מחדל");
 		button_defaultSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		button_defaultSettings.setPreferredSize(new Dimension(63, 25));
 		button_defaultSettings.setMargin(new Insets(2, 2, 2, 2));
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
@@ -1079,7 +1088,7 @@ public class Frame {
 				cDialog.setTitle("שינוי גודל פונט");
 				JComboBox comboBox_fontSize = new JComboBox();
 				String[] textSizes = new String[] { "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18",
-						"19", "20", "21" };
+						"19", "20", "21","22","23","24","25","26","27","28" };
 				comboBox_fontSize.setModel(new DefaultComboBoxModel(textSizes));
 				// find the index of fontSize in textSizes
 				int index = 0;
@@ -1095,7 +1104,6 @@ public class Frame {
 					fontSize = Integer.valueOf((String) obj);
 				}
 				setFonts();
-
 				/*
 				 * Point p = frame.getLocation(); dFrame.setLocation((int) (p.getX() +
 				 * frame.getWidth() - dFrame.getWidth()), (int) (p.getY() + frame.getHeight() -

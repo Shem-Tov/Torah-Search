@@ -94,7 +94,7 @@ public class ToraApp {
 	//Find Line Number
 	public static int lookupLineNumberFromPerek(int bookNum, int perekNum) {
 		if (bookNum==5) {
-			return Integer.parseInt(tablePerekBooks[bookNum+1][(tablePerekBooks[bookNum+1].length-1)]);
+			return Integer.parseInt(tablePerekBooks[bookNum][(tablePerekBooks[bookNum].length-1)]);
 		} else {
 			return Integer.parseInt(tablePerekBooks[bookNum+1][perekNum]);
 		}
