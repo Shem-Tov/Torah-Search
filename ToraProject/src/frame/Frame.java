@@ -79,8 +79,9 @@ public class Frame {
 	static final String combo_strLetterSearch = "חיפוש אותיות";
 
 	private static final int fontSize_hardCoded = 16;
+	private static final int fontSizeBig_hardCoded = fontSize_hardCoded + 2;
 	private static final int fontSizeSmall_hardCoded = fontSize_hardCoded - 2;
-	private static int fontSizeBig_hardCoded = fontSize_hardCoded + 2;
+	private static final int fontSizeSmaller_hardCoded = fontSize_hardCoded - 3;
 	
 	private static int fontSize = fontSize_hardCoded;
 	private static int fontSizeBig = fontSize + 2;
@@ -566,12 +567,14 @@ public class Frame {
 		button_defaultSettings.setPreferredSize(new Dimension(temp, 25));
 		temp = (int)(200*((float)fontSizeBig/fontSizeBig_hardCoded));
 		comboBox_main.setMaximumSize(new Dimension(temp, 32767));
+		temp = (int)(46*((float)fontSizeSmaller/fontSizeSmaller_hardCoded));
+		checkBox_searchRange.setPreferredSize(new Dimension(140, temp));
 
 		//comboBox_main
 		// panel.setPreferredSize(new Dimension(300, 10));
 		// gbl_panel.columnWidths = new int[] { 124, 42, 0 };
-		panel.setPreferredSize(new Dimension((int) (100 + 200 * ((float) fontSize / 16)), 10));
-		gbl_panel.columnWidths = new int[] { (int) (100 + 24 * ((float) fontSize / 16)), 42, 0 };
+		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) fontSize / 16)), 10));
+		gbl_panel.columnWidths = new int[] { (int) (120 + 24 * ((float) fontSize / 16)), 42, 0 };
 		// textHtmlSize = 5;
 		textHtmlSize = (int) (5 * ((float) fontSize / 16));
 		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_attentionHTML[0], color_attentionHTML[1],
@@ -925,8 +928,8 @@ public class Frame {
 		panel.add(button_searchRange, gbc_button_searchRange);
 
 		checkBox_searchRange = new JCheckBox("הכול");
-		checkBox_searchRange.setPreferredSize(new Dimension(140, 23));
 		checkBox_searchRange.setHorizontalAlignment(SwingConstants.RIGHT);
+		checkBox_searchRange.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		GridBagConstraints gbc_checkBox_searchRange = new GridBagConstraints();
 		gbc_checkBox_searchRange.anchor = GridBagConstraints.EAST;
 		gbc_checkBox_searchRange.insets = new Insets(0, 0, 5, 0);
