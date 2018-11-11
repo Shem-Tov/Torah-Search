@@ -25,23 +25,22 @@ public class Output {
 		}
 		int lastIndex = 0;
 		for (Integer thisIndex : indexes) {
-			//Boolean wasSpace = false;
+			// Boolean wasSpace = false;
 			String tempStr = "";
 			if (thisIndex > 0) {
 				tempStr = line.substring(lastIndex, thisIndex);
 				/*
-				if (tempStr.charAt(tempStr.length() - 1) == ' ') {
-					wasSpace = true;
-					// removes whitespace from the end
-					tempStr = tempStr.replaceFirst("\\s++$", "");
-				}
-				*/
+				 * if (tempStr.charAt(tempStr.length() - 1) == ' ') { wasSpace = true; //
+				 * removes whitespace from the end tempStr = tempStr.replaceFirst("\\s++$", "");
+				 * }
+				 */
 			}
-			//lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
-			//		+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
-			lineHtml += tempStr + htmlFormat.getHtml(0)
-			+ line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
-	
+			// lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") +
+			// htmlFormat.getHtml(0)
+			// + line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
+			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex, 1 + thisIndex)
+					+ htmlFormat.getHtml(1);
+
 			lastIndex = thisIndex + 1;
 		}
 		lineHtml += line.substring(lastIndex);
@@ -50,6 +49,12 @@ public class Output {
 
 	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
 			Boolean bool_sofiot, Boolean bool_wholeWords) {
+		return markMatchesInLine(line, searchSTR, htmlFormat,
+				bool_sofiot, bool_wholeWords,-1);
+	}
+	
+	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
+			Boolean bool_sofiot, Boolean bool_wholeWords, int index) {
 
 		// Does not mark, if in console mode
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -66,6 +71,7 @@ public class Output {
 			lineConvert = line;
 		}
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
+		int myIndex;
 		indexes.add(lineConvert.indexOf(searchConvert, 0));
 		try {
 			if (indexes.get(0) == -1) {
@@ -115,26 +121,31 @@ public class Output {
 				indexes.add(newIndex);
 			}
 		}
+		if (index!=-1) {
+			myIndex = indexes.get(index);
+			indexes = new ArrayList<Integer>();
+			indexes.add(myIndex);
+		}
 		int lastIndex = 0;
 		for (Integer thisIndex : indexes) {
-			
-			//Boolean wasSpace = false;
+
+			// Boolean wasSpace = false;
 			String tempStr = "";
 			if (thisIndex > 0) {
 				tempStr = line.substring(lastIndex, thisIndex);
-			/*	if ((tempStr.length() >= 1) && (tempStr.charAt(tempStr.length() - 1) == ' ')) {
-					wasSpace = true;
-					// removes whitespace from the end
-					tempStr = tempStr.replaceFirst("\\s++$", "");
-				}
-			*/
+				/*
+				 * if ((tempStr.length() >= 1) && (tempStr.charAt(tempStr.length() - 1) == ' '))
+				 * { wasSpace = true; // removes whitespace from the end tempStr =
+				 * tempStr.replaceFirst("\\s++$", ""); }
+				 */
 			}
-			
-			//lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") + htmlFormat.getHtml(0)
-			//		+ line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
-			
-			lineHtml += tempStr + htmlFormat.getHtml(0)
-			+ line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
+
+			// lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") +
+			// htmlFormat.getHtml(0)
+			// + line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
+
+			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex, STRLength + thisIndex)
+					+ htmlFormat.getHtml(1);
 
 			lastIndex = thisIndex + STRLength;
 		}
@@ -164,13 +175,19 @@ public class Output {
 
 	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot, Boolean bool_wholeWords) throws NoSuchFieldException {
+		return printPasukInfo(countLines, searchSTR, line, markupStyle,
+				bool_sofiot, bool_wholeWords, -1);
+	}
+
+	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot, Boolean bool_wholeWords, int index) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" " + "נמצא ב"
 					+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
 					+ ":" + pBookInstance.getPasukLetters();
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
-			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords);
+			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
 			Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);

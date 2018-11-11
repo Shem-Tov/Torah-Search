@@ -12,20 +12,20 @@ import hebrewLetters.HebrewLetters;
 import ioManagement.Methods;
 import ioManagement.Output;
 
-public class SwingActivity extends SwingWorker<Void,Integer>{
+public class SwingActivity extends SwingWorker<Void, Integer> {
 
 	private static SwingActivity instance;
 	private static int currentProgress;
 	private static final int finalProgress_hardCoded = 5846;
 	private static int finalProgress = finalProgress_hardCoded;
-	
+
 	public static void setFinalProgress(int[] range) {
-		if (range[1]==0) {
+		if (range[1] == 0) {
 			finalProgress = finalProgress_hardCoded;
 		} else {
-			finalProgress = range[1]-range[0];		
+			finalProgress = range[1] - range[0];
 		}
-	
+
 	}
 
 	public static SwingActivity getInstance() {
@@ -34,30 +34,29 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		}
 		return instance;
 	}
-	
+
 	public void callProcess(int num) {
-		callProcess(num,1,1,1);
+		callProcess(num, 1, 1, 1);
 	}
-	
-	public void callProcess(int num, int thisDilug, int minDilug, int maxDilug) 
-	{
-		currentProgress=num;
-		int factor=(int)(100*(((float)currentProgress/finalProgress)+(thisDilug-minDilug))/(maxDilug-minDilug+1));
+
+	public void callProcess(int num, int thisDilug, int minDilug, int maxDilug) {
+		currentProgress = num;
+		int factor = (int) (100 * (((float) currentProgress / finalProgress) + (thisDilug - minDilug))
+				/ (maxDilug - minDilug + 1));
 		publish(factor);
 	}
-	
+
 	@Override
-	protected Void doInBackground() throws Exception {
+	protected Void doInBackground() {
 		// TODO Auto-generated method stub
 		String tempStr = Frame.getTextField_Search();
-		if ((tempStr==null) || (tempStr.length()==0)){
+		if ((tempStr == null) || (tempStr.length() == 0)) {
 			Output.printText("חסר מילת חיפוש", 1);
 			return null;
 		}
-		if ((Frame.getComboBox_main()!=Frame.combo_strGimatriaSearch)
-			&& !HebrewLetters.checkHebrew(tempStr)) {
+		if ((Frame.getComboBox_main() != Frame.combo_strGimatriaSearch) && !HebrewLetters.checkHebrew(tempStr)) {
 			Output.printText("מילת חיפוש לא בעברית", 1);
-			return null;			
+			return null;
 		}
 		Object[] args = { null };
 		int selection = 0;
@@ -68,7 +67,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.get_searchRange();
-			Frame.showProgressBar(true,0b01);
+			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchWords;
 			break;
 		case Frame.combo_strGimatriaSearch:
@@ -77,7 +76,7 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.get_searchRange();
-			Frame.showProgressBar(true,0b01);
+			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchGimatria;
 			break;
 		case Frame.combo_strGimatriaCalculate:
@@ -94,24 +93,23 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			Output.printText("");
 			if (!StringUtils.isNumeric(Frame.getTextField_dilugMin().trim())) {
 				Output.printText("שדה 'דילוג מינימים' צריך להיות מספר", 1);
-				exitCode = true;			
+				exitCode = true;
 			}
 			if (!StringUtils.isNumeric(Frame.getTextField_dilugMax().trim())) {
 				Output.printText("שדה 'דילוג מקסימים' צריך להיות מספר", 1);
-				exitCode = true;			
+				exitCode = true;
 			}
 			if (!StringUtils.isNumeric(Frame.getTextField_padding().trim())) {
 				Output.printText("שדה 'מספר אותיות' צריך להיות מספר", 1);
-				exitCode = true;			
+				exitCode = true;
 			}
-			if (exitCode) return null;
+			if (exitCode)
+				return null;
 			args[2] = Frame.getTextField_dilugMin().trim();
 			args[3] = Frame.getTextField_dilugMax().trim();
 			args[4] = Frame.getTextField_padding().trim();
-			String offset1 = Frame.getTextField_offset().trim();
-			args[5] = ((offset1==null)||(offset1.length()==0)) ? "0":offset1;
-			args[6] = Frame.get_searchRange();
-			Frame.showProgressBar(true,0b11);
+			args[5] = Frame.get_searchRange();
+			Frame.showProgressBar(true, 0b11);
 			selection = Methods.id_searchDilugim;
 			break;
 		case Frame.combo_strLetterSearch:
@@ -119,13 +117,23 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			args[2] = Frame.get_searchRange();
-			if (Frame.getComboBox_sub()==Frame.comboBox_sub_Strings[0]) {
+			if (Frame.getComboBox_sub() == Frame.comboBox_sub_Strings[0]) {
 				args[3] = false;
 			} else {
 				args[3] = true;
 			}
-			Frame.showProgressBar(true,0b01);
+			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchLetters;
+			break;
+		case Frame.combo_strCountSearch:
+			args = Arrays.copyOf(args, 5);
+			args[0] = Frame.getTextField_Search();
+			args[1] = Frame.getCheckBox_wholeWord();
+			args[2] = Frame.getCheckBox_gimatriaSofiot();
+			args[3] = Frame.get_searchRange();
+			args[4] = Frame.getTextField_padding().trim();
+			Frame.showProgressBar(true, 0b01);
+			selection = Methods.id_searchCount;
 			break;
 		}
 		try {
@@ -139,21 +147,19 @@ public class SwingActivity extends SwingWorker<Void,Integer>{
 		}
 		return null;
 	}
-	
-	protected void process(List<Integer> chunks)
-	{
-		for (int chunk:chunks) {
-			//System.out.println(chunk+"%");
+
+	protected void process(List<Integer> chunks) {
+		for (int chunk : chunks) {
+			// System.out.println(chunk+"%");
 			Frame.setProgressBar(chunk);
 		}
 	}
-	
-	protected void done()
-	{
-		currentProgress=0;
-		Frame.showProgressBar(false,0b11);
-		//frame.setButtonEnabled();
+
+	protected void done() {
+		currentProgress = 0;
+		Frame.showProgressBar(false, 0b11);
+		// frame.setButtonEnabled();
 		Frame.setMethodRunning(false);
-		instance=null;
+		instance = null;
 	}
 }

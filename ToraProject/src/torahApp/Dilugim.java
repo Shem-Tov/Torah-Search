@@ -116,8 +116,6 @@ public class Dilugim {
 		int maxDilug;
 		int padding;
 		int countAll = 0;
-		@SuppressWarnings("unused")
-		int offset;
 		// FileWriter outputStream2 = null;
 		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
@@ -142,8 +140,7 @@ public class Dilugim {
 			maxDilug = ((args[3] != null) && (StringUtils.isNumeric((String)args[3])) && (((String) args[3]).length() > 0)) ? Integer.parseInt((String) args[3])
 					: 2;
 			padding = ((args[4] != null) && (StringUtils.isNumeric((String)args[4])) && (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
-			offset = ((args[5] != null) && (StringUtils.isNumeric((String)args[5])) && (((String) args[5]).length() > 0)) ? Integer.parseInt((String) args[5]) : 0;
-			searchRange = (args[6] != null) ? (int[]) (args[6]) : (new int[] { 0, 0 });
+			searchRange = (args[5] != null) ? (int[]) (args[5]) : (new int[] { 0, 0 });
 			if (!bool_sofiot) {
 				searchSTR = HebrewLetters.switchSofiotStr(searchSTR);
 			}
@@ -207,7 +204,7 @@ public class Dilugim {
 						}
 						continue;
 					}
-					if ((searchRange[1] != 0) && ((countLines < searchRange[0]) || (countLines > searchRange[1]))) {
+					if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 						if (searchIndex != 0) {
 							searchIndex = 0;
 							inputStream.reset();
@@ -302,7 +299,8 @@ public class Dilugim {
 											thisDilug, padding);
 
 									resArray[0][2] = strResults.getMyString().toString();
-									resArray[0][3] = String.valueOf(strResults.getPaddingHead());
+
+
 									resArray[0][4] = String.valueOf(strResults.getPaddingTail());
 									Output.printText("שורת הדילוג:" + ToraApp.cSpace(2)
 											+ Output.markTextBounds(strResults.getMyString().toString(),

@@ -5,6 +5,7 @@ import java.util.List;
 
 import extras.Console;
 import extras.extraFunctions;
+import torahApp.CountSearch;
 import torahApp.Dilugim;
 import torahApp.Gimatria;
 import torahApp.LetterSearch;
@@ -20,6 +21,7 @@ public class Methods {
 	public static final int id_calculateGimatria=3;
 	public static final int id_searchDilugim=4;
 	public static final int id_searchLetters=5;
+	public static final int id_searchCount=6;
 	public static final int id_settings=7;
 	
 	// Add method references here
@@ -69,6 +71,15 @@ public class Methods {
 			public void run(Object... args) throws IOException {
 				LetterSearch letter = LetterSearch.getInstance();
 				letter.searchForLetters(args);
+			}
+		});
+		getArrayMethodID().add(id_searchCount);
+		getArrayMethodTitle().add("Search Count");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				CountSearch cSearch = CountSearch.getInstance();
+				cSearch.searchByCount(args);
 			}
 		});
 		getArrayMethodID().add(8);

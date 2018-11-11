@@ -114,7 +114,7 @@ public class LetterSearch {
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
-				if ((searchRange[1] != 0) && ((countLines < searchRange[0]) || (countLines > searchRange[1]))) {
+				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {

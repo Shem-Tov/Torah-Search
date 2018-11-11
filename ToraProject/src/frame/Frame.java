@@ -33,6 +33,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ioManagement.ExcelFunctions;
 import ioManagement.PropStore;
 import torahApp.ToraApp;
@@ -75,14 +77,17 @@ public class Frame {
 	static final String combo_strSearch = "חיפוש רגיל";
 	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
 	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
-	static final String combo_strDilugim = "דילוגים";
+	static final String combo_strDilugim = "חיפוש בדילוגים";
 	static final String combo_strLetterSearch = "חיפוש אותיות";
+	static final String combo_strCountSearch = "חיפוש אינדקס";
+	static final String strLabel_padding_Dilug = "מספר אותיות";
+	static final String strLabel_padding_CountSearch = "מספר אינדקס";
 
 	private static final int fontSize_hardCoded = 16;
 	private static final int fontSizeBig_hardCoded = fontSize_hardCoded + 2;
 	private static final int fontSizeSmall_hardCoded = fontSize_hardCoded - 2;
 	private static final int fontSizeSmaller_hardCoded = fontSize_hardCoded - 3;
-	
+
 	private static int fontSize = fontSize_hardCoded;
 	private static int fontSizeBig = fontSize + 2;
 	private static int fontSizeSmall = fontSize - 2;
@@ -107,6 +112,8 @@ public class Frame {
 	private static String searchRangeString = searchRangeAll;
 	private static String searchRangeStringHTML = searchRangeAll;
 
+	private static int paddingSearchIndex = 1;
+	private static int paddingDilug = 1;
 	// JTextPane Formatting
 	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
 			color_attentionHTML[0], color_attentionHTML[1], color_attentionHTML[2], 0b111);
@@ -132,8 +139,8 @@ public class Frame {
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
-	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">"+ "חישוב מיוחד" + "<br/>" + "לסופיות"
-			+ "</p> </html>";
+	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">" + "חישוב מיוחד"
+			+ "<br/>" + "לסופיות" + "</p> </html>";
 	private static final String checkBox_countPsukim_true = "<html>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
@@ -424,7 +431,16 @@ public class Frame {
 		textField_dilugMin.setText(PropStore.map.get(PropStore.minDilug));
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
 		textField_offset.setText(PropStore.map.get(PropStore.offsetDilug));
-		textField_padding.setText(PropStore.map.get(PropStore.paddingDilug));
+		try {
+			paddingDilug = Integer.parseInt(PropStore.map.get(PropStore.paddingDilug));
+		} catch (Exception e) {
+
+		}
+		try {
+			paddingSearchIndex = Integer.parseInt(PropStore.map.get(PropStore.paddingSearchIndex));
+		} catch (Exception e) {
+
+		}
 		ToraApp.subTorahTableFile = PropStore.map.get(PropStore.subTorahTablesFile);
 		ToraApp.subTorahLineFile = PropStore.map.get(PropStore.subTorahLineFile);
 		ToraApp.subTorahLetterFile = PropStore.map.get(PropStore.subTorahLettersFile);
@@ -475,7 +491,14 @@ public class Frame {
 		PropStore.addNotNull(PropStore.minDilug, textField_dilugMin.getText());
 		PropStore.addNotNull(PropStore.maxDilug, textField_dilugMax.getText());
 		PropStore.addNotNull(PropStore.offsetDilug, textField_offset.getText());
-		PropStore.addNotNull(PropStore.paddingDilug, textField_padding.getText());
+		switch (comboBox_main.getSelectedItem().toString()) {
+		case combo_strDilugim:
+			PropStore.addNotNull(PropStore.paddingDilug, textField_padding.getText());
+			break;
+		case combo_strCountSearch:
+			PropStore.addNotNull(PropStore.paddingSearchIndex, textField_padding.getText());
+			break;
+		}
 		PropStore.addNotNull(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
 		PropStore.addNotNull(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
 		PropStore.addNotNull(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
@@ -563,14 +586,14 @@ public class Frame {
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		button_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		checkBox_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
-		int temp =(int)(95*((float)fontSizeSmall/fontSizeSmall_hardCoded));
+		int temp = (int) (95 * ((float) fontSizeSmall / fontSizeSmall_hardCoded));
 		button_defaultSettings.setPreferredSize(new Dimension(temp, 25));
-		temp = (int)(200*((float)fontSizeBig/fontSizeBig_hardCoded));
+		temp = (int) (200 * ((float) fontSizeBig / fontSizeBig_hardCoded));
 		comboBox_main.setMaximumSize(new Dimension(temp, 32767));
-		temp = (int)(46*((float)fontSizeSmaller/fontSizeSmaller_hardCoded));
+		temp = (int) (46 * ((float) fontSizeSmaller / fontSizeSmaller_hardCoded));
 		checkBox_searchRange.setPreferredSize(new Dimension(140, temp));
 
-		//comboBox_main
+		// comboBox_main
 		// panel.setPreferredSize(new Dimension(300, 10));
 		// gbl_panel.columnWidths = new int[] { 124, 42, 0 };
 		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) fontSize / 16)), 10));
@@ -613,6 +636,7 @@ public class Frame {
 	private static void changeLayout(String str) {
 		switch (str) {
 		case combo_strSearch:
+		case combo_strCountSearch:
 		case combo_strGimatriaSearch:
 		case combo_strGimatriaCalculate:
 		case combo_strLetterSearch:
@@ -620,26 +644,41 @@ public class Frame {
 			label_dilugMin.setVisible(false);
 			textField_dilugMax.setVisible(false);
 			textField_dilugMin.setVisible(false);
-			label_padding.setVisible(false);
 			textField_offset.setVisible(false);
-			textField_padding.setVisible(false);
 			switch (str) {
 			case combo_strSearch:
+				label_padding.setVisible(false);
+				textField_padding.setVisible(false);
+				comboBox_sub.setVisible(false);
+				checkBox_countPsukim.setVisible(true);
+				checkBox_wholeWord.setVisible(true);
+				break;
+			case combo_strCountSearch:
+				label_padding.setVisible(true);
+				label_padding.setText(strLabel_padding_CountSearch);
+				textField_padding.setText(String.valueOf(paddingSearchIndex));
+				textField_padding.setVisible(true);
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(true);
 				checkBox_wholeWord.setVisible(true);
 				break;
 			case combo_strGimatriaSearch:
+				label_padding.setVisible(false);
+				textField_padding.setVisible(false);
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(true);
 				break;
 			case combo_strLetterSearch:
+				label_padding.setVisible(false);
+				textField_padding.setVisible(false);
 				comboBox_sub.setVisible(true);
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(false);
 				break;
 			case combo_strGimatriaCalculate:
+				label_padding.setVisible(false);
+				textField_padding.setVisible(false);
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(false);
@@ -651,6 +690,8 @@ public class Frame {
 			textField_dilugMax.setVisible(true);
 			textField_dilugMin.setVisible(true);
 			label_padding.setVisible(true);
+			label_padding.setText(strLabel_padding_Dilug);
+			textField_padding.setText(String.valueOf(paddingDilug));
 			textField_offset.setVisible(true);
 			textField_padding.setVisible(true);
 			comboBox_sub.setVisible(false);
@@ -709,10 +750,8 @@ public class Frame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-
 		JInternalFrame internalFrame = new JInternalFrame("חיפוש בתורה");
 		frame.getContentPane().add(internalFrame, BorderLayout.NORTH);
-
 		panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
@@ -722,7 +761,7 @@ public class Frame {
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
-				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch }));
+				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch, combo_strCountSearch }));
 		comboBox_main.setBackground(ColorBG_comboBox_main);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
@@ -837,7 +876,7 @@ public class Frame {
 
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
-		label_padding = new JLabel("מספר אותיות");
+		label_padding = new JLabel(strLabel_padding_Dilug);
 		GridBagConstraints gbc_label_padding = new GridBagConstraints();
 		gbc_label_padding.anchor = GridBagConstraints.EAST;
 		gbc_label_padding.insets = new Insets(0, 0, 5, 5);
@@ -1025,6 +1064,18 @@ public class Frame {
 			public void actionPerformed(ActionEvent arg0) {
 				// button.setEnabled(false);
 				if (!methodRunning) {
+					switch (comboBox_main.getSelectedItem().toString()) {
+					case combo_strDilugim:
+						if (StringUtils.isNumeric(textField_padding.getText())) {
+							paddingDilug = Integer.parseInt(textField_padding.getText());
+						}
+						break;
+					case combo_strCountSearch:
+						if (StringUtils.isNumeric(textField_padding.getText())) {
+							paddingSearchIndex = Integer.parseInt(textField_padding.getText());
+						}
+						break;
+					}
 					methodRunning = true;
 					button_search.setText(buttonCancelText);
 					textPane.setText("");
@@ -1064,8 +1115,7 @@ public class Frame {
 					color_mainStyleHTML[0] = c.getRed();
 					color_mainStyleHTML[1] = c.getGreen();
 					color_mainStyleHTML[2] = c.getBlue();
-					mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, 
-							color_mainStyleHTML[0],
+					mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, color_mainStyleHTML[0],
 							color_mainStyleHTML[1], color_mainStyleHTML[2], 0b100);
 				}
 			}
@@ -1091,7 +1141,7 @@ public class Frame {
 				cDialog.setTitle("שינוי גודל פונט");
 				JComboBox comboBox_fontSize = new JComboBox();
 				String[] textSizes = new String[] { "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18",
-						"19", "20", "21","22","23","24","25","26","27","28" };
+						"19", "20", "21", "22", "23", "24", "25", "26", "27", "28" };
 				comboBox_fontSize.setModel(new DefaultComboBoxModel(textSizes));
 				// find the index of fontSize in textSizes
 				int index = 0;
