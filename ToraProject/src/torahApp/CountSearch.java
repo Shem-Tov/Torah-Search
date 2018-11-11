@@ -116,6 +116,7 @@ public class CountSearch {
 					} else {
 						splitStr = line.trim().split("\\s+");
 					}
+					int countIndex = 0;
 					for (String s : splitStr) {
 						// Do your stuff here
 						if (s.equals(searchConvert)) {
@@ -124,9 +125,10 @@ public class CountSearch {
 								// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 								// fill results array
 								Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
-										bool_sofiot, bool_wholeWords);
+										bool_sofiot, bool_wholeWords, countIndex);
 								break outerloop;
 							}
+							countIndex++;
 						}
 					}
 				} else {
