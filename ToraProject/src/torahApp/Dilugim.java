@@ -299,8 +299,7 @@ public class Dilugim {
 											thisDilug, padding);
 
 									resArray[0][2] = strResults.getMyString().toString();
-
-
+									resArray[0][3] = String.valueOf(strResults.getPaddingHead());
 									resArray[0][4] = String.valueOf(strResults.getPaddingTail());
 									Output.printText("שורת הדילוג:" + ToraApp.cSpace(2)
 											+ Output.markTextBounds(strResults.getMyString().toString(),
