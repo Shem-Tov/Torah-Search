@@ -143,7 +143,7 @@ public class Gimatria {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
-				Output.printText(Frame.HtmlHRLine);
+				Output.printLine(Frame.lineHeaderSize);
 			} else {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			}

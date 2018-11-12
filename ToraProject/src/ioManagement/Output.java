@@ -188,13 +188,28 @@ public class Output {
 					+ ":" + pBookInstance.getPasukLetters();
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
-			Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
+			printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
+			printLine(1);
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
 		}
 		return (new String[][] { { searchSTR, pBookInstance.getBookName(), pBookInstance.getPerekLetters(),
 				pBookInstance.getPasukLetters(), line } });
+	}
+
+	public static void printLine(int size) {
+		//blue is default color
+		printLine(size,"blue");
+	}
+	
+	public static void printLine(int size, String color) {
+		String line = "<div style=\"height:" + size + 
+				"px; font-size:0; background-color:" +
+				color+";\"></div>";
+		if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
+			Frame.appendText(line,(byte)0);
+		}
 	}
 
 	public static void printText(String text) {

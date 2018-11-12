@@ -105,7 +105,7 @@ public class LetterSearch {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				Output.printText(Frame.HtmlHRLine);
+				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {

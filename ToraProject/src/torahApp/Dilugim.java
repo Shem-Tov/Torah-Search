@@ -135,11 +135,12 @@ public class Dilugim {
 			searchOriginal = ((String) args[0]);
 			searchSTR = searchOriginal.replace(" ", "");
 			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
-			minDilug = ((args[2] != null) && (StringUtils.isNumeric((String)args[2])) && (((String) args[2]).length() > 0)) ? Integer.parseInt((String) args[2])
-					: 2;
-			maxDilug = ((args[3] != null) && (StringUtils.isNumeric((String)args[3])) && (((String) args[3]).length() > 0)) ? Integer.parseInt((String) args[3])
-					: 2;
-			padding = ((args[4] != null) && (StringUtils.isNumeric((String)args[4])) && (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
+			minDilug = ((args[2] != null) && (StringUtils.isNumeric((String) args[2]))
+					&& (((String) args[2]).length() > 0)) ? Integer.parseInt((String) args[2]) : 2;
+			maxDilug = ((args[3] != null) && (StringUtils.isNumeric((String) args[3]))
+					&& (((String) args[3]).length() > 0)) ? Integer.parseInt((String) args[3]) : 2;
+			padding = ((args[4] != null) && (StringUtils.isNumeric((String) args[4]))
+					&& (((String) args[4]).length() > 0)) ? Integer.parseInt((String) args[4]) : 0;
 			searchRange = (args[5] != null) ? (int[]) (args[5]) : (new int[] { 0, 0 });
 			if (!bool_sofiot) {
 				searchSTR = HebrewLetters.switchSofiotStr(searchSTR);
@@ -167,7 +168,7 @@ public class Dilugim {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				Output.printText(Frame.HtmlHRLine);
+				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
@@ -249,7 +250,7 @@ public class Dilugim {
 										Output.printText(
 												StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 									} else {
-										Output.printText(Output.markText("<hr size=5>", frame.Frame.headerStyleHTML));
+										Output.printLine(2,"orange");
 									}
 								}
 								Output.printText(
@@ -306,6 +307,7 @@ public class Dilugim {
 													strResults.getPaddingHead(), (strResults.getPaddingTail()),
 													frame.Frame.markupStyleHTML));
 								}
+								Output.printLine(1);
 								Output.printText("");
 								results.add(resArray);
 								inputStream.reset();
@@ -331,14 +333,14 @@ public class Dilugim {
 								"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count)
 										+ " פעמים" + " לדילוג" + ToraApp.cSpace() + thisDilug + ".",
 								frame.Frame.footerStyleHTML));
+				Output.printLine(2,"orange");
 				Output.printText("");
 				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
 				String fileName = searchOriginal;
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
 					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, bool_filePaddingFound,
-							((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
-							);
+							((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
 					maxDilug = thisDilug;

@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -94,8 +95,7 @@ public class Frame {
 	private static int fontSizeSmaller = fontSize - 3;
 
 	private static int textHtmlSize = 5;
-	public static final String HtmlHRLine = "<div style=\"height:5px; font-size:0; background-color:blue;\"></div>";
-
+	public static final int lineHeaderSize = 5;
 	private static final int[] color_mainStyleHTML_hardCoded = new int[] { 128, 88, 255 };
 	private static final int[] color_markupStyleHTML_hardCoded = new int[] { 245, 195, 92 };
 	private static final int[] color_attentionHTML = new int[] { 250, 40, 40 };
@@ -152,30 +152,33 @@ public class Frame {
 	private static GridBagLayout gbl_panel;
 	private static JButton button_search;
 	private static JButton button_defaultSettings;
-	private static JLabel label_textfield_Search;
-	private static JTextField textField_Search;
-	private static JTextField textField_dilugMin;
-	private static JTextField textField_dilugMax;
-	private static JTextField textField_offset;
-	private static JComboBox<?> comboBox_main;
-	private static JTextField textField_padding;
-	static JTextPane textPane;
-	private SwingActivity activity;
-	private static JScrollPane scrollPane;
-	private static HTMLDocument doc = new HTMLDocument();
-	private static HTMLEditorKit kit = new HTMLEditorKit();
-	private static JCheckBox checkBox_gimatriaSofiot;
-	private static JCheckBox checkBox_wholeWord;
-	private static JCheckBox checkBox_countPsukim;
-	static public int panelWidth;
-	private JPanel panel_1;
-	private JPopupMenu popupMenu;
-	private static JProgressBar progressBar;
+	private static JButton button_searchRange;
 	private static JLabel label_padding;
 	private static JLabel label_dProgress;
 	private static JLabel label_countMatch;
 	private static JLabel label_dilugMin;
 	private static JLabel label_dilugMax;
+	private static JLabel label_textfield_Search;
+	private static JTextField textField_Search;
+	private static JTextField textField_dilugMin;
+	private static JTextField textField_dilugMax;
+	private static JTextField textField_offset;
+	private static JTextField textField_padding;
+	private static JComboBox<?> comboBox_main;
+	private static JCheckBox checkBox_gimatriaSofiot;
+	private static JCheckBox checkBox_wholeWord;
+	private static JCheckBox checkBox_countPsukim;
+	private static JCheckBox checkBox_searchRange;
+	static JTextPane textPane;
+	private static JScrollPane scrollPane;
+	private static JTabbedPane tabbedPane;
+	private static HTMLDocument doc = new HTMLDocument();
+	private static HTMLEditorKit kit = new HTMLEditorKit();
+	private SwingActivity activity;
+	static public int panelWidth;
+	private JPanel panel_1;
+	private JPopupMenu popupMenu;
+	private static JProgressBar progressBar;
 	private static JComboBox<?> comboBox_sub;
 	private static JMenuItem menuItem_bgColor;
 	private static JMenu menuItem_textColor;
@@ -184,8 +187,6 @@ public class Frame {
 	private static JMenuItem menuItem_textSize;
 	private static JMenuBar menuBar;
 	private static JMenu menuSettings;
-	private static JButton button_searchRange;
-	private static JCheckBox checkBox_searchRange;
 
 	class PopUpTextPane extends JPopupMenu {
 		/**
@@ -864,8 +865,11 @@ public class Frame {
 
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
-
-		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		tabbedPane =new JTabbedPane();
+		tabbedPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
+		tabbedPane.setTabPlacement(JTabbedPane.RIGHT);
+		tabbedPane.addTab("דוח",scrollPane);
+		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
 		button_search = new JButton("חפש");
