@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JInternalFrame;
 import java.awt.BorderLayout;
-import java.awt.CheckboxMenuItem;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JScrollPane;
@@ -186,6 +185,12 @@ public class Frame {
 	private static JComboBox<?> comboBox_sub;
 	private static JMenuItem menuItem_bgColor;
 	private static JMenu menuItem_textColor;
+	private static JMenu menuFiles;
+	private static JMenuItem menuNoTevotFile;
+	private static JMenuItem menuLinesFile;
+	private static JMenuItem menuTorahTable;
+	private static JMenuItem menuExcelFolder;
+	private static JMenuItem menuResetExcelFolder;
 	private static JMenuItem menuItem_textColorMain;
 	private static JMenuItem menuItem_textColorMarkup;
 	private static JMenuItem menuItem_textSize;
@@ -233,76 +238,6 @@ public class Frame {
 				}
 			});
 			add(anItem);
-			JMenu menu = new JMenu("טעינת קובץ חדש");
-			anItem = new JMenuItem("טבלת אינדקס - TorahTables.xls");
-			anItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					JFileChooser chooser = new JFileChooser();
-					File workingDirectory = new File(System.getProperty("user.dir"));
-					chooser.setCurrentDirectory(workingDirectory);
-					FileNameExtensionFilter filter = new FileNameExtensionFilter("XLS files", "xls");
-					chooser.setFileFilter(filter);
-					int returnVal = chooser.showOpenDialog(getParent());
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						System.out
-								.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-						ToraApp.subTorahTableFile = chooser.getSelectedFile().getAbsolutePath();
-						// There are identical calls like this, one here the another in
-						// ToraApp.starter()
-						ToraApp.tablePerekBooks = ExcelFunctions
-								.readBookTableXLS(new String[] { ToraApp.subTorahTableFile }, 0, 0, 1, 6, 53);
-						PropStore.map.put(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
-						PropStore.store();
-					}
-				}
-			});
-			menu.add(anItem);
-			anItem = new JMenuItem("קובץ תורה מחולק בשורות - Lines.txt");
-			anItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					JFileChooser chooser = new JFileChooser();
-					File workingDirectory = new File(System.getProperty("user.dir"));
-					chooser.setCurrentDirectory(workingDirectory);
-					FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
-					chooser.setFileFilter(filter);
-					int returnVal = chooser.showOpenDialog(getParent());
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						System.out
-								.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-						ToraApp.subTorahLineFile = chooser.getSelectedFile().getAbsolutePath();
-						// There are identical calls like this, one here the another in
-						// ToraApp.starter()
-						PropStore.map.put(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
-						PropStore.store();
-					}
-				}
-			});
-			menu.add(anItem);
-			anItem = new JMenuItem("קובץ תורה אותיות - NoTevot.txt");
-			anItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent event) {
-					JFileChooser chooser = new JFileChooser();
-					File workingDirectory = new File(System.getProperty("user.dir"));
-					chooser.setCurrentDirectory(workingDirectory);
-					FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
-					chooser.setFileFilter(filter);
-					int returnVal = chooser.showOpenDialog(getParent());
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						System.out
-								.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-						ToraApp.subTorahLetterFile = chooser.getSelectedFile().getAbsolutePath();
-						// There are identical calls like this, one here the another in
-						// ToraApp.starter()
-						PropStore.map.put(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
-						PropStore.store();
-					}
-				}
-			});
-			menu.add(anItem);
-			add(menu);
 		}
 	}
 
@@ -387,7 +322,7 @@ public class Frame {
 	public static Boolean getMethodCancelRequest() {
 		return methodCancelRequest;
 	}
-	
+
 	public static int getTabbedPaneWidth() {
 		return tabbedPane.getWidth();
 	}
@@ -606,6 +541,11 @@ public class Frame {
 		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuNoTevotFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuLinesFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuTorahTable.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuFiles.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+
 		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
@@ -638,8 +578,8 @@ public class Frame {
 		if (frame_instance != null) {
 			frame_instance.frame.setMinimumSize(new Dimension((int) (300 + 250 * ((float) getFontSize() / 16)),
 					(int) (300 + 220 * ((float) getFontSize() / 16))));
-			//frame_instance.frame.getSize();
-			
+			// frame_instance.frame.getSize();
+
 			// frame_instance.frame.repaint();
 			// frame_instance.frame.revalidate();
 		}
@@ -888,14 +828,14 @@ public class Frame {
 
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
-		tabbedPane =new JTabbedPane();
+		tabbedPane = new JTabbedPane();
 		tabbedPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		tabbedPane.setTabPlacement(JTabbedPane.RIGHT);
-		tabbedPane.addTab("דוח",scrollPane);
-		//add JTree here
-		tree=Tree.getInstance();
+		tabbedPane.addTab("דוח", scrollPane);
+		// add JTree here
+		tree = Tree.getInstance();
 		tree.setBackground(ColorBG_textPane);
-		tabbedPane.addTab("עץ",new JScrollPane(tree));
+		tabbedPane.addTab("עץ", new JScrollPane(tree));
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
@@ -1072,19 +1012,19 @@ public class Frame {
 		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColor.add(menuItem_textColorMain);
 		menuItem_textColor.add(menuItem_textColorMarkup);
-		checkbox_createDocument =  new JCheckBoxMenuItem("להכין דוח");
+		checkbox_createDocument = new JCheckBoxMenuItem("להכין דוח");
 		checkbox_createDocument.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		checkbox_createDocument.setHorizontalTextPosition(SwingConstants.RIGHT);
 		checkbox_createDocument.setHorizontalAlignment(SwingConstants.RIGHT);
 		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createDocument.setSelected(true);
-		checkbox_createExcel =  new JCheckBoxMenuItem("להכין קובץ אקסל");
+		checkbox_createExcel = new JCheckBoxMenuItem("להכין קובץ אקסל");
 		checkbox_createExcel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		checkbox_createExcel.setHorizontalTextPosition(SwingConstants.RIGHT);
 		checkbox_createExcel.setHorizontalAlignment(SwingConstants.RIGHT);
 		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createExcel.setSelected(true);
-		checkbox_createTree =  new JCheckBoxMenuItem("להכין עץ");
+		checkbox_createTree = new JCheckBoxMenuItem("להכין עץ");
 		checkbox_createTree.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		checkbox_createTree.setHorizontalTextPosition(SwingConstants.RIGHT);
 		checkbox_createTree.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -1096,6 +1036,42 @@ public class Frame {
 		menuSettings.add(checkbox_createDocument);
 		menuSettings.add(checkbox_createExcel);
 		menuSettings.add(checkbox_createTree);
+		menuFiles = new JMenu("טעינת קובץ חדש");
+		menuSettings.add(menuFiles);
+		menuFiles.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuFiles.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuFiles.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuFiles.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuExcelFolder = new JMenuItem("שינוי תיקיה לדוחות אקסל");
+		menuExcelFolder.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuExcelFolder.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuExcelFolder.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuResetExcelFolder = new JMenuItem("החזרת תיקיה מקורית לדוחות אקסל");
+		menuResetExcelFolder.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuResetExcelFolder.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuResetExcelFolder.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuResetExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuTorahTable = new JMenuItem("טבלת אינדקס - TorahTables.xls");
+		menuTorahTable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuTorahTable.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuTorahTable.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuTorahTable.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuLinesFile = new JMenuItem("קובץ תורה מחולק בשורות - Lines.txt");
+		menuLinesFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuLinesFile.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuLinesFile.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuLinesFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuNoTevotFile = new JMenuItem("קובץ תורה אותיות - NoTevot.txt");
+		menuNoTevotFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuNoTevotFile.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuNoTevotFile.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuNoTevotFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuFiles.add(menuExcelFolder);
+		menuFiles.add(menuResetExcelFolder);
+		menuFiles.add(menuTorahTable);
+		menuFiles.add(menuLinesFile);
+		menuFiles.add(menuNoTevotFile);
 		button_defaultSettings = new JButton("קבע ברירת מחדל");
 		button_defaultSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -1157,6 +1133,105 @@ public class Frame {
 				 */
 				Color c = JColorChooser.showDialog(null, "בחר צבע", ColorBG_Panel);
 				setBGColor(c);
+			}
+		});
+		menuResetExcelFolder.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				CustomDialog cDialog = new CustomDialog();
+				cDialog.setTitle("שחזור הגדרות תיקיה");
+				JLabel label = new JLabel(
+						"האם להחזיר חזרה את התיקיה ל " + ExcelFunctions.getExcel_File_Location_Hardcoded());
+				cDialog.addComponent(label);
+				Object selection = cDialog.show();
+				// System.out.println(selection);
+				// null is canceled
+				if (selection != null) {
+					ExcelFunctions.resetExcel_File_Location();
+					PropStore.map.put(PropStore.excelFolder, ExcelFunctions.getExcel_File_Location());
+					PropStore.store();
+					// Saving code here
+				}
+			}
+		});
+
+		menuExcelFolder.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JFileChooser chooser = new JFileChooser();
+				File workingDirectory = new File(System.getProperty("user.dir"));
+				chooser.setCurrentDirectory(workingDirectory);
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				chooser.setAcceptAllFileFilterUsed(false);
+				int returnVal = chooser.showOpenDialog((Component) event.getSource());
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					// System.out.println("You chose this folder: " +
+					// chooser.getSelectedFile().getAbsolutePath());
+					System.out.println("You chose this folder: " + chooser.getSelectedFile().getName());
+					ExcelFunctions.setExcel_File_Location("./" + chooser.getSelectedFile().getName() + "/");
+					// chooser.getSelectedFile().getAbsolutePath();
+					PropStore.map.put(PropStore.excelFolder, ExcelFunctions.getExcel_File_Location());
+					PropStore.store();
+				}
+			}
+		});
+		menuTorahTable.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JFileChooser chooser = new JFileChooser();
+				File workingDirectory = new File(System.getProperty("user.dir"));
+				chooser.setCurrentDirectory(workingDirectory);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("XLS files", "xls");
+				chooser.setFileFilter(filter);
+				int returnVal = chooser.showOpenDialog((Component) event.getSource());
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+					ToraApp.subTorahTableFile = chooser.getSelectedFile().getAbsolutePath();
+					// There are identical calls like this, one here the another in
+					// ToraApp.starter()
+					ToraApp.tablePerekBooks = ExcelFunctions
+							.readBookTableXLS(new String[] { ToraApp.subTorahTableFile }, 0, 0, 1, 6, 53);
+					PropStore.map.put(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
+					PropStore.store();
+				}
+			}
+		});
+		menuLinesFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JFileChooser chooser = new JFileChooser();
+				File workingDirectory = new File(System.getProperty("user.dir"));
+				chooser.setCurrentDirectory(workingDirectory);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+				chooser.setFileFilter(filter);
+				int returnVal = chooser.showOpenDialog((Component) event.getSource());
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+					ToraApp.subTorahLineFile = chooser.getSelectedFile().getAbsolutePath();
+					// There are identical calls like this, one here the another in
+					// ToraApp.starter()
+					PropStore.map.put(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
+					PropStore.store();
+				}
+			}
+		});
+		menuNoTevotFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JFileChooser chooser = new JFileChooser();
+				File workingDirectory = new File(System.getProperty("user.dir"));
+				chooser.setCurrentDirectory(workingDirectory);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+				chooser.setFileFilter(filter);
+				int returnVal = chooser.showOpenDialog((Component) event.getSource());
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+					ToraApp.subTorahLetterFile = chooser.getSelectedFile().getAbsolutePath();
+					// There are identical calls like this, one here the another in
+					// ToraApp.starter()
+					PropStore.map.put(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
+					PropStore.store();
+				}
 			}
 		});
 		menuItem_textColorMain.addActionListener(new ActionListener() {
@@ -1272,11 +1347,9 @@ public class Frame {
 		return checkbox_createExcel.isSelected();
 	}
 
-
 	public static Boolean getCheckbox_createTree() {
 		return checkbox_createTree.isSelected();
 	}
-
 
 	public static Boolean getCheckbox_createDocument() {
 		return checkbox_createDocument.isSelected();

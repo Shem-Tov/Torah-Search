@@ -190,9 +190,25 @@ public class ExcelFunctions {
 	// End Excel Tables
 
 	// private static final String FILE_NAME = "/MyFirstExcel.xlsx";
-	private static final String EXCEL_FILE_LOCATION = "./Reports/";
+	private static final String EXCEL_FILE_LOCATION_HARDCODED = "./Reports/";
+	private static String EXCEL_FILE_LOCATION = EXCEL_FILE_LOCATION_HARDCODED;
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
-
+	
+	public static String getExcel_File_Location_Hardcoded() {
+		return EXCEL_FILE_LOCATION_HARDCODED;
+	}
+	public static String getExcel_File_Location() {
+		return EXCEL_FILE_LOCATION;
+	}
+	
+	public static void setExcel_File_Location(String directoryPath) {
+		EXCEL_FILE_LOCATION = directoryPath;
+	}
+	
+	public static void resetExcel_File_Location() {
+		EXCEL_FILE_LOCATION = EXCEL_FILE_LOCATION_HARDCODED;
+	}	
+	
 	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
 			ArrayList<String[][]> results, boolean bool_Padding, String...etc ) {
 		if (!frame.Frame.getCheckbox_createExcel()) {
