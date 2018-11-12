@@ -91,9 +91,9 @@ public class Frame {
 	private static final int fontSizeSmaller_hardCoded = fontSize_hardCoded - 3;
 
 	private static int fontSize = fontSize_hardCoded;
-	private static int fontSizeBig = fontSize + 2;
-	private static int fontSizeSmall = fontSize - 2;
-	private static int fontSizeSmaller = fontSize - 3;
+	private static int fontSizeBig = getFontSize() + 2;
+	private static int fontSizeSmall = getFontSize() - 2;
+	private static int fontSizeSmaller = getFontSize() - 3;
 
 	private static int textHtmlSize = 5;
 	public static final int lineHeaderSize = 5;
@@ -452,9 +452,9 @@ public class Frame {
 			customBGColor = ColorBG_Panel;
 		}
 		try {
-			fontSize = Integer.parseInt(PropStore.map.get(PropStore.fontSize));
+			setFontSize(Integer.parseInt(PropStore.map.get(PropStore.fontSize)));
 		} catch (Exception e) {
-			fontSize = fontSize_hardCoded;
+			setFontSize(fontSize_hardCoded);
 		}
 
 		try {
@@ -509,7 +509,7 @@ public class Frame {
 				.valueOf(new Color(color_mainStyleHTML[0], color_mainStyleHTML[1], color_mainStyleHTML[2]).getRGB()));
 		PropStore.addNotNull(PropStore.markupHtmlColor, String.valueOf(
 				new Color(color_markupStyleHTML[0], color_markupStyleHTML[1], color_markupStyleHTML[2]).getRGB()));
-		PropStore.addNotNull(PropStore.fontSize, String.valueOf(fontSize));
+		PropStore.addNotNull(PropStore.fontSize, String.valueOf(getFontSize()));
 		PropStore.addNotNull(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
 		PropStore.addNotNull(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
 		PropStore.addNotNull(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
@@ -559,49 +559,49 @@ public class Frame {
 		// frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN,
 		// fontSize));
 		// frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
-		fontSizeBig = fontSize + 2;
-		fontSizeSmall = fontSize - 2;
-		fontSizeSmaller = fontSize - 4;
-		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
-		label_textfield_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		label_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		textField_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		textPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
-		button_search.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
-		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
-		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSize));
+		setFontSizeBig(getFontSize() + 2);
+		fontSizeSmall = getFontSize() - 2;
+		fontSizeSmaller = getFontSize() - 4;
+		comboBox_main.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		label_textfield_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		textField_Search.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		label_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		textField_dilugMin.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		label_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		textField_dilugMax.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		textPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		button_search.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		comboBox_sub.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		label_countMatch.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
-		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
-		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
-		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
-		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		button_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		checkBox_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
 		int temp = (int) (95 * ((float) fontSizeSmall / fontSizeSmall_hardCoded));
 		button_defaultSettings.setPreferredSize(new Dimension(temp, 25));
-		temp = (int) (200 * ((float) fontSizeBig / fontSizeBig_hardCoded));
+		temp = (int) (200 * ((float) getFontSizeBig() / fontSizeBig_hardCoded));
 		comboBox_main.setMaximumSize(new Dimension(temp, 32767));
 		temp = (int) (46 * ((float) fontSizeSmaller / fontSizeSmaller_hardCoded));
 		checkBox_searchRange.setPreferredSize(new Dimension(140, temp));
-
+		//Tree.getInstance().setMaxSize(tabbedPane.getSize());
 		// comboBox_main
 		// panel.setPreferredSize(new Dimension(300, 10));
 		// gbl_panel.columnWidths = new int[] { 124, 42, 0 };
-		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) fontSize / 16)), 10));
-		gbl_panel.columnWidths = new int[] { (int) (120 + 24 * ((float) fontSize / 16)), 42, 0 };
+		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) getFontSize() / 16)), 10));
+		gbl_panel.columnWidths = new int[] { (int) (120 + 24 * ((float) getFontSize() / 16)), 42, 0 };
 		// textHtmlSize = 5;
-		textHtmlSize = (int) (5 * ((float) fontSize / 16));
+		textHtmlSize = (int) (5 * ((float) getFontSize() / 16));
 		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_attentionHTML[0], color_attentionHTML[1],
 				color_attentionHTML[2], 0b111);
 		mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_mainStyleHTML[0], color_mainStyleHTML[1],
@@ -616,8 +616,8 @@ public class Frame {
 
 //		thisFrame.frame.setMinimumSize(new Dimension(550, 520));
 		if (frame_instance != null) {
-			frame_instance.frame.setMinimumSize(new Dimension((int) (300 + 250 * ((float) fontSize / 16)),
-					(int) (300 + 220 * ((float) fontSize / 16))));
+			frame_instance.frame.setMinimumSize(new Dimension((int) (300 + 250 * ((float) getFontSize() / 16)),
+					(int) (300 + 220 * ((float) getFontSize() / 16))));
 			// frame_instance.frame.repaint();
 			// frame_instance.frame.revalidate();
 		}
@@ -745,8 +745,8 @@ public class Frame {
 		ToraApp.setGuiMode(ToraApp.id_guiMode_Frame);
 		frame = new JFrame();
 		frame.setTitle("חיפוש בתורה");
-		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
-		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, fontSize));
+		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
+		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
 		frame.setBounds(100, 100, 1600, 887);
 		frame.setMinimumSize(new Dimension(550, 520));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -1019,34 +1019,34 @@ public class Frame {
 		menuSettings = new JMenu("הגדרות");
 		menuSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuSettings.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuBar.add(menuSettings);
 		menuItem_bgColor = new JMenuItem("צבע רקע");
 		menuItem_bgColor.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_bgColor.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuItem_bgColor.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColor = new JMenu("צבע טקסט");
 		menuItem_textColor.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_textColor.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuItem_textColor.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColorMain = new JMenuItem("טקסט דוח רגיל");
 		menuItem_textColorMain.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_textColorMain.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuItem_textColorMain.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuItem_textColorMain.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textColorMain.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColorMarkup = new JMenuItem("צבע הארה");
 		menuItem_textColorMarkup.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_textColorMarkup.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuItem_textColorMarkup.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuItem_textColorMarkup.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textColorMarkup.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 
 		menuItem_textSize = new JMenuItem("גודל טקסט");
 		menuItem_textSize.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_textSize.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuItem_textSize.setHorizontalAlignment(SwingConstants.RIGHT);
-		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeBig));
+		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColor.add(menuItem_textColorMain);
 		menuItem_textColor.add(menuItem_textColorMarkup);
 		menuSettings.add(menuItem_bgColor);
@@ -1154,7 +1154,7 @@ public class Frame {
 				// find the index of fontSize in textSizes
 				int index = 0;
 				for (int i = 0; i < textSizes.length; i++) {
-					if (textSizes[i].equals(String.valueOf(fontSize))) {
+					if (textSizes[i].equals(String.valueOf(getFontSize()))) {
 						index = i;
 						break;
 					}
@@ -1162,7 +1162,7 @@ public class Frame {
 				cDialog.addComponent(comboBox_fontSize, true, index);
 				Object obj = cDialog.show();
 				if (obj != null) {
-					fontSize = Integer.valueOf((String) obj);
+					setFontSize(Integer.valueOf((String) obj));
 				}
 				setFonts();
 				/*
@@ -1196,5 +1196,21 @@ public class Frame {
 		setFonts();
 		setBGColor(customBGColor);
 		changeLayout(comboBox_main.getSelectedItem().toString());
+	}
+
+	public static int getFontSize() {
+		return fontSize;
+	}
+
+	public static void setFontSize(int fontSize) {
+		Frame.fontSize = fontSize;
+	}
+
+	public static int getFontSizeBig() {
+		return fontSizeBig;
+	}
+
+	public static void setFontSizeBig(int fontSizeBig) {
+		Frame.fontSizeBig = fontSizeBig;
 	}
 }

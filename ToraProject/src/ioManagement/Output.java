@@ -3,6 +3,7 @@ package ioManagement;
 import java.util.ArrayList;
 
 import frame.Frame;
+import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import stringFormatting.HtmlGenerator;
 import stringFormatting.StringAlignUtils;
@@ -188,8 +189,10 @@ public class Output {
 					+ ":" + pBookInstance.getPasukLetters();
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
-			printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
+			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
+			printText(outputText);
 			printLine(1);
+			printTree(countLines, outputText);
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
@@ -211,7 +214,23 @@ public class Output {
 			Frame.appendText(line,(byte)0);
 		}
 	}
+	
+	public static String getLine(int size) {
+		//blue is default color
+		return getLine(size,"blue");
+	}
+	
+	public static String getLine(int size, String color) {
+		String line = "<div style=\"height:" + size + 
+				"px; font-size:0; background-color:" +
+				color+";\"></div>";
+		return line;	
+	}
 
+	public static void printTree(int lineNum,String text) {
+		Tree.getInstance().addNodeParasha(lineNum, "<html><body style='width: 800px'><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
+	}
+	
 	public static void printText(String text) {
 		printText(text, (byte) 0);
 	}

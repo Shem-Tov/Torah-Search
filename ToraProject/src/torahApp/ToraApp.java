@@ -99,6 +99,19 @@ public class ToraApp {
 			return Integer.parseInt(tablePerekBooks[bookNum+1][perekNum]);
 		}
 	}
+	
+	//Find Parasha Name from Line Number
+	public static int lookupParashaIndexFromLine(int line) {
+		int index=0;
+		for (String s:tablePerekParashot[1]) {
+			if (line<Integer.parseInt(s)) {
+				return (index-1);
+			}
+			index++;
+		}
+		return -1;
+	}
+	
 	//Find Line Number
 	public static int lookupLineNumberFromParasha(int parasha) {
 		//System.out.println(tablePerekParashot[1][parasha]);

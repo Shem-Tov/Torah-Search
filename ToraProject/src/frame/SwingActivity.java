@@ -62,6 +62,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 		int selection = 0;
 		switch (Frame.getComboBox_main()) {
 		case Frame.combo_strSearch:
+			Tree.getInstance().clearTree();
 			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
@@ -71,6 +72,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			selection = Methods.id_searchWords;
 			break;
 		case Frame.combo_strGimatriaSearch:
+			Tree.getInstance().clearTree();
 			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
@@ -86,6 +88,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			selection = Methods.id_calculateGimatria;
 			break;
 		case Frame.combo_strDilugim:
+			Tree.getInstance().clearTree();
 			args = Arrays.copyOf(args, 7);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
@@ -113,6 +116,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			selection = Methods.id_searchDilugim;
 			break;
 		case Frame.combo_strLetterSearch:
+			Tree.getInstance().clearTree();
 			args = Arrays.copyOf(args, 4);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
@@ -126,6 +130,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			selection = Methods.id_searchLetters;
 			break;
 		case Frame.combo_strCountSearch:
+			Tree.getInstance().clearTree();
 			args = Arrays.copyOf(args, 5);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
