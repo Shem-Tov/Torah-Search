@@ -103,8 +103,9 @@ public class ToraApp {
 	//Find Parasha Name from Line Number
 	public static int lookupParashaIndexFromLine(int line) {
 		int index=0;
+		//System.out.println(line);
 		for (String s:tablePerekParashot[1]) {
-			if (line<Integer.parseInt(s)) {
+			if (line<=Integer.parseInt(s)) {
 				return (index-1);
 			}
 			index++;

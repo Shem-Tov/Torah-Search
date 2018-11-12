@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
+import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ManageIO;
 import ioManagement.Output;
@@ -84,6 +85,7 @@ public class CountSearch {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
+				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
@@ -124,6 +126,7 @@ public class CountSearch {
 							if (count == searchIndex) {
 								// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 								// fill results array
+								Output.printText("נמצא בפעם ה: "+searchIndex);
 								Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
 										bool_sofiot, bool_wholeWords, countIndex);
 								break outerloop;
@@ -169,6 +172,9 @@ public class CountSearch {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
+			}
+			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+				Tree.getInstance().flushBuffer((count<50));
 			}
 		} catch (Exception e) {
 			Output.printText("Error with loading Lines.txt", 1);

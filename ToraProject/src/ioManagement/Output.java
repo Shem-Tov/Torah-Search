@@ -192,7 +192,7 @@ public class Output {
 			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
 			printText(outputText);
 			printLine(1);
-			printTree(countLines, outputText);
+			printTree(countLines, outputText,false);
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
@@ -207,9 +207,7 @@ public class Output {
 	}
 	
 	public static void printLine(int size, String color) {
-		String line = "<div style=\"height:" + size + 
-				"px; font-size:0; background-color:" +
-				color+";\"></div>";
+		String line = getLine(size,color);
 		if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
 			Frame.appendText(line,(byte)0);
 		}
@@ -227,8 +225,20 @@ public class Output {
 		return line;	
 	}
 
-	public static void printTree(int lineNum,String text) {
-		Tree.getInstance().addNodeParasha(lineNum, "<html><body style='width: 800px'><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
+	public static void printTree(int lineNum,String text,Boolean isDilug) {
+		int width = (int)(frame.Frame.getTabbedPaneWidth()/1.5);
+		if (!frame.Frame.getCheckbox_createTree()) {
+			return;
+		}
+		//System.out.println(width);
+		Tree.getInstance().addNodeParasha(lineNum, 
+				"<html><body style='width: "+width+
+				"px'>"+frame.Frame.mainStyleHTML.getHtml(0)+
+				text+frame.Frame.mainStyleHTML.getHtml(1)+
+				getLine(1)+"</body></html>",isDilug);
+		
+		//Tree.getInstance().addNodeParasha(lineNum, "<html><body style='width: "+width+"px'><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
+		//Tree.getInstance().addNodeParasha(lineNum, "<html><body><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
 	}
 	
 	public static void printText(String text) {

@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JInternalFrame;
 import java.awt.BorderLayout;
+import java.awt.CheckboxMenuItem;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JScrollPane;
@@ -27,6 +28,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
 import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -118,7 +120,7 @@ public class Frame {
 	// JTextPane Formatting
 	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
 			color_attentionHTML[0], color_attentionHTML[1], color_attentionHTML[2], 0b111);
-	private static stringFormatting.HtmlGenerator mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
+	public static stringFormatting.HtmlGenerator mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
 			color_mainStyleHTML_hardCoded[0], color_mainStyleHTML_hardCoded[1], color_mainStyleHTML_hardCoded[2],
 			0b111);
 	// public static StringFormatting.HtmlGenerator markupStyleHTML = new
@@ -171,6 +173,7 @@ public class Frame {
 	private static JCheckBox checkBox_countPsukim;
 	private static JCheckBox checkBox_searchRange;
 	static JTextPane textPane;
+	private static Tree tree;
 	private static JScrollPane scrollPane;
 	private static JTabbedPane tabbedPane;
 	private static HTMLDocument doc = new HTMLDocument();
@@ -186,6 +189,9 @@ public class Frame {
 	private static JMenuItem menuItem_textColorMain;
 	private static JMenuItem menuItem_textColorMarkup;
 	private static JMenuItem menuItem_textSize;
+	private static JCheckBoxMenuItem checkbox_createExcel;
+	private static JCheckBoxMenuItem checkbox_createTree;
+	private static JCheckBoxMenuItem checkbox_createDocument;
 	private static JMenuBar menuBar;
 	private static JMenu menuSettings;
 
@@ -381,6 +387,10 @@ public class Frame {
 	public static Boolean getMethodCancelRequest() {
 		return methodCancelRequest;
 	}
+	
+	public static int getTabbedPaneWidth() {
+		return tabbedPane.getWidth();
+	}
 
 	public static void setSearchRange(int start, int end, String str, String strHTML) {
 		searchRange = new int[] { start, end };
@@ -486,6 +496,11 @@ public class Frame {
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
 		checkBox_countPsukim.setText(
 				((checkBox_countPsukim.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
+		checkbox_createDocument.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createDocument)));
+		checkbox_createExcel.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createExcel)));
+		checkbox_createTree.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createTree)));
+		textPane.setVisible(checkbox_createDocument.isSelected());
+		tree.setVisible(checkbox_createTree.isSelected());
 	}
 
 	public static void saveValues() {
@@ -513,6 +528,10 @@ public class Frame {
 		PropStore.addNotNull(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
 		PropStore.addNotNull(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
 		PropStore.addNotNull(PropStore.bool_countPsukim, String.valueOf(checkBox_countPsukim.isSelected()));
+		PropStore.addNotNull(PropStore.bool_createDocument, String.valueOf(checkbox_createDocument.isSelected()));
+		PropStore.addNotNull(PropStore.bool_createExcel, String.valueOf(checkbox_createExcel.isSelected()));
+		PropStore.addNotNull(PropStore.bool_createTree, String.valueOf(checkbox_createTree.isSelected()));
+
 		PropStore.store();
 	}
 
@@ -526,7 +545,9 @@ public class Frame {
 			// mode 0 = regular style with Carriage Return
 			// mode 1 = error style with Carriage Return
 			// mode 2 = regular style without Carriage Return
-
+			if (!checkbox_createDocument.isSelected()) {
+				return;
+			}
 			switch (mode) {
 			case 0:
 				// kit.insertHTML(doc, doc.getLength(), "<b>hello", 0, 0, HTML.Tag.B);
@@ -585,6 +606,9 @@ public class Frame {
 		menuItem_bgColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		button_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		checkBox_searchRange.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
@@ -594,10 +618,6 @@ public class Frame {
 		comboBox_main.setMaximumSize(new Dimension(temp, 32767));
 		temp = (int) (46 * ((float) fontSizeSmaller / fontSizeSmaller_hardCoded));
 		checkBox_searchRange.setPreferredSize(new Dimension(140, temp));
-		//Tree.getInstance().setMaxSize(tabbedPane.getSize());
-		// comboBox_main
-		// panel.setPreferredSize(new Dimension(300, 10));
-		// gbl_panel.columnWidths = new int[] { 124, 42, 0 };
 		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) getFontSize() / 16)), 10));
 		gbl_panel.columnWidths = new int[] { (int) (120 + 24 * ((float) getFontSize() / 16)), 42, 0 };
 		// textHtmlSize = 5;
@@ -618,6 +638,8 @@ public class Frame {
 		if (frame_instance != null) {
 			frame_instance.frame.setMinimumSize(new Dimension((int) (300 + 250 * ((float) getFontSize() / 16)),
 					(int) (300 + 220 * ((float) getFontSize() / 16))));
+			//frame_instance.frame.getSize();
+			
 			// frame_instance.frame.repaint();
 			// frame_instance.frame.revalidate();
 		}
@@ -871,8 +893,9 @@ public class Frame {
 		tabbedPane.setTabPlacement(JTabbedPane.RIGHT);
 		tabbedPane.addTab("דוח",scrollPane);
 		//add JTree here
-		Tree tree=Tree.getInstance();
-		tabbedPane.addTab("עץ",tree);
+		tree=Tree.getInstance();
+		tree.setBackground(ColorBG_textPane);
+		tabbedPane.addTab("עץ",new JScrollPane(tree));
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
@@ -1049,9 +1072,30 @@ public class Frame {
 		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textColor.add(menuItem_textColorMain);
 		menuItem_textColor.add(menuItem_textColorMarkup);
+		checkbox_createDocument =  new JCheckBoxMenuItem("להכין דוח");
+		checkbox_createDocument.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		checkbox_createDocument.setHorizontalTextPosition(SwingConstants.RIGHT);
+		checkbox_createDocument.setHorizontalAlignment(SwingConstants.RIGHT);
+		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkbox_createDocument.setSelected(true);
+		checkbox_createExcel =  new JCheckBoxMenuItem("להכין קובץ אקסל");
+		checkbox_createExcel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		checkbox_createExcel.setHorizontalTextPosition(SwingConstants.RIGHT);
+		checkbox_createExcel.setHorizontalAlignment(SwingConstants.RIGHT);
+		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkbox_createExcel.setSelected(true);
+		checkbox_createTree =  new JCheckBoxMenuItem("להכין עץ");
+		checkbox_createTree.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		checkbox_createTree.setHorizontalTextPosition(SwingConstants.RIGHT);
+		checkbox_createTree.setHorizontalAlignment(SwingConstants.RIGHT);
+		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkbox_createTree.setSelected(true);
 		menuSettings.add(menuItem_bgColor);
 		menuSettings.add(menuItem_textColor);
 		menuSettings.add(menuItem_textSize);
+		menuSettings.add(checkbox_createDocument);
+		menuSettings.add(checkbox_createExcel);
+		menuSettings.add(checkbox_createTree);
 		button_defaultSettings = new JButton("קבע ברירת מחדל");
 		button_defaultSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -1172,6 +1216,16 @@ public class Frame {
 				 */
 			}
 		});
+		checkbox_createDocument.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textPane.setVisible(checkbox_createDocument.isSelected());
+			}
+		});
+		checkbox_createTree.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tree.setVisible(checkbox_createTree.isSelected());
+			}
+		});
 		// Open Dialog for Search Range
 		button_searchRange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1213,4 +1267,19 @@ public class Frame {
 	public static void setFontSizeBig(int fontSizeBig) {
 		Frame.fontSizeBig = fontSizeBig;
 	}
+
+	public static Boolean getCheckbox_createExcel() {
+		return checkbox_createExcel.isSelected();
+	}
+
+
+	public static Boolean getCheckbox_createTree() {
+		return checkbox_createTree.isSelected();
+	}
+
+
+	public static Boolean getCheckbox_createDocument() {
+		return checkbox_createDocument.isSelected();
+	}
+
 }

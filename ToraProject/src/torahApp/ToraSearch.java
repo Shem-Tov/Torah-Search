@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
+import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
 import ioManagement.ManageIO;
@@ -85,6 +86,7 @@ public class ToraSearch {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
+				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
@@ -169,6 +171,9 @@ public class ToraSearch {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
+			}
+			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+				Tree.getInstance().flushBuffer((count<50));
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
 			String fileName = searchSTR;

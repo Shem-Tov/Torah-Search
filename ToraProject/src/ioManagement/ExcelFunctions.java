@@ -195,6 +195,9 @@ public class ExcelFunctions {
 
 	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
 			ArrayList<String[][]> results, boolean bool_Padding, String...etc ) {
+		if (!frame.Frame.getCheckbox_createExcel()) {
+			return;
+		}
 		// mode=0 regular search sofiot considered
 		// mode=1 regular search sofiot not considered
 		// mode=2 dilugim search

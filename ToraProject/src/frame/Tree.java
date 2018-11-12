@@ -4,6 +4,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class Tree extends JTree {
 	public void setMaxSize(Dimension dimension) {
 		this.setMaximumSize(dimension);
 	}
+
 	public void setFontSize(int size) {
 		final int fontSizeDiff = 10;
 		// final Font currentFont = this.getFont();
@@ -48,7 +50,7 @@ public class Tree extends JTree {
 	 * } } return null; }
 	 */
 
-	public final DefaultMutableTreeNode findNode(String searchString) {
+	public final DefaultMutableTreeNode findNode(String grandparent, String parent) {
 		List<DefaultMutableTreeNode> searchNodes = getSearchNodes((DefaultMutableTreeNode) this.getModel().getRoot());
 		DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) this.getLastSelectedPathComponent();
 		DefaultMutableTreeNode foundNode = null;
@@ -62,16 +64,22 @@ public class Tree extends JTree {
 			}
 		}
 		for (int index = bookmark + 1; index < searchNodes.size(); index++) {
-			if (searchNodes.get(index).toString().toLowerCase().contains(searchString.toLowerCase())) {
-				foundNode = searchNodes.get(index);
-				break;
+			if (searchNodes.get(index).toString().toLowerCase().equals(parent.toLowerCase())) {
+				if ((grandparent == null) || (searchNodes.get(index).getParent().toString().toLowerCase()
+						.equals(grandparent.toLowerCase()))) {
+					foundNode = searchNodes.get(index);
+					break;
+				}
 			}
 		}
 		if (foundNode == null) {
 			for (int index = 0; index <= bookmark; index++) {
-				if (searchNodes.get(index).toString().toLowerCase().contains(searchString.toLowerCase())) {
-					foundNode = searchNodes.get(index);
-					break;
+				if (searchNodes.get(index).toString().toLowerCase().equals(parent.toLowerCase())) {
+					if ((grandparent == null) || (searchNodes.get(index).getParent().toString().toLowerCase()
+							.equals(grandparent.toLowerCase()))) {
+						foundNode = searchNodes.get(index);
+						break;
+					}
 				}
 			}
 		}
@@ -87,59 +95,124 @@ public class Tree extends JTree {
 		return searchNodes;
 	}
 
-	public void addNode(String parent, String child) {
-		DefaultMutableTreeNode parentNode = findNode(parent);
-		parentNode.add(new DefaultMutableTreeNode(child));
+	public void addNode(String grandparent, String parent, ArrayList<String> children) {
+		DefaultMutableTreeNode parentNode = findNode(grandparent, parent);
+		for (String child : children) {
+			parentNode.add(new DefaultMutableTreeNode(child));
+		}
+
 		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 		// model.reload(parentNode);
 		model.reload(root);
 	}
 
-	private static final String rootString = "תורה";
+	private static String rootString = "תורה";
 	private int nextParashaIndex = 0;
 	private String thisParasha = "";
+	private ArrayList<String> dataBuffer = new ArrayList<String>();
+	private String thisDilugNode = "";
 
 	public void addNodeParasha(int lineChild, String child) {
+		addNodeParasha(lineChild, child, false);
+	}
+
+	public void addNodeParasha(int lineChild, String child, Boolean isDilug) {
 		if (lineChild > nextParashaIndex) {
+			if (dataBuffer != null) {
+				addNode((isDilug) ? thisDilugNode:null ,thisParasha, dataBuffer);
+				dataBuffer = new ArrayList<String>();
+			}
 			int childIndex = ToraApp.lookupParashaIndexFromLine(lineChild);
 			String parent = ToraApp.tablePerekParashot[0][childIndex];
 			nextParashaIndex = Integer.parseInt(ToraApp.tablePerekParashot[1][childIndex + 1]);
 			thisParasha = parent;
-			addNode(rootString, parent);
+			String str = "";
+			if (isDilug) {
+				str = thisDilugNode;
+				// System.out.println(thisDilugNode);
+			} else {
+				str = rootString;
+			}
+			addNode(null,str, new ArrayList<String>(Arrays.asList(parent)));
 		}
-		addNode(thisParasha, child);
+		dataBuffer.add(child);
+	}
+
+	public String packHTML(String str) {
+		return "<html>" + str + "</html>";
+	}
+
+	public void addNodeDilug(String dilug) {
+		if (dataBuffer != null) {
+			addNode(null,thisParasha, dataBuffer);
+			dataBuffer = new ArrayList<String>();
+		}
+		nextParashaIndex = 0;
+		thisParasha = "";
+		thisDilugNode = packHTML(dilug);
+		addNode(null,rootString, new ArrayList<String>(Arrays.asList(thisDilugNode)));
+	}
+	public void flushBuffer() {
+		flushBuffer(true,false);
+	}
+	
+	public void flushBuffer(Boolean expandtree) {
+		flushBuffer(expandtree,false);
+	}
+
+	public void flushBuffer(Boolean expandtree,Boolean isDilug) {
+		if (dataBuffer != null) {
+			addNode((isDilug) ? thisDilugNode:null,thisParasha, dataBuffer);
+			dataBuffer = new ArrayList<String>();
+		}
+		// expands the tree
+		if (expandtree) {
+			for (int i = 0; i < this.getRowCount(); i++) {
+				this.expandRow(i);
+			}
+		}
 	}
 
 	public void clearTree() {
 		if (this.toString() == null) {
 			return;
 		}
+		nextParashaIndex = 0;
+		thisParasha = "";
 		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 		root.removeAllChildren();
 		model.reload();
 	}
 
+	public void changeRootText(String str) {
+		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+		rootString = packHTML(str);
+		root.setUserObject(rootString);
+		model.nodeChanged(root);
+	}
+
 	public Tree() {
 		// create the root node
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootString);
-		// create the child nodes
-		/*
-		 * DefaultMutableTreeNode bereshitNode = new DefaultMutableTreeNode("בראשית");
-		 * DefaultMutableTreeNode shmotNode = new DefaultMutableTreeNode("שמות");
-		 * DefaultMutableTreeNode vayikraNode = new DefaultMutableTreeNode("ויקרא");
-		 * DefaultMutableTreeNode baMidbarNode = new DefaultMutableTreeNode("במדבר");
-		 * DefaultMutableTreeNode dvarimNode = new DefaultMutableTreeNode("דברים");
-		 * //add the child nodes to the root node root.add(bereshitNode);
-		 * root.add(shmotNode); root.add(vayikraNode); root.add(baMidbarNode);
-		 * root.add(dvarimNode);
-		 */
 		// create the tree by passing in the root node
 		this.setModel(new DefaultTreeModel(root));
 		setFontSize(Frame.getFontSize());
 		this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		this.setVisible(true);
+
+		/*
+		 * tree_wrap should be set as the cls for your TreePanel, under
+		 * Ext.AbstractComponent However, this will place tree-wrap several div's up the
+		 * heirarchy from the actual element you are targeting. So, x-grid-cell-inner is
+		 * used with a descendent selector to be more precise. Hopefully, the
+		 * combination will avoid applying the styles to anything unintended.
+		 * 
+		 * Only the height and white-space are actually needed. The other lines make it
+		 * pretty.
+		 */
 	}
 	/*
 	 * public static void main(String[] args) { SwingUtilities.invokeLater(new

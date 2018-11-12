@@ -33,7 +33,10 @@ public class PropStore {
 	public static final String bgColor = "bgColor";
 	public static final String mainHtmlColor = "mainHtmlColor";
 	public static final String markupHtmlColor = "markupHtmlColor";
-
+	public static final String bool_createExcel = "createExcel";
+	public static final String bool_createTree = "createTree";
+	public static final String bool_createDocument = "createDocument";
+	
 	public static void addNotNull(String key, String value) {
 		if (value != null) {
 			map.put(key, value);

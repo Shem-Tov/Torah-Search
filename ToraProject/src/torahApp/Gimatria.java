@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
+import frame.Tree;
 import ioManagement.ExcelFunctions;
 import ioManagement.ManageIO;
 import ioManagement.Output;
@@ -144,6 +145,7 @@ public class Gimatria {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 				Output.printLine(Frame.lineHeaderSize);
+				Tree.getInstance().changeRootText(Output.markText(String.valueOf(searchGmt), Frame.headerStyleHTML));
 			} else {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			}
@@ -225,6 +227,9 @@ public class Gimatria {
 			Output.printText("");
 			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
 			Output.printText("");
+			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+				Tree.getInstance().flushBuffer((count<50));
+			}
 			String Title = ((bool_wholeWords) ? "גימטריה: מילים שלמות" : "גימטריה: צירוף אותיות");
 			String fileName = String.valueOf(searchGmt);
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");

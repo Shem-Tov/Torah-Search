@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import frame.Frame;
+import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
 import ioManagement.ManageIO;
@@ -105,13 +106,12 @@ public class LetterSearch {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
+				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
-			}
-			// System.out.println(formatter.locale());
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 			}
+			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
@@ -156,8 +156,8 @@ public class LetterSearch {
 						if (modePsukim) {
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 							String tempStr1 = "\u202B" + "\"" + searchSTR + "\" " + "נמצא ב"
-									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
-									+ ":" + pBookInstance.getPasukLetters();
+									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
 							results.add(new String[][] { { s, pBookInstance.getBookName(),
@@ -174,13 +174,15 @@ public class LetterSearch {
 					break;
 				}
 			}
+			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+				Tree.getInstance().flushBuffer((count<50));
+			}
 			String Title = ("חיפוש אותיות במילים בתורה");
 			String fileName = "LT_" + searchSTR;
 			String sheet = ("אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true,searchSTR
-						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
-						);
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true, searchSTR,
+						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
 

@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import frame.Frame;
+import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
 import ioManagement.ManageIO;
@@ -168,13 +169,12 @@ public class Dilugim {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
+				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
-			}
-			// System.out.println(formatter.locale());
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 			}
+			// System.out.println(formatter.locale());
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 					frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
@@ -245,12 +245,14 @@ public class Dilugim {
 									Output.printText("");
 									Output.printText(str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug),
 											frame.Frame.headerStyleHTML));
+									
 									// Output.printText("");
 									if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 										Output.printText(
 												StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 									} else {
-										Output.printLine(2,"orange");
+										Tree.getInstance().addNodeDilug(str);
+										Output.printLine(2, "orange");
 									}
 								}
 								Output.printText(
@@ -262,6 +264,7 @@ public class Dilugim {
 								resArray[0][0] = String.valueOf(thisDilug);
 								resArray[0][1] = searchOriginal;
 								String reportLine = "";
+								String treeString = "";
 								for (int i = 0; i < searchSTR.length(); i++) {
 									if (!boolRepeat) {
 										reportLine = "";
@@ -293,7 +296,9 @@ public class Dilugim {
 											+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 									String lineHtml = Output.markMatchPOS(lineText, i, lineForChar,
 											frame.Frame.markupStyleHTML);
-									Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml);
+									String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
+									treeString += tempStr2+"<br>"; 
+									Output.printText(tempStr2);
 								}
 								if (bool_filePaddingFound) {
 									paddingResults strResults = readDilugExpandedResult(searchSTR, lineForChar[0][2],
@@ -302,11 +307,14 @@ public class Dilugim {
 									resArray[0][2] = strResults.getMyString().toString();
 									resArray[0][3] = String.valueOf(strResults.getPaddingHead());
 									resArray[0][4] = String.valueOf(strResults.getPaddingTail());
-									Output.printText("שורת הדילוג:" + ToraApp.cSpace(2)
+									String treeString2 = "שורת הדילוג:" + ToraApp.cSpace(2)
 											+ Output.markTextBounds(strResults.getMyString().toString(),
 													strResults.getPaddingHead(), (strResults.getPaddingTail()),
-													frame.Frame.markupStyleHTML));
+													frame.Frame.markupStyleHTML);
+									Output.printText(treeString2);
+									treeString += treeString2;
 								}
+								Output.printTree(lineForChar[0][0], treeString, true);
 								Output.printLine(1);
 								Output.printText("");
 								results.add(resArray);
@@ -333,7 +341,7 @@ public class Dilugim {
 								"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count)
 										+ " פעמים" + " לדילוג" + ToraApp.cSpace() + thisDilug + ".",
 								frame.Frame.footerStyleHTML));
-				Output.printLine(2,"orange");
+				Output.printLine(2, "orange");
 				Output.printText("");
 				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
 				String fileName = searchOriginal;
@@ -349,6 +357,9 @@ public class Dilugim {
 					// changed to current loop index
 					break;
 				}
+			}
+			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+				Tree.getInstance().flushBuffer((countAll < 50),true);
 			}
 			Output.printText("");
 			Output.printText(Output.markText(
