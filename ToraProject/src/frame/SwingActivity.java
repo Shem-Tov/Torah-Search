@@ -67,11 +67,17 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 		switch (Frame.getComboBox_main()) {
 		case Frame.combo_strSearch:
 			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 4);
+			args = Arrays.copyOf(args, 6);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.get_searchRange();
+			args[4] = Frame.getCheckbox_searchMultiple();
+			if ((Frame.getCheckbox_searchMultiple()) &&
+					(Frame.getTextField_padding().length()>0) &&
+					(HebrewLetters.checkHebrew(Frame.getTextField_padding()))) {
+				args[5] = Frame.getTextField_padding();
+			} 
 			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchWords;
 			break;

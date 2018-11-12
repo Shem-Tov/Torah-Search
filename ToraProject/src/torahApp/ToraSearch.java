@@ -34,6 +34,8 @@ public class ToraSearch {
 		int[] searchRange;
 		boolean bool_wholeWords;
 		boolean bool_sofiot;
+		boolean bool_multiSearch;
+		String searchSTR2 = "", searchConvert2 = "";
 		// FileWriter outputStream2 = null;
 		try {
 			if (args.length < 3) {
@@ -43,7 +45,12 @@ public class ToraSearch {
 			bool_wholeWords = (args[1] != null) ? (Boolean) args[1] : true;
 			bool_sofiot = (args[2] != null) ? (Boolean) args[2] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
-			searchRange = (args[3] != null) ?(int[])(args[3]) : (new int[] {0,0});
+			searchRange = (args[3] != null) ? (int[]) (args[3]) : (new int[] { 0, 0 });
+			bool_multiSearch = (args[4] != null) ? (Boolean) args[4] : false;
+			if (bool_multiSearch) {
+				searchSTR2 = ((String) args[5]).trim();
+				searchConvert2 = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR2) : searchSTR2;
+			}
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
@@ -64,16 +71,16 @@ public class ToraSearch {
 			// System.out.println("Working Directory = " +
 			// System.getProperty("user.dir"));
 			inputStream = bReader;
-			String line="";
-			String line2="";
-			int searchSTRinLine2=0;
+			String line = "";
+			String line2 = "";
+			int searchSTRinLine2 = 0;
 			if ((!bool_wholeWords) && (searchConvert.contains(" "))) {
 				inputStream2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
-				searchSTRinLine2 = searchConvert.length()-searchConvert.indexOf(' ');
-				//inputStream2.mark(640000);
+				searchSTRinLine2 = searchConvert.length() - searchConvert.indexOf(' ');
+				// inputStream2.mark(640000);
 				line2 = inputStream2.readLine();
 			}
-			//inputStream.mark(640000);
+			// inputStream.mark(640000);
 			count = 0;
 //				outputStream.getBuffer().setLength(0);
 			// \u202A - Left to Right Formatting
@@ -97,9 +104,7 @@ public class ToraSearch {
 			}
 			while ((line = inputStream.readLine()) != null) {
 				countLines++;
-				if ((searchRange[1]!=0) && 
-						((countLines<=searchRange[0]) ||
-								(countLines>searchRange[1]))) {
+				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
@@ -122,9 +127,17 @@ public class ToraSearch {
 					} else {
 						splitStr = line.trim().split("\\s+");
 					}
+					Boolean found1 = false, found2 = false;
 					for (String s : splitStr) {
-						// Do your stuff here
-						if (s.equals(searchConvert)) {
+						if (bool_multiSearch) {
+							if (s.equals(searchConvert) && (!found1)) {
+								found1 = true;
+							} else if (s.equals(searchConvert2)) {
+								found2 = true;
+							}
+						}
+						if (((bool_multiSearch) && (found1) && (found2))
+								|| ((!bool_multiSearch) && (s.equals(searchConvert)))) {
 							count++;
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
@@ -133,15 +146,19 @@ public class ToraSearch {
 							// fill results array
 							results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
+							if (bool_multiSearch) {
+								break;
+							}
 						}
 					}
 				} else {
-					String combineConvertedLines="";
-					if (searchSTRinLine2>0) {
+					String combineConvertedLines = "";
+					if (searchSTRinLine2 > 0) {
 						line2 = (inputStream2.readLine());
-						if (line2!=null) {
-							line2=line2.substring(0, searchSTRinLine2);
-							combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line+" "+line2) : (line+" "+line2));
+						if (line2 != null) {
+							line2 = line2.substring(0, searchSTRinLine2);
+							combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line + " " + line2)
+									: (line + " " + line2));
 						} else {
 							combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line);
 						}
@@ -149,23 +166,53 @@ public class ToraSearch {
 						combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line);
 					}
 					if (combineConvertedLines.contains(searchConvert)) {
-						boolean foundInLine2=false;
-						if (searchSTRinLine2>0) {
-							if ((combineConvertedLines.lastIndexOf(searchConvert)+searchConvert.length())>line.length()) {
-								foundInLine2=true;
+						if ((!bool_multiSearch)) {
+							boolean foundInLine2 = false;
+							if (searchSTRinLine2 > 0) {
+								if ((combineConvertedLines.lastIndexOf(searchConvert) + searchConvert.length()) > line
+										.length()) {
+									foundInLine2 = true;
+								}
+							}
+							int countMatch;
+							countMatch = StringUtils.countMatches(combineConvertedLines, searchConvert);
+							count = count + countMatch;
+							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							}
+							countPsukim++;
+							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
+							// fill results array
+							results.add(Output.printPasukInfo(countLines, searchSTR,
+									((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
+									bool_sofiot, bool_wholeWords));
+						} else if ((combineConvertedLines.contains(searchConvert2))) {
+							if ((searchConvert2.contains(searchConvert)) || (searchConvert.contains(searchConvert2))) {
+								if ((combineConvertedLines.indexOf(searchConvert,
+										combineConvertedLines.indexOf(searchConvert2) + 1) != -1)
+										|| (combineConvertedLines.indexOf(searchConvert2,
+												combineConvertedLines.indexOf(searchConvert) + 1) != -1)) {
+									boolean foundInLine2 = false;
+									if (searchSTRinLine2 > 0) {
+										if ((combineConvertedLines.lastIndexOf(searchConvert)
+												+ searchConvert.length()) > line.length()) {
+											foundInLine2 = true;
+										}
+									}
+									count++;
+									if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+										frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+									}
+									countPsukim++;
+									// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
+									// fill results array
+									results.add(Output.printPasukInfo(countLines, searchSTR,
+											((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
+											bool_sofiot, bool_wholeWords));
+
+								}
 							}
 						}
-						int countMatch = StringUtils.countMatches(combineConvertedLines, searchConvert);
-						count = count + countMatch;
-						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
-						}
-						countPsukim++;
-						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
-						// fill results array
-						results.add(Output.printPasukInfo(countLines, searchSTR, 
-								((foundInLine2)?(line+" "+line2):line), frame.Frame.markupStyleHTML,
-								bool_sofiot, bool_wholeWords));
 					}
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
@@ -174,17 +221,18 @@ public class ToraSearch {
 				}
 			}
 			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
-				Tree.getInstance().flushBuffer((count<50));
+				Tree.getInstance().flushBuffer((count < 50));
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
 			String fileName = searchSTR;
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true
-						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
-						);
+				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true,
+						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			Output.printText("Error with loading Lines.txt", 1);
 			e.printStackTrace();
 		} finally {

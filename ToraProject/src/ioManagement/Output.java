@@ -49,13 +49,12 @@ public class Output {
 	}
 
 	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
-			Boolean bool_sofiot, Boolean bool_wholeWords) {
-		return markMatchesInLine(line, searchSTR, htmlFormat,
-				bool_sofiot, bool_wholeWords,-1);
+			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) {
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot, bool_wholeWords, -1);
 	}
-	
+
 	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
-			Boolean bool_sofiot, Boolean bool_wholeWords, int index) {
+			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) {
 
 		// Does not mark, if in console mode
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -64,14 +63,24 @@ public class Output {
 		String lineHtml = "";
 		String lineConvert;
 		String searchConvert;
+		String searchConvert2 = "";
 		if (!bool_sofiot) {
 			searchConvert = HebrewLetters.switchSofiotStr(searchSTR);
 			lineConvert = HebrewLetters.switchSofiotStr(line);
+			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
+				searchConvert2 = HebrewLetters.switchSofiotStr(searchSTR2[0]);
+			}
 		} else {
 			searchConvert = searchSTR;
 			lineConvert = line;
+			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
+				searchConvert2 = searchSTR2[0];
+			}
 		}
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
+		ArrayList<Integer> indexes2 = new ArrayList<Integer>();
+		ArrayList<Integer> indexes3 = new ArrayList<Integer>();
+
 		int myIndex;
 		indexes.add(lineConvert.indexOf(searchConvert, 0));
 		try {
@@ -122,11 +131,76 @@ public class Output {
 				indexes.add(newIndex);
 			}
 		}
-		if (index!=-1) {
+		if (index != -1) {
 			myIndex = indexes.get(index);
 			indexes = new ArrayList<Integer>();
 			indexes.add(myIndex);
 		}
+		int myIndex2;
+		if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
+			indexes2.add(lineConvert.indexOf(searchConvert2, 0));
+			try {
+				if (indexes2.get(0) == -1) {
+					throw new IllegalArgumentException();
+				}
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+			int STRLength2 = searchSTR2[0].length();
+			int newIndex2 = 0;
+			int startPOS2 = indexes2.get(0);
+			if (bool_wholeWords) {
+				// checks for spaces before and after word
+				boolean cancel = false;
+				if ((indexes2.get(0) > 0) && (lineConvert.charAt(indexes2.get(0) - 1) != ' ')) {
+					cancel = true;
+				}
+				if (((indexes2.get(0) + searchConvert.length() < lineConvert.length())
+						&& (lineConvert.charAt(indexes2.get(0) + searchConvert.length()) != ' '))) {
+					cancel = true;
+				}
+				if (cancel) {
+					startPOS2 += 1;
+					indexes2.remove(0);
+				}
+			}
+			// find all occurences of searchSTR in Line and Color them
+			while ((newIndex2 = lineConvert.indexOf(searchConvert, startPOS2 + 1)) != -1) {
+				if (bool_wholeWords) {
+					// checks for spaces before and after word
+					Boolean cancel = false;
+					if ((newIndex2 > 0) && (lineConvert.charAt(newIndex2 - 1) != ' ')) {
+						cancel = true;
+					}
+					if (((newIndex2 + searchConvert.length() < lineConvert.length())
+							&& (lineConvert.charAt(newIndex2 + searchConvert.length()) != ' '))) {
+						cancel = true;
+					}
+					if (!cancel) {
+						startPOS2 = newIndex2;
+						indexes2.add(newIndex2);
+					} else {
+						startPOS2 += 1;
+					}
+				} else {
+					startPOS2 = newIndex2;
+					indexes2.add(newIndex2);
+				}
+			}
+			if (index != -1) {
+				myIndex2 = indexes2.get(index);
+				indexes2 = new ArrayList<Integer>();
+				indexes2.add(myIndex2);
+			}
+			
+			for (Integer thisIndex :indexes) {
+				for (Integer thisIndex2 : indexes2) {
+					
+				}
+			}
+		}
+		
+
 		int lastIndex = 0;
 		for (Integer thisIndex : indexes) {
 
@@ -175,24 +249,32 @@ public class Output {
 	}
 
 	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-			Boolean bool_sofiot, Boolean bool_wholeWords) throws NoSuchFieldException {
-		return printPasukInfo(countLines, searchSTR, line, markupStyle,
-				bool_sofiot, bool_wholeWords, -1);
+			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) throws NoSuchFieldException {
+		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot, bool_wholeWords, -1, searchSTR2);
 	}
 
 	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-			Boolean bool_sofiot, Boolean bool_wholeWords, int index) throws NoSuchFieldException {
+			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		try {
-			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" " + "נמצא ב"
-					+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
-					+ ":" + pBookInstance.getPasukLetters();
+			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" ";
+			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
+				tempStr1 += "\"" + markText(searchSTR2[0], markupStyle) + "\" ";
+			}
+			tempStr1 += "נמצא ב" + StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+					+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
-			String lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
+			String lineHtml;
+			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
+				lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index,
+						searchSTR2[0]);
+			} else {
+				lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
+			}
 			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
 			printText(outputText);
 			printLine(1);
-			printTree(countLines, outputText,false);
+			printTree(countLines, outputText, false);
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
@@ -202,45 +284,44 @@ public class Output {
 	}
 
 	public static void printLine(int size) {
-		//blue is default color
-		printLine(size,"blue");
-	}
-	
-	public static void printLine(int size, String color) {
-		String line = getLine(size,color);
-		if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
-			Frame.appendText(line,(byte)0);
-		}
-	}
-	
-	public static String getLine(int size) {
-		//blue is default color
-		return getLine(size,"blue");
-	}
-	
-	public static String getLine(int size, String color) {
-		String line = "<div style=\"height:" + size + 
-				"px; font-size:0; background-color:" +
-				color+";\"></div>";
-		return line;	
+		// blue is default color
+		printLine(size, "blue");
 	}
 
-	public static void printTree(int lineNum,String text,Boolean isDilug) {
-		int width = (int)(frame.Frame.getTabbedPaneWidth()/1.5);
+	public static void printLine(int size, String color) {
+		String line = getLine(size, color);
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+			Frame.appendText(line, (byte) 0);
+		}
+	}
+
+	public static String getLine(int size) {
+		// blue is default color
+		return getLine(size, "blue");
+	}
+
+	public static String getLine(int size, String color) {
+		String line = "<div style=\"height:" + size + "px; font-size:0; background-color:" + color + ";\"></div>";
+		return line;
+	}
+
+	public static void printTree(int lineNum, String text, Boolean isDilug) {
+		int width = (int) (frame.Frame.getTabbedPaneWidth() / 1.5);
 		if (!frame.Frame.getCheckbox_createTree()) {
 			return;
 		}
-		//System.out.println(width);
-		Tree.getInstance().addNodeParasha(lineNum, 
-				"<html><body style='width: "+width+
-				"px'>"+frame.Frame.mainStyleHTML.getHtml(0)+
-				text+frame.Frame.mainStyleHTML.getHtml(1)+
-				getLine(1)+"</body></html>",isDilug);
-		
-		//Tree.getInstance().addNodeParasha(lineNum, "<html><body style='width: "+width+"px'><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
-		//Tree.getInstance().addNodeParasha(lineNum, "<html><body><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
+		// System.out.println(width);
+		Tree.getInstance().addNodeParasha(lineNum,
+				"<html><body style='width: " + width + "px'>" + frame.Frame.mainStyleHTML.getHtml(0) + text
+						+ frame.Frame.mainStyleHTML.getHtml(1) + getLine(1) + "</body></html>",
+				isDilug);
+
+		// Tree.getInstance().addNodeParasha(lineNum, "<html><body style='width:
+		// "+width+"px'><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
+		// Tree.getInstance().addNodeParasha(lineNum, "<html><body><p
+		// align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
 	}
-	
+
 	public static void printText(String text) {
 		printText(text, (byte) 0);
 	}

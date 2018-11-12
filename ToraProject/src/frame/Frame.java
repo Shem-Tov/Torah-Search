@@ -144,7 +144,7 @@ public class Frame {
 	private static final String buttonCancelRequestText = "מבטל..";
 	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">" + "חישוב מיוחד"
 			+ "<br/>" + "לסופיות" + "</p> </html>";
-	private static final String checkBox_countPsukim_true = "<html>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</html>";
+	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</p></html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
 	private static Boolean methodCancelRequest = false;
@@ -171,6 +171,7 @@ public class Frame {
 	private static JCheckBox checkBox_wholeWord;
 	private static JCheckBox checkBox_countPsukim;
 	private static JCheckBox checkBox_searchRange;
+	private static JCheckBox checkBox_searchMultiple;
 	static JTextPane textPane;
 	private static Tree tree;
 	private static JScrollPane scrollPane;
@@ -525,6 +526,7 @@ public class Frame {
 		checkBox_wholeWord.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		checkBox_searchMultiple.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
@@ -538,7 +540,8 @@ public class Frame {
 		menuLinesFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuTorahTable.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuFiles.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
-
+		menuResetExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
@@ -586,6 +589,7 @@ public class Frame {
 		checkBox_gimatriaSofiot.setBackground(c);
 		checkBox_countPsukim.setBackground(c);
 		checkBox_searchRange.setBackground(c);
+		checkBox_searchMultiple.setBackground(c);
 		// frame_instance.frame.repaint();
 		// frame_instance.frame.revalidate();
 	}
@@ -604,10 +608,11 @@ public class Frame {
 			switch (str) {
 			case combo_strSearch:
 				label_padding.setVisible(false);
-				textField_padding.setVisible(false);
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(true);
 				checkBox_wholeWord.setVisible(true);
+				checkBox_searchMultiple.setVisible(true);
+				textField_padding.setVisible(checkBox_searchMultiple.isSelected());
 				break;
 			case combo_strCountSearch:
 				label_padding.setVisible(true);
@@ -617,6 +622,7 @@ public class Frame {
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(true);
 				checkBox_wholeWord.setVisible(true);
+				checkBox_searchMultiple.setVisible(false);
 				break;
 			case combo_strGimatriaSearch:
 				label_padding.setVisible(false);
@@ -624,6 +630,7 @@ public class Frame {
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(true);
+				checkBox_searchMultiple.setVisible(false);
 				break;
 			case combo_strLetterSearch:
 				label_padding.setVisible(false);
@@ -631,6 +638,7 @@ public class Frame {
 				comboBox_sub.setVisible(true);
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(false);
+				checkBox_searchMultiple.setVisible(false);
 				break;
 			case combo_strGimatriaCalculate:
 				label_padding.setVisible(false);
@@ -638,6 +646,8 @@ public class Frame {
 				comboBox_sub.setVisible(false);
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(false);
+				checkBox_searchMultiple.setVisible(false);
+				break;
 			}
 			break;
 		case combo_strDilugim:
@@ -652,6 +662,8 @@ public class Frame {
 			comboBox_sub.setVisible(false);
 			checkBox_countPsukim.setVisible(false);
 			checkBox_wholeWord.setVisible(false);
+			checkBox_searchMultiple.setVisible(false);
+			break;
 		}
 	}
 
@@ -715,8 +727,9 @@ public class Frame {
 		panel_1.add(comboBox_main);
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
-				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch, combo_strCountSearch,combo_strTorahPrint }));
+		comboBox_main.setModel(new DefaultComboBoxModel(
+				new String[] { combo_strSearch, combo_strGimatriaSearch, combo_strGimatriaCalculate, combo_strDilugim,
+						combo_strLetterSearch, combo_strCountSearch, combo_strTorahPrint }));
 		comboBox_main.setBackground(ColorBG_comboBox_main);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
@@ -894,15 +907,17 @@ public class Frame {
 		gbc_checkBox_countPsukim.gridx = 0;
 		gbc_checkBox_countPsukim.gridy = 7;
 		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
+		checkBox_searchMultiple = new JCheckBox("<html><p align='right'>"+"חיפוש יותר<br> ממילה אחת"+"</p></html>");
+		checkBox_searchMultiple.setSelected(false);
+		checkBox_searchMultiple.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		checkBox_searchMultiple.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		GridBagConstraints gbc_checkBox_searchMultiple = new GridBagConstraints();
+		gbc_checkBox_searchMultiple.anchor = GridBagConstraints.EAST;
+		gbc_checkBox_searchMultiple.insets = new Insets(0, 0, 5, 5);
+		gbc_checkBox_searchMultiple.gridx = 0;
+		gbc_checkBox_searchMultiple.gridy = 8;
+		panel.add(checkBox_searchMultiple, gbc_checkBox_searchMultiple);
 		// Change countPsukim checkbox text when changing selected state
-		checkBox_countPsukim.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JCheckBox cb = (JCheckBox) event.getSource();
-				cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
-			}
-		});
-
 		progressBar = new JProgressBar();
 		progressBar.setMinimumSize(new Dimension(150, 30));
 		progressBar.setVisible(false);
@@ -1059,6 +1074,27 @@ public class Frame {
 		button_defaultSettings.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuSettings.add(button_defaultSettings);
 		button_defaultSettings.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
+		// Change countPsukim checkbox text when changing selected state
+		checkBox_countPsukim.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JCheckBox cb = (JCheckBox) event.getSource();
+				cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
+			}
+		});
+		// Add second textbox for multiple Search
+		checkBox_searchMultiple.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (getComboBox_main() == combo_strSearch) {
+					JCheckBox cb = (JCheckBox) event.getSource();
+					textField_padding.setVisible(cb.isSelected());
+					frame_instance.frame.repaint();
+					frame_instance.frame.revalidate();
+				}
+			}
+		});
+
 		// Button to save settings
 		button_defaultSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1331,6 +1367,9 @@ public class Frame {
 
 	public static Boolean getCheckbox_createDocument() {
 		return checkbox_createDocument.isSelected();
+	}
+	public static Boolean getCheckbox_searchMultiple() {
+		return checkBox_searchMultiple.isSelected();
 	}
 
 }
