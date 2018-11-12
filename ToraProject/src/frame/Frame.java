@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
+
 import java.awt.Font;
 import java.awt.Dimension;
 
@@ -869,6 +870,9 @@ public class Frame {
 		tabbedPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		tabbedPane.setTabPlacement(JTabbedPane.RIGHT);
 		tabbedPane.addTab("דוח",scrollPane);
+		//add JTree here
+		Tree tree=Tree.getInstance();
+		tabbedPane.addTab("עץ",tree);
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 

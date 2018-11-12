@@ -1,18 +1,24 @@
 package frame;
 import java.awt.ComponentOrientation;
 
-import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-public class Tree extends JFrame
+import javax.swing.tree.DefaultTreeModel;
+public class Tree extends JTree
 {
-    /**
+	public static Tree getInstance() {
+		if (instance == null) {
+			instance = new Tree();
+		}
+		return instance;
+	}
+	private static Tree instance;
+   /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTree tree;
-    public Tree()
+	public Tree()
     {
         //create the root node
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("תורה");
@@ -29,13 +35,8 @@ public class Tree extends JFrame
         root.add(baMidbarNode);
         root.add(dvarimNode);
         //create the tree by passing in the root node
-        tree = new JTree(root);
-        tree.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        add(tree);
-         
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("עץ החיים");       
-        this.pack();
+        this.setModel(new DefaultTreeModel(root));
+        this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         this.setVisible(true);
     }
      
