@@ -57,6 +57,7 @@ public class ToraSearch {
 
 		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
+			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
 		}
 		try {

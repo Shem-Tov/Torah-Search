@@ -23,6 +23,7 @@ public class Methods {
 	public static final int id_searchLetters=5;
 	public static final int id_searchCount=6;
 	public static final int id_settings=7;
+	public static final int id_printTorah=8;
 	
 	// Add method references here
 	public static List<MethodRunner> arrayMethods = new ArrayList<>();
@@ -82,22 +83,6 @@ public class Methods {
 				cSearch.searchByCount(args);
 			}
 		});
-		getArrayMethodID().add(8);
-		getArrayMethodTitle().add("Find Words");
-		arrayMethods.add(new MethodRunner() {
-			@Override
-			public void run(Object... args) throws IOException {
-				extraFunctions.findWords();
-			}
-		});
-		getArrayMethodID().add(9);
-		getArrayMethodTitle().add("Find First Letters");
-		arrayMethods.add(new MethodRunner() {
-			@Override
-			public void run(Object... args) throws IOException {
-				extraFunctions.findFirstLetters();
-			}
-		});
 		getArrayMethodID().add(id_settings);
 		getArrayMethodTitle().add("Settings");
 		arrayMethods.add(new MethodRunner() {
@@ -106,7 +91,30 @@ public class Methods {
 				Console.menuSettings();
 			}
 		});
-		
+		getArrayMethodID().add(id_printTorah);
+		getArrayMethodTitle().add("Print Torah");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				extras.printFile.printTorah();
+			}
+		});
+		getArrayMethodID().add(9);
+		getArrayMethodTitle().add("Find Words");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				extraFunctions.findWords();
+			}
+		});
+		getArrayMethodID().add(10);
+		getArrayMethodTitle().add("Find First Letters");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				extraFunctions.findFirstLetters();
+			}
+		});
 	}
 	public static List<String> getArrayMethodTitle() {
 		return arrayMethodTitle;

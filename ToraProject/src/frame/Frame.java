@@ -83,6 +83,7 @@ public class Frame {
 	static final String combo_strDilugim = "חיפוש בדילוגים";
 	static final String combo_strLetterSearch = "חיפוש אותיות";
 	static final String combo_strCountSearch = "חיפוש אינדקס";
+	static final String combo_strTorahPrint = "הדפסת התורה";
 	static final String strLabel_padding_Dilug = "מספר אותיות";
 	static final String strLabel_padding_CountSearch = "מספר אינדקס";
 
@@ -164,7 +165,6 @@ public class Frame {
 	private static JTextField textField_Search;
 	private static JTextField textField_dilugMin;
 	private static JTextField textField_dilugMax;
-	private static JTextField textField_offset;
 	private static JTextField textField_padding;
 	private static JComboBox<?> comboBox_main;
 	private static JCheckBox checkBox_gimatriaSofiot;
@@ -264,10 +264,6 @@ public class Frame {
 
 	public static String getTextField_padding() {
 		return textField_padding.getText();
-	}
-
-	public static String getTextField_offset() {
-		return textField_offset.getText();
 	}
 
 	public static String getTextField_Search() {
@@ -377,7 +373,6 @@ public class Frame {
 		textField_Search.setText(PropStore.map.get(PropStore.searchWord));
 		textField_dilugMin.setText(PropStore.map.get(PropStore.minDilug));
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
-		textField_offset.setText(PropStore.map.get(PropStore.offsetDilug));
 		try {
 			paddingDilug = Integer.parseInt(PropStore.map.get(PropStore.paddingDilug));
 		} catch (Exception e) {
@@ -442,7 +437,6 @@ public class Frame {
 		PropStore.addNotNull(PropStore.searchWord, textField_Search.getText());
 		PropStore.addNotNull(PropStore.minDilug, textField_dilugMin.getText());
 		PropStore.addNotNull(PropStore.maxDilug, textField_dilugMax.getText());
-		PropStore.addNotNull(PropStore.offsetDilug, textField_offset.getText());
 		switch (comboBox_main.getSelectedItem().toString()) {
 		case combo_strDilugim:
 			PropStore.addNotNull(PropStore.paddingDilug, textField_padding.getText());
@@ -533,7 +527,6 @@ public class Frame {
 		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
-		textField_offset.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		label_dProgress.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		label_countMatch.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmaller));
@@ -608,7 +601,6 @@ public class Frame {
 			label_dilugMin.setVisible(false);
 			textField_dilugMax.setVisible(false);
 			textField_dilugMin.setVisible(false);
-			textField_offset.setVisible(false);
 			switch (str) {
 			case combo_strSearch:
 				label_padding.setVisible(false);
@@ -656,11 +648,10 @@ public class Frame {
 			label_padding.setVisible(true);
 			label_padding.setText(strLabel_padding_Dilug);
 			textField_padding.setText(String.valueOf(paddingDilug));
-			textField_offset.setVisible(true);
 			textField_padding.setVisible(true);
 			comboBox_sub.setVisible(false);
-			checkBox_countPsukim.setVisible(true);
-			checkBox_wholeWord.setVisible(true);
+			checkBox_countPsukim.setVisible(false);
+			checkBox_wholeWord.setVisible(false);
 		}
 	}
 
@@ -725,7 +716,7 @@ public class Frame {
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(new String[] { combo_strSearch, combo_strGimatriaSearch,
-				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch, combo_strCountSearch }));
+				combo_strGimatriaCalculate, combo_strDilugim, combo_strLetterSearch, combo_strCountSearch,combo_strTorahPrint }));
 		comboBox_main.setBackground(ColorBG_comboBox_main);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
@@ -911,19 +902,6 @@ public class Frame {
 				cb.setText(((cb.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
 			}
 		});
-
-		textField_offset = new JTextField();
-		textField_offset.setText((String) null);
-		textField_offset.setMinimumSize(new Dimension(150, 25));
-		textField_offset.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_offset.setColumns(10);
-		textField_offset.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_textField_offset = new GridBagConstraints();
-		gbc_textField_offset.anchor = GridBagConstraints.EAST;
-		gbc_textField_offset.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_offset.gridx = 1;
-		gbc_textField_offset.gridy = 9;
-		panel.add(textField_offset, gbc_textField_offset);
 
 		progressBar = new JProgressBar();
 		progressBar.setMinimumSize(new Dimension(150, 30));

@@ -90,6 +90,7 @@ public class Gimatria {
 		boolean bool_sofiot;
 		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 		if (bReader == null) {
+			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
 		}
 		// FileWriter outputStream2 = null;

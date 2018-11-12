@@ -53,6 +53,7 @@ public class Dilugim {
 		int countJumps = 0, newpadding = 0;
 		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLetterFile, ToraApp.subTorahLetterFile);
 		if (bReader == null) {
+			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return null;
 		}
 		try {

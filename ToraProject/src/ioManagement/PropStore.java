@@ -23,7 +23,6 @@ public class PropStore {
 	public static final String bool_countPsukim = "count_psukim";
 	public static final String minDilug = "minDilug";
 	public static final String maxDilug = "maxDikug";
-	public static final String offsetDilug = "offsetDilug";
 	public static final String paddingDilug = "paddingDilug";
 	public static final String paddingSearchIndex = "paddingSearchIndex";
 	public static final String subTorahTablesFile = "subTorahTables";

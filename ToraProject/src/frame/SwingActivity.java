@@ -55,7 +55,11 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			return null;
 		}
 		if ((Frame.getComboBox_main() != Frame.combo_strGimatriaSearch) && !HebrewLetters.checkHebrew(tempStr)) {
-			Output.printText("מילת חיפוש לא בעברית", 1);
+			Output.printText("ניתן להקליד בתיבת החיפוש רק אותיות עבריות ורווחים", 1);
+			return null;
+		}
+		if ((Frame.getComboBox_main() == Frame.combo_strDilugim) && (tempStr.length()==1)) {
+			Output.printText("נא להקליד יותר מאות אחת בתיבת החיפוש עבור החיפוש בדילוגים", 1);
 			return null;
 		}
 		Object[] args = { null };
@@ -139,6 +143,9 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			args[4] = Frame.getTextField_padding().trim();
 			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchCount;
+			break;
+		case Frame.combo_strTorahPrint:
+			selection = Methods.id_printTorah;
 			break;
 		}
 		try {
