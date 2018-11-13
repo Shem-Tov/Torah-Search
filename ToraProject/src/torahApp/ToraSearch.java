@@ -99,7 +99,11 @@ public class ToraSearch {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
+				String tempStr=searchSTR;
+				if (bool_multiSearch) {
+					tempStr += " | "+searchSTR2;
+				}
+				Tree.getInstance().changeRootText(Output.markText(tempStr, Frame.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
