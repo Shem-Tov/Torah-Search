@@ -77,30 +77,30 @@ public class Output {
 				searchConvert2 = searchSTR2[0];
 			}
 		}
-		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		ArrayList<Integer> indexes2 = new ArrayList<Integer>();
-		ArrayList<Integer> indexes3 = new ArrayList<Integer>();
+		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
+		ArrayList<Integer[]> indexes2 = new ArrayList<Integer[]>();
+		ArrayList<Integer[]> indexes3 = new ArrayList<Integer[]>();
 
 		int myIndex;
-		indexes.add(lineConvert.indexOf(searchConvert, 0));
+		int tempIndex = lineConvert.indexOf(searchConvert, 0);
+		indexes.add(new Integer[] {tempIndex,tempIndex+searchConvert.length()} );
 		try {
-			if (indexes.get(0) == -1) {
+			if (indexes.get(0)[0] == -1) {
 				throw new IllegalArgumentException();
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
-		int STRLength = searchSTR.length();
 		int newIndex = 0;
-		int startPOS = indexes.get(0);
+		int startPOS = indexes.get(0)[0];
 		if (bool_wholeWords) {
 			// checks for spaces before and after word
 			boolean cancel = false;
-			if ((indexes.get(0) > 0) && (lineConvert.charAt(indexes.get(0) - 1) != ' ')) {
+			if ((indexes.get(0)[0] > 0) && (lineConvert.charAt(indexes.get(0)[0] - 1) != ' ')) {
 				cancel = true;
 			}
-			if (((indexes.get(0) + searchConvert.length() < lineConvert.length())
-					&& (lineConvert.charAt(indexes.get(0) + searchConvert.length()) != ' '))) {
+			if (((indexes.get(0)[0] + searchConvert.length() < lineConvert.length())
+					&& (lineConvert.charAt(indexes.get(0)[0] + searchConvert.length()) != ' '))) {
 				cancel = true;
 			}
 			if (cancel) {
@@ -122,41 +122,41 @@ public class Output {
 				}
 				if (!cancel) {
 					startPOS = newIndex;
-					indexes.add(newIndex);
+					indexes.add(new Integer[] {newIndex,newIndex+searchConvert.length()});
 				} else {
 					startPOS += 1;
 				}
 			} else {
 				startPOS = newIndex;
-				indexes.add(newIndex);
+				indexes.add(new Integer[] {newIndex,newIndex+searchConvert.length()});
 			}
 		}
 		if (index != -1) {
-			myIndex = indexes.get(index);
-			indexes = new ArrayList<Integer>();
-			indexes.add(myIndex);
+			myIndex = indexes.get(index)[0];
+			indexes = new ArrayList<Integer[]>();
+			indexes.add(new Integer[] {myIndex,myIndex+searchConvert.length()});
 		}
 		int myIndex2;
 		if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-			indexes2.add(lineConvert.indexOf(searchConvert2, 0));
+			tempIndex = lineConvert.indexOf(searchConvert2, 0);
+			indexes2.add(new Integer[] {tempIndex,tempIndex+searchConvert2.length()});
 			try {
-				if (indexes2.get(0) == -1) {
+				if (indexes2.get(0)[0] == -1) {
 					throw new IllegalArgumentException();
 				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			}
-			int STRLength2 = searchSTR2[0].length();
 			int newIndex2 = 0;
-			int startPOS2 = indexes2.get(0);
+			int startPOS2 = indexes2.get(0)[0];
 			if (bool_wholeWords) {
 				// checks for spaces before and after word
 				boolean cancel = false;
-				if ((indexes2.get(0) > 0) && (lineConvert.charAt(indexes2.get(0) - 1) != ' ')) {
+				if ((indexes2.get(0)[0] > 0) && (lineConvert.charAt(indexes2.get(0)[0] - 1) != ' ')) {
 					cancel = true;
 				}
-				if (((indexes2.get(0) + searchConvert.length() < lineConvert.length())
-						&& (lineConvert.charAt(indexes2.get(0) + searchConvert.length()) != ' '))) {
+				if (((indexes2.get(0)[0] + searchConvert.length() < lineConvert.length())
+						&& (lineConvert.charAt(indexes2.get(0)[0] + searchConvert.length()) != ' '))) {
 					cancel = true;
 				}
 				if (cancel) {
@@ -178,36 +178,77 @@ public class Output {
 					}
 					if (!cancel) {
 						startPOS2 = newIndex2;
-						indexes2.add(newIndex2);
+						indexes2.add(new Integer[] {newIndex2,newIndex2+searchConvert2.length()});
 					} else {
 						startPOS2 += 1;
 					}
 				} else {
 					startPOS2 = newIndex2;
-					indexes2.add(newIndex2);
+					indexes2.add(new Integer[] {newIndex2,newIndex2+searchConvert2.length()});
 				}
 			}
 			if (index != -1) {
-				myIndex2 = indexes2.get(index);
-				indexes2 = new ArrayList<Integer>();
-				indexes2.add(myIndex2);
+				myIndex2 = indexes2.get(index)[0];
+				indexes2 = new ArrayList<Integer[]>();
+				indexes2.add(new Integer[] {myIndex2,myIndex2+searchConvert2.length()});
 			}
-			
-			for (Integer thisIndex :indexes) {
-				for (Integer thisIndex2 : indexes2) {
-					
+
+			int countIndex = 0;
+			int countIndex2 = 0;
+			while (true) {
+				if ((countIndex < indexes.size()) && (countIndex2 < indexes2.size())) {
+					if (indexes.get(countIndex)[0] <= indexes2.get(countIndex2)[0]) {
+						if (indexes.get(countIndex)[1] >= indexes2.get(countIndex2)[0]) {
+							if (indexes.get(countIndex)[1] < indexes2.get(countIndex2)[1]) {
+								indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes2.get(countIndex2)[1] });
+								countIndex++;
+								countIndex2++;
+							} else {
+								indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
+								countIndex++;
+								countIndex2++;
+							}
+						} else {
+							indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
+							countIndex++;
+						}
+					} else {
+						if (indexes2.get(countIndex2)[1] >= indexes.get(countIndex)[0]) {
+							if (indexes2.get(countIndex2)[1] < indexes.get(countIndex)[1]) {
+								indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex)[1] });
+								countIndex++;
+								countIndex2++;
+							} else {
+								indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
+								countIndex++;
+								countIndex2++;
+							}
+						} else {
+							indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
+							countIndex2++;
+						}
+					}
+				} else {
+					if (countIndex<indexes.size()) {
+						indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
+						countIndex++;	
+					} else if (countIndex2<indexes2.size()) {
+						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex2)[1] });
+						countIndex2++;	
+					} else {
+						break;
+					}
 				}
 			}
 		}
-		
 
 		int lastIndex = 0;
-		for (Integer thisIndex : indexes) {
+		for (Integer[] thisIndex : indexes) {
 
 			// Boolean wasSpace = false;
 			String tempStr = "";
-			if (thisIndex > 0) {
-				tempStr = line.substring(lastIndex, thisIndex);
+			if (thisIndex[0] > 0) {
+				tempStr = line.substring(lastIndex, thisIndex[0]);
 				/*
 				 * if ((tempStr.length() >= 1) && (tempStr.charAt(tempStr.length() - 1) == ' '))
 				 * { wasSpace = true; // removes whitespace from the end tempStr =
@@ -219,10 +260,10 @@ public class Output {
 			// htmlFormat.getHtml(0)
 			// + line.substring(thisIndex, STRLength + thisIndex) + htmlFormat.getHtml(1);
 
-			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex, STRLength + thisIndex)
+			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex[0], thisIndex[1])
 					+ htmlFormat.getHtml(1);
 
-			lastIndex = thisIndex + STRLength;
+			lastIndex = thisIndex[1];
 		}
 		lineHtml += line.substring(lastIndex);
 		return lineHtml;
