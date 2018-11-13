@@ -346,11 +346,11 @@ public class Dilugim {
 				Output.printLine(2, "orange");
 				Output.printText("");
 				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
-				String fileName = searchOriginal;
+				String fileName = searchOriginal.replace(' ','_');
 				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
 				if (count > 0) {
 					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, bool_filePaddingFound,
-							((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
+							searchOriginal,((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
 					maxDilug = thisDilug;

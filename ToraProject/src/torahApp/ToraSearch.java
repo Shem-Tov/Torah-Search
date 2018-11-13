@@ -252,11 +252,14 @@ public class ToraSearch {
 				Tree.getInstance().flushBuffer((count < 50));
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
-			String fileName = searchSTR;
+			String fileName = searchSTR.replace(' ','_');
+			if (bool_multiSearch) {
+				fileName += "_"+searchSTR2.replace(' ','_');
+			}
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
 				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true,
-						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
+						searchSTR,searchSTR2,((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
 

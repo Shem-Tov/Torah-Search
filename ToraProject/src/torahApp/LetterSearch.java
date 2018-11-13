@@ -180,7 +180,7 @@ public class LetterSearch {
 				Tree.getInstance().flushBuffer((count<50));
 			}
 			String Title = ("חיפוש אותיות במילים בתורה");
-			String fileName = "LT_" + searchSTR;
+			String fileName = "LT_" + searchSTR.replace(' ','_');
 			String sheet = ("אותיות");
 			if (count > 0) {
 				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true, searchSTR,

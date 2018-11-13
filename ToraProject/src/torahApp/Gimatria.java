@@ -170,14 +170,7 @@ public class Gimatria {
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
-							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.Frame.markupStyleHTML) + "\" "
-									+ "נמצא ב" + pBookInstance.getBookName() + " " + pBookInstance.getPerekLetters()
-									+ ":" + pBookInstance.getPasukLetters();
 							wCounter.addWord(s);
-							Output.printText(
-									StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line,
-											s, frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
 							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
 						}
@@ -203,15 +196,8 @@ public class Gimatria {
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
-							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 							String s = line.substring(lineCountStart, lineCountEnd);
-							String tempStr1 = "\u202B" + "\"" + Output.markText(s, frame.Frame.markupStyleHTML) + "\" "
-									+ "נמצא ב" + pBookInstance.getBookName() + " " + pBookInstance.getPerekLetters()
-									+ ":" + pBookInstance.getPasukLetters();
 							wCounter.addWord(s);
-							Output.printText(
-									StringAlignUtils.padRight(tempStr1, 32) + "  =  " + Output.markMatchesInLine(line,
-											s, frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
 							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
 						}
@@ -236,7 +222,7 @@ public class Gimatria {
 			String fileName = String.valueOf(searchGmt);
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true,fileName
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true,String.valueOf(searchGmt)
 						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
 						);
 			}

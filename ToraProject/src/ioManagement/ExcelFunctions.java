@@ -219,6 +219,7 @@ public class ExcelFunctions {
 		// mode=1 regular search sofiot not considered
 		// mode=2 dilugim search
 		// mode=3 letters search
+		// mode=3 gimatria search
 
 		// etc - additional information
 		// fileName - name of excel file, can have multiple sheets
@@ -293,15 +294,22 @@ public class ExcelFunctions {
 		row.setHeightInPoints(80);
 		cell.setCellStyle(styleTitle);// Apply style to cell
 		cell.setCellValue(Title);
-		// if (mode == 3) {
 		int countETC = 1;
 		for (String e : etc) {
-			if (countETC == 1) {
-				sheet.setColumnWidth(1, 6000);
+			int length = e.length();
+			if (length > 0) {
+				switch (countETC) {
+				case 1:
+					sheet.setColumnWidth(countETC, 1000+Math.max(5000,(int)(length/3)*(600)));
+					break;
+				default:
+					sheet.setColumnWidth(countETC, 1000+Math.max(5,(int)(length/3))*600);
+					break;
+				}
+				cell = row.createCell(countETC++);
+				cell.setCellStyle(styleTitle);
+				cell.setCellValue(e);
 			}
-			cell = row.createCell(countETC++);
-			cell.setCellStyle(styleTitle);
-			cell.setCellValue(e);
 		}
 		// }
 		rowNum++;
@@ -346,7 +354,7 @@ public class ExcelFunctions {
 				cell = row.createCell(0);
 				cell.setCellStyle(style);
 				cell.setCellValue(index++);
-				
+
 				String[][] resArray = lineReport.getResults();
 				for (String[] res : resArray) {
 					for (int i = 0; i < res.length; i++) {
@@ -530,10 +538,9 @@ public class ExcelFunctions {
 		}
 
 		sheet.autoSizeColumn(0);
-		sheet.autoSizeColumn(2);
-		sheet.autoSizeColumn(3);
-		sheet.autoSizeColumn(5);
-		sheet.autoSizeColumn(6);
+		for (int i = countETC; i<=6; i++) {
+			sheet.autoSizeColumn(i);
+		}
 
 		try {
 			FileOutputStream outputStream = new FileOutputStream(fileNameExtended);
