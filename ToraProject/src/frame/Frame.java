@@ -318,11 +318,10 @@ public class Frame {
 	public static String getComboBox_sub() {
 		return comboBox_sub.getSelectedItem().toString();
 	}
-	
+
 	public static int getComboBox_sub_Index() {
 		return comboBox_sub.getSelectedIndex();
 	}
-	
 
 	public static Boolean getMethodCancelRequest() {
 		return methodCancelRequest;
@@ -436,9 +435,17 @@ public class Frame {
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
 		checkBox_countPsukim.setText(
 				((checkBox_countPsukim.isSelected()) ? checkBox_countPsukim_true : checkBox_countPsukim_false));
-		checkbox_createDocument.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createDocument)));
+		if (PropStore.map.get(PropStore.bool_createDocument) != null) {
+			checkbox_createDocument.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createDocument)));
+		} else {
+			checkbox_createDocument.setSelected(true);
+		}
+		if (PropStore.map.get(PropStore.bool_createTree) != null) {
+			checkbox_createTree.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createTree)));
+		} else {
+			checkbox_createTree.setSelected(true);
+		}
 		checkbox_createExcel.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createExcel)));
-		checkbox_createTree.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createTree)));
 		textPane.setVisible(checkbox_createDocument.isSelected());
 		tree.setVisible(checkbox_createTree.isSelected());
 	}
@@ -650,8 +657,9 @@ public class Frame {
 				label_padding.setVisible(false);
 				textField_padding.setVisible(false);
 				comboBox_sub.setVisible(true);
-				//DefaultComboBoxModel model = new DefaultComboBoxModel(comboBox_sub_Strings_Letters);
-				//comboBox_sub.setModel( model );
+				// DefaultComboBoxModel model = new
+				// DefaultComboBoxModel(comboBox_sub_Strings_Letters);
+				// comboBox_sub.setModel( model );
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(false);
 				checkBox_searchMultiple.setVisible(false);
@@ -676,8 +684,9 @@ public class Frame {
 			textField_padding.setText(String.valueOf(paddingDilug));
 			textField_padding.setVisible(true);
 			comboBox_sub.setVisible(false);
-			//DefaultComboBoxModel model = new DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
-			//comboBox_sub.setModel( model );
+			// DefaultComboBoxModel model = new
+			// DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
+			// comboBox_sub.setModel( model );
 			checkBox_countPsukim.setVisible(false);
 			checkBox_wholeWord.setVisible(false);
 			checkBox_searchMultiple.setVisible(false);
