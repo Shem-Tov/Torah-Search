@@ -3,10 +3,8 @@ package torahApp;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import extras.Console;
 import ioManagement.ExcelFunctions;
 import ioManagement.Methods;
-import ioManagement.Output;
 import ioManagement.PropStore;
 
 //import java.util.Formatter;

@@ -13,7 +13,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import hebrewLetters.HebrewLetters;
 import torahApp.ToraApp;
 
 import java.io.File;
@@ -23,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 public class ExcelFunctions {
@@ -34,7 +32,8 @@ public class ExcelFunctions {
 	public static final int id_charPOS = 5;
 	public static final int id_lineNum = 6;
 
-	public static String[][] readBookTableXLS(String[] inputFiles, int sheetNUM, int startColumn, int startRow, int endColumn, int endRow) {
+	public static String[][] readBookTableXLS(String[] inputFiles, int sheetNUM, int startColumn, int startRow,
+			int endColumn, int endRow) {
 		String[][] data = null;
 		Workbook workbook = null;
 		DataFormatter dataFormatter = new DataFormatter();
@@ -110,6 +109,7 @@ public class ExcelFunctions {
 		}
 		return data;
 	}
+
 	public static String[][] readParashaTableXLS(String[] inputFiles, int sheetNUM, int X, int Y, int posX, int posY) {
 		String[][] data = null;
 		Workbook workbook = null;
@@ -193,25 +193,26 @@ public class ExcelFunctions {
 	private static final String EXCEL_FILE_LOCATION_HARDCODED = "./Reports/";
 	private static String EXCEL_FILE_LOCATION = EXCEL_FILE_LOCATION_HARDCODED;
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
-	
+
 	public static String getExcel_File_Location_Hardcoded() {
 		return EXCEL_FILE_LOCATION_HARDCODED;
 	}
+
 	public static String getExcel_File_Location() {
 		return EXCEL_FILE_LOCATION;
 	}
-	
+
 	public static void setExcel_File_Location(String directoryPath) {
 		EXCEL_FILE_LOCATION = directoryPath;
 	}
-	
+
 	public static void resetExcel_File_Location() {
 		EXCEL_FILE_LOCATION = EXCEL_FILE_LOCATION_HARDCODED;
-	}	
-	
+	}
+
 	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
-			ArrayList<String[][]> results, boolean bool_Padding, String...etc ) {
-		if (!frame.Frame.getCheckbox_createExcel()) {
+			ArrayList<LineReport> results, boolean bool_Padding, String... etc) {
+		if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (!frame.Frame.getCheckbox_createExcel())) {
 			return;
 		}
 		// mode=0 regular search sofiot considered
@@ -292,17 +293,17 @@ public class ExcelFunctions {
 		row.setHeightInPoints(80);
 		cell.setCellStyle(styleTitle);// Apply style to cell
 		cell.setCellValue(Title);
-		//if (mode == 3) {
-		int countETC=1;
-		for (String e:etc) {
-			if (countETC==1) {
+		// if (mode == 3) {
+		int countETC = 1;
+		for (String e : etc) {
+			if (countETC == 1) {
 				sheet.setColumnWidth(1, 6000);
 			}
 			cell = row.createCell(countETC++);
 			cell.setCellStyle(styleTitle);
 			cell.setCellValue(e);
 		}
-		//}
+		// }
 		rowNum++;
 		int colNum = 0;
 		int index;
@@ -329,7 +330,6 @@ public class ExcelFunctions {
 		case 0:
 		case 1:
 		case 3:
-			Boolean bool_sofiot = (mode == 0) ? true : false;
 			for (String field : header) {
 				if (field == dilugWord) {
 					continue;
@@ -339,47 +339,37 @@ public class ExcelFunctions {
 				cell.setCellValue(field);
 			}
 			index = 1;
-			for (String[][] resArr : results) {
+			int lineIndex = -1;
+			for (LineReport lineReport : results) {
+				lineIndex++;
 				row = sheet.createRow(rowNum++);
 				cell = row.createCell(0);
 				cell.setCellStyle(style);
 				cell.setCellValue(index++);
-				for (String[] res : resArr) {
+				
+				String[][] resArray = lineReport.getResults();
+				for (String[] res : resArray) {
 					for (int i = 0; i < res.length; i++) {
 						cell = row.createCell(i + 1);
 						cell.setCellStyle(style);
 						if (i == id_toraLine) {
-							int j = 0;
-							String lineConvert;
-							String searchConvert;
-							if (!bool_sofiot) {
-								searchConvert = HebrewLetters.switchSofiotStr(res[id_searchSTR]);
-								lineConvert = HebrewLetters.switchSofiotStr(res[id_toraLine]);
-							} else {
-								searchConvert = res[id_searchSTR];
-								lineConvert = res[id_toraLine];
-							}
-							ArrayList<Integer> indexes = new ArrayList<Integer>();
-							indexes.add(lineConvert.indexOf(searchConvert, 0));
-							int STRLength = res[id_searchSTR].length();
-							int newIndex = 0;
 							// find all occurences of searchSTR in Line and Color them
-							while ((newIndex = lineConvert.indexOf(searchConvert, indexes.get(j) + 1)) != -1) {
-								indexes.add(newIndex);
-								j++;
-							}
 							int lastIndex = 0;
 							HSSFRichTextString richString = new HSSFRichTextString(new String(res[id_toraLine]));
 							try {
-								for (Integer thisIndex : indexes) {
-									if (thisIndex > 0) {
-										richString.applyFont(lastIndex, thisIndex, txtFont);
+								if (results.get(lineIndex).getIndexes() == null) {
+									cell.setCellValue(richString);
+								} else {
+									for (Integer[] thisIndex : results.get(lineIndex).getIndexes()) {
+										if (thisIndex[0] > 0) {
+											richString.applyFont(lastIndex, thisIndex[0], txtFont);
+										}
+										richString.applyFont(thisIndex[0], thisIndex[1], fontDilug);
+										lastIndex = thisIndex[1];
 									}
-									richString.applyFont(thisIndex, STRLength + thisIndex, fontDilug);
-									lastIndex = thisIndex + STRLength;
+									richString.applyFont(lastIndex, richString.length(), txtFont);
+									cell.setCellValue(richString);
 								}
-								richString.applyFont(lastIndex, richString.length(), txtFont);
-								cell.setCellValue(richString);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -419,8 +409,8 @@ public class ExcelFunctions {
 				cell.setCellValue(field);
 			}
 			index = 1;
-
-			for (String[][] resArr : results) {
+			for (LineReport lineReport : results) {
+				String[][] resArr = lineReport.getResults();
 				// if ((mode==1) && (counter++==0)) { // The Dilugim Mode needs to skip first
 				// array
 				// continue;
@@ -563,10 +553,9 @@ public class ExcelFunctions {
 
 	public static void main(String[] args) {
 		// writeXLS(new String[] { "Hello", "1", "2", "3" });
-
-		writeXLS("בדיקה", "דוח", 0, "Title", new ArrayList<String[][]>(
-				Arrays.asList(new String[][] { { "1", "2" } }, new String[][] { { "3", "4" } })), true);
-
+		ArrayList<LineReport> arrLineReport = new ArrayList<LineReport>();
+		arrLineReport.add(new LineReport(new String[][] { { "1", "2" } }, null));
+		arrLineReport.add(new LineReport(new String[][] { { "3", "4" } }, null));
+		writeXLS("בדיקה", "דוח", 0, "Title", arrLineReport, true);
 	}
-
 }

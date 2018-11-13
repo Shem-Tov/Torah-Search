@@ -10,6 +10,7 @@ import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
@@ -52,7 +53,7 @@ public class LetterSearch {
 	}
 
 	public void searchForLetters(Object[] args) throws IOException {
-		ArrayList<String[][]> results = new ArrayList<String[][]>();
+		ArrayList<LineReport> results = new ArrayList<LineReport>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		String searchSTR;
@@ -161,8 +162,8 @@ public class LetterSearch {
 									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 							// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 							Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " =    " + line);
-							results.add(new String[][] { { s, pBookInstance.getBookName(),
-									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } });
+							results.add(new LineReport ( new String[][] { { s, pBookInstance.getBookName(),
+									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } },null));
 						} else {
 							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
 									bool_sofiot, true));

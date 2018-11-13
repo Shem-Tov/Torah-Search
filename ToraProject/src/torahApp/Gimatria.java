@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import frame.Frame;
 import frame.Tree;
 import ioManagement.ExcelFunctions;
+import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
@@ -81,7 +82,7 @@ public class Gimatria {
 	}
 
 	public void searchGimatria(Object[] args) throws IOException {
-		ArrayList<String[][]> results = new ArrayList<String[][]>();
+		ArrayList<LineReport> results = new ArrayList<LineReport>();
 		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
 		String searchSTR;

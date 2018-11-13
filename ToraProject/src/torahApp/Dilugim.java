@@ -11,6 +11,7 @@ import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
 import stringFormatting.StringAlignUtils;
@@ -180,7 +181,7 @@ public class Dilugim {
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 					frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
 				}
-				ArrayList<String[][]> results = new ArrayList<String[][]>();
+				ArrayList<LineReport> results = new ArrayList<LineReport>();
 				inputStream = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
 				inputStream.mark(markInt);
 				int countPOS = 0; // counts char position in line
@@ -318,7 +319,7 @@ public class Dilugim {
 								Output.printTree(lineForChar[0][0], treeString, true);
 								Output.printLine(1);
 								Output.printText("");
-								results.add(resArray);
+								results.add(new LineReport(resArray,null));
 								inputStream.reset();
 								searchIndex = 0;
 								countLines = backup_countLines;

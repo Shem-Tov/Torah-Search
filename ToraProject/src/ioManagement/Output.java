@@ -48,18 +48,15 @@ public class Output {
 		return lineHtml;
 	}
 
-	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
+	public static LineHtmlReport markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
 			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) {
 		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot, bool_wholeWords, -1);
 	}
 
-	public static String markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
+	public static LineHtmlReport markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
 			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) {
 
 		// Does not mark, if in console mode
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return line;
-		}
 		String lineHtml = "";
 		String lineConvert;
 		String searchConvert;
@@ -267,7 +264,11 @@ public class Output {
 			lastIndex = thisIndex[1];
 		}
 		lineHtml += line.substring(lastIndex);
-		return lineHtml;
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return new LineHtmlReport(line,indexes);
+		} else {
+			return new LineHtmlReport(lineHtml,indexes);
+		}
 	}
 
 	public static String markText(String str, HtmlGenerator markupStyle) {
@@ -290,14 +291,15 @@ public class Output {
 		return strArray[0] + strArray[1] + strArray[2];
 	}
 
-	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) throws NoSuchFieldException {
 		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot, bool_wholeWords, -1, searchSTR2);
 	}
 
-	public static String[][] printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
+	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+		Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
+		LineHtmlReport lineHtmlReport = null;
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" ";
 			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
@@ -306,14 +308,13 @@ public class Output {
 			tempStr1 += "נמצא ב" + StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 					+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
-			String lineHtml;
 			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-				lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index,
+				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index,
 						searchSTR2[0]);
 			} else {
-				lineHtml = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
+				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
 			}
-			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
+			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml();
 			printText(outputText);
 			printLine(1);
 			printTree(countLines, outputText, false);
@@ -321,8 +322,10 @@ public class Output {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
 		}
-		return (new String[][] { { searchSTR, pBookInstance.getBookName(), pBookInstance.getPerekLetters(),
-				pBookInstance.getPasukLetters(), line } });
+		String[][] results = new String[][] { { searchSTR, pBookInstance.getBookName(), pBookInstance.getPerekLetters(),
+			pBookInstance.getPasukLetters(), line } };
+
+		return new LineReport(results,lineHtmlReport.getIndexes());
 	}
 
 	public static void printLine(int size) {
