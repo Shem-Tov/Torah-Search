@@ -218,6 +218,11 @@ public class Gimatria {
 			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
 				Tree.getInstance().flushBuffer((count<50));
 			}
+			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
+				Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
+				// break is redundant, because for loop will end anyway because maxDilug has
+				// changed to current loop index
+			}
 			String Title = ((bool_wholeWords) ? "גימטריה: מילים שלמות" : "גימטריה: צירוף אותיות");
 			String fileName = String.valueOf(searchGmt);
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
