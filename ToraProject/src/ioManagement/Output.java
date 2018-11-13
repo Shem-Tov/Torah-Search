@@ -99,8 +99,8 @@ public class Output {
 			if ((indexes.get(0)[0] > 0) && (lineConvert.charAt(indexes.get(0)[0] - 1) != ' ')) {
 				cancel = true;
 			}
-			if (((indexes.get(0)[0] + searchConvert.length() < lineConvert.length())
-					&& (lineConvert.charAt(indexes.get(0)[0] + searchConvert.length()) != ' '))) {
+			if (((indexes.get(0)[1] < lineConvert.length())
+					&& (lineConvert.charAt(indexes.get(0)[1]) != ' '))) {
 				cancel = true;
 			}
 			if (cancel) {
@@ -155,8 +155,8 @@ public class Output {
 				if ((indexes2.get(0)[0] > 0) && (lineConvert.charAt(indexes2.get(0)[0] - 1) != ' ')) {
 					cancel = true;
 				}
-				if (((indexes2.get(0)[0] + searchConvert.length() < lineConvert.length())
-						&& (lineConvert.charAt(indexes2.get(0)[0] + searchConvert.length()) != ' '))) {
+				if (((indexes2.get(0)[1] < lineConvert.length())
+						&& (lineConvert.charAt(indexes2.get(0)[1]) != ' '))) {
 					cancel = true;
 				}
 				if (cancel) {
@@ -165,15 +165,15 @@ public class Output {
 				}
 			}
 			// find all occurences of searchSTR in Line and Color them
-			while ((newIndex2 = lineConvert.indexOf(searchConvert, startPOS2 + 1)) != -1) {
+			while ((newIndex2 = lineConvert.indexOf(searchConvert2, startPOS2 + 1)) != -1) {
 				if (bool_wholeWords) {
 					// checks for spaces before and after word
 					Boolean cancel = false;
 					if ((newIndex2 > 0) && (lineConvert.charAt(newIndex2 - 1) != ' ')) {
 						cancel = true;
 					}
-					if (((newIndex2 + searchConvert.length() < lineConvert.length())
-							&& (lineConvert.charAt(newIndex2 + searchConvert.length()) != ' '))) {
+					if (((newIndex2 + searchConvert2.length() < lineConvert.length())
+							&& (lineConvert.charAt(newIndex2 + searchConvert2.length()) != ' '))) {
 						cancel = true;
 					}
 					if (!cancel) {
@@ -233,13 +233,14 @@ public class Output {
 						indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
 						countIndex++;	
 					} else if (countIndex2<indexes2.size()) {
-						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex2)[1] });
+						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
 						countIndex2++;	
 					} else {
 						break;
 					}
 				}
 			}
+			indexes = indexes3;
 		}
 
 		int lastIndex = 0;
@@ -300,7 +301,7 @@ public class Output {
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" ";
 			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-				tempStr1 += "\"" + markText(searchSTR2[0], markupStyle) + "\" ";
+				tempStr1 += " | \"" + markText(searchSTR2[0], markupStyle) + "\" ";
 			}
 			tempStr1 += "נמצא ב" + StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 					+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();

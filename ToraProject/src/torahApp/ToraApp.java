@@ -221,7 +221,7 @@ public class ToraApp {
 		}
 		return null;
 	}
-
+/*
 	public static void main(String[] args) throws IOException {
 		// findFirstLetters();
 		// findWords();
@@ -234,7 +234,8 @@ public class ToraApp {
 		// Thirteen Fourteen Fifteen Sixteen Seventeen Eighteen Nineteen Twenty
 		// TwentyOne TwentyTwo");
 	}
-
+*/
+	
 	public static char[] getHLetters() {
 		return hLetters;
 	}

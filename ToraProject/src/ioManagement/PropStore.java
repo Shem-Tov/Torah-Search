@@ -25,6 +25,7 @@ public class PropStore {
 	public static final String maxDilug = "maxDikug";
 	public static final String paddingDilug = "paddingDilug";
 	public static final String paddingSearchIndex = "paddingSearchIndex";
+	public static final String paddingSearchMulti = "paddingSearchMulti";
 	public static final String subTorahTablesFile = "subTorahTables";
 	public static final String subTorahLineFile = "subTorahLineFile";
 	public static final String subTorahLettersFile = "subTorahLettersFile";

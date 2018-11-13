@@ -114,7 +114,8 @@ public class Frame {
 	private static final String searchRangeAll = "הכול";
 	private static String searchRangeString = searchRangeAll;
 	private static String searchRangeStringHTML = searchRangeAll;
-
+	
+	private static String paddingSearchMulti = "";
 	private static int paddingSearchIndex = 1;
 	private static int paddingDilug = 1;
 	// JTextPane Formatting
@@ -374,6 +375,7 @@ public class Frame {
 		textField_Search.setText(PropStore.map.get(PropStore.searchWord));
 		textField_dilugMin.setText(PropStore.map.get(PropStore.minDilug));
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
+		paddingSearchMulti = PropStore.map.get(PropStore.paddingSearchMulti);
 		try {
 			paddingDilug = Integer.parseInt(PropStore.map.get(PropStore.paddingDilug));
 		} catch (Exception e) {
@@ -438,12 +440,16 @@ public class Frame {
 		PropStore.addNotNull(PropStore.searchWord, textField_Search.getText());
 		PropStore.addNotNull(PropStore.minDilug, textField_dilugMin.getText());
 		PropStore.addNotNull(PropStore.maxDilug, textField_dilugMax.getText());
+		
 		switch (comboBox_main.getSelectedItem().toString()) {
 		case combo_strDilugim:
 			PropStore.addNotNull(PropStore.paddingDilug, textField_padding.getText());
 			break;
 		case combo_strCountSearch:
 			PropStore.addNotNull(PropStore.paddingSearchIndex, textField_padding.getText());
+			break;
+		case combo_strSearch:
+			PropStore.addNotNull(PropStore.paddingSearchMulti, textField_padding.getText());
 			break;
 		}
 		PropStore.addNotNull(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
@@ -613,6 +619,7 @@ public class Frame {
 				checkBox_wholeWord.setVisible(true);
 				checkBox_searchMultiple.setVisible(true);
 				textField_padding.setVisible(checkBox_searchMultiple.isSelected());
+				textField_padding.setText(paddingSearchMulti);
 				break;
 			case combo_strCountSearch:
 				label_padding.setVisible(true);

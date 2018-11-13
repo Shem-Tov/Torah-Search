@@ -86,7 +86,11 @@ public class ToraSearch {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
+			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"";
+			if (bool_multiSearch) {
+				str += " | \"" + searchSTR2 + "\"";
+			}
+			str += "...";
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
@@ -144,10 +148,14 @@ public class ToraSearch {
 							}
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
-									bool_sofiot, bool_wholeWords));
+
 							if (bool_multiSearch) {
+								results.add(Output.printPasukInfo(countLines, searchSTR, line,
+										frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords, searchSTR2));
 								break;
+							} else {
+								results.add(Output.printPasukInfo(countLines, searchSTR, line,
+										frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
 							}
 						}
 					}
@@ -208,9 +216,28 @@ public class ToraSearch {
 									// fill results array
 									results.add(Output.printPasukInfo(countLines, searchSTR,
 											((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
-											bool_sofiot, bool_wholeWords));
+											bool_sofiot, bool_wholeWords, searchSTR2));
 
 								}
+							} else {
+								boolean foundInLine2 = false;
+								if (searchSTRinLine2 > 0) {
+									if ((combineConvertedLines.lastIndexOf(searchConvert)
+											+ searchConvert.length()) > line.length()) {
+										foundInLine2 = true;
+									}
+								}
+								count++;
+								if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+									frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+								}
+								countPsukim++;
+								// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
+								// fill results array
+								results.add(Output.printPasukInfo(countLines, searchSTR,
+										((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
+										bool_sofiot, bool_wholeWords, searchSTR2));
+
 							}
 						}
 					}
