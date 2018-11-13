@@ -76,7 +76,8 @@ public class Frame {
 		return frame_instance;
 	}
 
-	public static final String[] comboBox_sub_Strings = new String[] { "מילים", "פסוקים" };
+	public static final String[] comboBox_sub_Strings_Letters = new String[] { "מילים", "פסוקים" };
+	public static final String[] comboBox_sub_Strings_Dilugim = new String[] { "אותיות", "מילים", "פסוקים" };
 	static final String combo_strSearch = "חיפוש רגיל";
 	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
 	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
@@ -114,7 +115,7 @@ public class Frame {
 	private static final String searchRangeAll = "הכול";
 	private static String searchRangeString = searchRangeAll;
 	private static String searchRangeStringHTML = searchRangeAll;
-	
+
 	private static String paddingSearchMulti = "";
 	private static int paddingSearchIndex = 1;
 	private static int paddingDilug = 1;
@@ -145,7 +146,8 @@ public class Frame {
 	private static final String buttonCancelRequestText = "מבטל..";
 	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">" + "חישוב מיוחד"
 			+ "<br/>" + "לסופיות" + "</p> </html>";
-	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" + "<br/>" + "שנמצאו" + "</p></html>";
+	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" + "<br/>"
+			+ "שנמצאו" + "</p></html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
 	private static Boolean methodCancelRequest = false;
@@ -316,6 +318,11 @@ public class Frame {
 	public static String getComboBox_sub() {
 		return comboBox_sub.getSelectedItem().toString();
 	}
+	
+	public static int getComboBox_sub_Index() {
+		return comboBox_sub.getSelectedIndex();
+	}
+	
 
 	public static Boolean getMethodCancelRequest() {
 		return methodCancelRequest;
@@ -440,7 +447,7 @@ public class Frame {
 		PropStore.addNotNull(PropStore.searchWord, textField_Search.getText());
 		PropStore.addNotNull(PropStore.minDilug, textField_dilugMin.getText());
 		PropStore.addNotNull(PropStore.maxDilug, textField_dilugMax.getText());
-		
+
 		switch (comboBox_main.getSelectedItem().toString()) {
 		case combo_strDilugim:
 			PropStore.addNotNull(PropStore.paddingDilug, textField_padding.getText());
@@ -643,6 +650,8 @@ public class Frame {
 				label_padding.setVisible(false);
 				textField_padding.setVisible(false);
 				comboBox_sub.setVisible(true);
+				//DefaultComboBoxModel model = new DefaultComboBoxModel(comboBox_sub_Strings_Letters);
+				//comboBox_sub.setModel( model );
 				checkBox_countPsukim.setVisible(false);
 				checkBox_wholeWord.setVisible(false);
 				checkBox_searchMultiple.setVisible(false);
@@ -667,6 +676,8 @@ public class Frame {
 			textField_padding.setText(String.valueOf(paddingDilug));
 			textField_padding.setVisible(true);
 			comboBox_sub.setVisible(false);
+			//DefaultComboBoxModel model = new DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
+			//comboBox_sub.setModel( model );
 			checkBox_countPsukim.setVisible(false);
 			checkBox_wholeWord.setVisible(false);
 			checkBox_searchMultiple.setVisible(false);
@@ -853,7 +864,7 @@ public class Frame {
 		button_search = new JButton("חפש");
 		comboBox_sub = new JComboBox();
 		comboBox_sub.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		comboBox_sub.setModel(new DefaultComboBoxModel(comboBox_sub_Strings));
+		comboBox_sub.setModel(new DefaultComboBoxModel(comboBox_sub_Strings_Letters));
 		comboBox_sub.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -914,7 +925,7 @@ public class Frame {
 		gbc_checkBox_countPsukim.gridx = 0;
 		gbc_checkBox_countPsukim.gridy = 7;
 		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
-		checkBox_searchMultiple = new JCheckBox("<html><p align='right'>"+"חיפוש יותר<br> ממילה אחת"+"</p></html>");
+		checkBox_searchMultiple = new JCheckBox("<html><p align='right'>" + "חיפוש יותר<br> ממילה אחת" + "</p></html>");
 		checkBox_searchMultiple.setSelected(false);
 		checkBox_searchMultiple.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_searchMultiple.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -1375,6 +1386,7 @@ public class Frame {
 	public static Boolean getCheckbox_createDocument() {
 		return checkbox_createDocument.isSelected();
 	}
+
 	public static Boolean getCheckbox_searchMultiple() {
 		return checkBox_searchMultiple.isSelected();
 	}

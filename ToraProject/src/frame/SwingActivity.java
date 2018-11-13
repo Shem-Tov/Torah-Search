@@ -99,7 +99,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			break;
 		case Frame.combo_strDilugim:
 			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 7);
+			args = Arrays.copyOf(args, 6);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			Boolean exitCode = false;
@@ -122,6 +122,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			args[3] = Frame.getTextField_dilugMax().trim();
 			args[4] = Frame.getTextField_padding().trim();
 			args[5] = Frame.get_searchRange();
+			//args[6] = Frame.getComboBox_sub_Index();
 			Frame.showProgressBar(true, 0b11);
 			selection = Methods.id_searchDilugim;
 			break;
@@ -131,7 +132,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			args[2] = Frame.get_searchRange();
-			if (Frame.getComboBox_sub() == Frame.comboBox_sub_Strings[0]) {
+			if (Frame.getComboBox_sub() == Frame.comboBox_sub_Strings_Letters[0]) {
 				args[3] = false;
 			} else {
 				args[3] = true;
