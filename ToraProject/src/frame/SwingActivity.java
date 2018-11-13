@@ -50,17 +50,19 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 	protected Void doInBackground() {
 		// TODO Auto-generated method stub
 		String tempStr = Frame.getTextField_Search();
-		if ((tempStr == null) || (tempStr.length() == 0)) {
-			Output.printText("חסר מילת חיפוש", 1);
-			return null;
-		}
-		if ((Frame.getComboBox_main() != Frame.combo_strGimatriaSearch) && !HebrewLetters.checkHebrew(tempStr)) {
-			Output.printText("ניתן להקליד בתיבת החיפוש רק אותיות עבריות ורווחים", 1);
-			return null;
-		}
-		if ((Frame.getComboBox_main() == Frame.combo_strDilugim) && (tempStr.length()==1)) {
-			Output.printText("נא להקליד יותר מאות אחת בתיבת החיפוש עבור החיפוש בדילוגים", 1);
-			return null;
+		if (Frame.getComboBox_main() != Frame.combo_strTorahPrint) {
+			if ((tempStr == null) || (tempStr.length() == 0)) {
+				Output.printText("חסר מילת חיפוש", 1);
+				return null;
+			}
+			if ((Frame.getComboBox_main() != Frame.combo_strGimatriaSearch) && !HebrewLetters.checkHebrew(tempStr)) {
+				Output.printText("ניתן להקליד בתיבת החיפוש רק אותיות עבריות ורווחים", 1);
+				return null;
+			}
+			if ((Frame.getComboBox_main() == Frame.combo_strDilugim) && (tempStr.length() == 1)) {
+				Output.printText("נא להקליד יותר מאות אחת בתיבת החיפוש עבור החיפוש בדילוגים", 1);
+				return null;
+			}
 		}
 		Object[] args = { null };
 		int selection = 0;
@@ -73,11 +75,10 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
 			args[3] = Frame.get_searchRange();
 			args[4] = Frame.getCheckbox_searchMultiple();
-			if ((Frame.getCheckbox_searchMultiple()) &&
-					(Frame.getTextField_padding().length()>0) &&
-					(HebrewLetters.checkHebrew(Frame.getTextField_padding()))) {
+			if ((Frame.getCheckbox_searchMultiple()) && (Frame.getTextField_padding().length() > 0)
+					&& (HebrewLetters.checkHebrew(Frame.getTextField_padding()))) {
 				args[5] = Frame.getTextField_padding();
-			} 
+			}
 			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchWords;
 			break;
@@ -122,7 +123,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			args[3] = Frame.getTextField_dilugMax().trim();
 			args[4] = Frame.getTextField_padding().trim();
 			args[5] = Frame.get_searchRange();
-			//args[6] = Frame.getComboBox_sub_Index();
+			// args[6] = Frame.getComboBox_sub_Index();
 			Frame.showProgressBar(true, 0b11);
 			selection = Methods.id_searchDilugim;
 			break;

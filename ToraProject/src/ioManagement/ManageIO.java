@@ -2,10 +2,12 @@ package ioManagement;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
+import java.io.UnsupportedEncodingException;
 
 import torahApp.ToraApp;
 
@@ -44,8 +46,8 @@ public class ManageIO {
 		} catch (Exception e) {
 			try {
 				File file = new File(fileName2);
-				bReader = new BufferedReader(new FileReader(file));
-			} catch (FileNotFoundException e1) {
+				bReader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF8"));
+			} catch (FileNotFoundException | UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
