@@ -42,7 +42,7 @@ public class ManageIO {
 		BufferedReader bReader = null;
 		try {
 			bReader = new BufferedReader(
-					new InputStreamReader(ToraApp.class.getClassLoader().getResourceAsStream(fileName1)));
+					new InputStreamReader(ToraApp.class.getClassLoader().getResourceAsStream(fileName1),"UTF8"));
 		} catch (Exception e) {
 			try {
 				File file = new File(fileName2);
