@@ -66,10 +66,11 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 		}
 		Object[] args = { null };
 		int selection = 0;
+		try {
 		switch (Frame.getComboBox_main()) {
 		case Frame.combo_strSearch:
 			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 6);
+			args = Arrays.copyOf(args, 7);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_wholeWord();
 			args[2] = Frame.getCheckBox_gimatriaSofiot();
@@ -78,6 +79,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			if ((Frame.getCheckbox_searchMultiple()) && (Frame.getTextField_padding().length() > 0)
 					&& (HebrewLetters.checkHebrew(Frame.getTextField_padding()))) {
 				args[5] = Frame.getTextField_padding();
+				args[6] = (Frame.getComboBox_sub_Index()==0)?true:false;
 			}
 			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchWords;
@@ -100,7 +102,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			break;
 		case Frame.combo_strDilugim:
 			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 6);
+			args = Arrays.copyOf(args, 7);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			Boolean exitCode = false;
@@ -123,13 +125,17 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			args[3] = Frame.getTextField_dilugMax().trim();
 			args[4] = Frame.getTextField_padding().trim();
 			args[5] = Frame.get_searchRange();
-			// args[6] = Frame.getComboBox_sub_Index();
 			Frame.showProgressBar(true, 0b11);
-			selection = Methods.id_searchDilugim;
+			if (Frame.getComboBox_sub_Index()==0) {
+				selection = Methods.id_searchDilugim;
+			} else {
+				args[6] = Frame.getComboBox_sub_Index();
+				selection = Methods.id_searchDilugWordPasuk;
+			}
 			break;
 		case Frame.combo_strLetterSearch:
 			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 4);
+			args = Arrays.copyOf(args, 6);
 			args[0] = Frame.getTextField_Search();
 			args[1] = Frame.getCheckBox_gimatriaSofiot();
 			args[2] = Frame.get_searchRange();
@@ -138,6 +144,9 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			} else {
 				args[3] = true;
 			}
+			args[4] = Frame.getCheckbox_letterOrder();
+			args[5] = Frame.getCheckBox_wholeWord();
+			
 			Frame.showProgressBar(true, 0b01);
 			selection = Methods.id_searchLetters;
 			break;
@@ -155,6 +164,9 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 		case Frame.combo_strTorahPrint:
 			selection = Methods.id_printTorah;
 			break;
+		}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
 		}
 		try {
 			if (selection > 0) {

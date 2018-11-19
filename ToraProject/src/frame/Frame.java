@@ -1,10 +1,8 @@
 package frame;
 
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
-
 import javax.swing.JFrame;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -21,8 +19,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-
-import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Point;
 import javax.swing.DefaultComboBoxModel;
@@ -34,24 +30,20 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-
 import org.apache.commons.lang3.StringUtils;
-
 import ioManagement.ExcelFunctions;
 import ioManagement.PropStore;
 import torahApp.ToraApp;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
-
 import java.awt.Font;
 import java.awt.Dimension;
-
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.BoxLayout;
@@ -76,8 +68,29 @@ public class Frame {
 		return frame_instance;
 	}
 
+	private static final int rowHeight_hardCoded = 30;
+	private static int rowHeight = rowHeight_hardCoded;
+	@SuppressWarnings("unused")
+	private static final int id_rowHeight_search=0;
+	private static final int id_rowHeight_dilug=1;
+	private static final int id_rowHeight_padding=2;
+	private static final int id_rowHeight_combosub=3;
+	private static final int id_rowHeight_letterOrder=4;
+	private static final int id_rowHeight_wholeWord=5;
+	@SuppressWarnings("unused")
+	private static final int id_rowHeight_gimatriaSofiot=6;
+	private static final int id_rowHeight_countPsukim=7;
+	private static final int id_rowHeight_searchMulti=8;
+	@SuppressWarnings("unused")
+	private static final int id_rowHeight_searchRange=9;
+	@SuppressWarnings("unused")
+	private static final int id_rowHeight_progress=10;
+	@SuppressWarnings("unused")
+	private static final int id_rowHeight_BUTTON=11;
 	public static final String[] comboBox_sub_Strings_Letters = new String[] { "מילים", "פסוקים" };
-	public static final String[] comboBox_sub_Strings_Dilugim = new String[] { "אותיות", "מילים", "פסוקים" };
+	public static final String[] comboBox_sub_Strings_Dilugim = new String[] { "רגיל","ראש פסוק" , "סוף פסוק","ראש מילה","סוף מילה" };
+	public static final String[] comboBox_sub_Strings_Search_Multi = new String[] { "חובה שתי המילים",
+			"מספיק מילה אחת" };
 	static final String combo_strSearch = "חיפוש רגיל";
 	static final String combo_strGimatriaSearch = "חיפוש גימטריה";
 	static final String combo_strGimatriaCalculate = "חישוב גימטריה";
@@ -87,7 +100,12 @@ public class Frame {
 	static final String combo_strTorahPrint = "הדפסת התורה";
 	static final String strLabel_padding_Dilug = "מספר אותיות";
 	static final String strLabel_padding_CountSearch = "מספר אינדקס";
-
+	static final String strLabel_padding_Search = "מילה שניה";
+	static final String checkBox_searchMultiple_String =  "<html><p align='right'>" + "חיפוש יותר ממילה אחת" + "</p></html>";
+	static final String checkBox_letterOrder_String = "שמור סדר האותיות";
+	static final String checkBox_letterOrder_Tooltip = "שמור על סדר האותיות";
+	static final String checkBox_wholeWord_Letters = "שמור על ראשי וסופי תיבות";
+	static final String checkBox_wholeWord_Regular = "מילים שלמות";
 	private static final int fontSize_hardCoded = 16;
 	private static final int fontSizeBig_hardCoded = fontSize_hardCoded + 2;
 	private static final int fontSizeSmall_hardCoded = fontSize_hardCoded - 2;
@@ -145,8 +163,8 @@ public class Frame {
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
 	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">" + "חישוב מיוחד"
-			+ "<br/>" + "לסופיות" + "</p> </html>";
-	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" + "<br/>"
+			+ " לסופיות" + "</p> </html>";
+	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" 
 			+ "שנמצאו" + "</p></html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
@@ -154,8 +172,8 @@ public class Frame {
 	private static Boolean methodRunning = false;
 
 	private JFrame frame;
-	private static JPanel panel;
-	private static GridBagLayout gbl_panel;
+	private static ArrayList<JPanel> subPanels = new ArrayList<JPanel>();
+    private static JPanel panel,subPanelProgressLabels,panelGroup, menuPanel;
 	private static JButton button_search;
 	private static JButton button_defaultSettings;
 	private static JButton button_searchRange;
@@ -175,6 +193,7 @@ public class Frame {
 	private static JCheckBox checkBox_countPsukim;
 	private static JCheckBox checkBox_searchRange;
 	private static JCheckBox checkBox_searchMultiple;
+	private static JCheckBox checkBox_letterOrder;
 	static JTextPane textPane;
 	private static Tree tree;
 	private static JScrollPane scrollPane;
@@ -183,7 +202,6 @@ public class Frame {
 	private static HTMLEditorKit kit = new HTMLEditorKit();
 	private SwingActivity activity;
 	static public int panelWidth;
-	private JPanel panel_1;
 	private JPopupMenu popupMenu;
 	private static JProgressBar progressBar;
 	private static JComboBox<?> comboBox_sub;
@@ -547,6 +565,7 @@ public class Frame {
 		checkBox_gimatriaSofiot.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		checkBox_countPsukim.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		checkBox_searchMultiple.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
+		checkBox_letterOrder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		label_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		textField_padding.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
 		progressBar.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSize()));
@@ -575,7 +594,6 @@ public class Frame {
 		temp = (int) (46 * ((float) fontSizeSmaller / fontSizeSmaller_hardCoded));
 		checkBox_searchRange.setPreferredSize(new Dimension(140, temp));
 		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) getFontSize() / 16)), 10));
-		gbl_panel.columnWidths = new int[] { (int) (120 + 24 * ((float) getFontSize() / 16)), 42, 0 };
 		// textHtmlSize = 5;
 		textHtmlSize = (int) (5 * ((float) getFontSize() / 16));
 		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_attentionHTML[0], color_attentionHTML[1],
@@ -604,92 +622,103 @@ public class Frame {
 	private static void setBGColor(Color c) {
 		customBGColor = c;
 		panel.setBackground(c);
+		panelGroup.setBackground(c);
+		for (JPanel thisPanel:subPanels) {
+			thisPanel.setBackground(c);
+		}
+		subPanelProgressLabels.setBackground(c);
 		comboBox_sub.setBackground(c);
 		checkBox_wholeWord.setBackground(c);
 		checkBox_gimatriaSofiot.setBackground(c);
 		checkBox_countPsukim.setBackground(c);
 		checkBox_searchRange.setBackground(c);
 		checkBox_searchMultiple.setBackground(c);
+		checkBox_letterOrder.setBackground(c);
 		// frame_instance.frame.repaint();
 		// frame_instance.frame.revalidate();
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void changeLayout(String str) {
+		DefaultComboBoxModel model;
 		switch (str) {
 		case combo_strSearch:
 		case combo_strCountSearch:
 		case combo_strGimatriaSearch:
 		case combo_strGimatriaCalculate:
 		case combo_strLetterSearch:
-			label_dilugMax.setVisible(false);
-			label_dilugMin.setVisible(false);
-			textField_dilugMax.setVisible(false);
-			textField_dilugMin.setVisible(false);
+			subPanels.get(id_rowHeight_dilug).setVisible(false);
 			switch (str) {
 			case combo_strSearch:
-				label_padding.setVisible(false);
-				comboBox_sub.setVisible(false);
-				checkBox_countPsukim.setVisible(true);
-				checkBox_wholeWord.setVisible(true);
-				checkBox_searchMultiple.setVisible(true);
-				textField_padding.setVisible(checkBox_searchMultiple.isSelected());
-				textField_padding.setText(paddingSearchMulti);
+				subPanels.get(id_rowHeight_padding).setVisible(checkBox_searchMultiple.isSelected());
+				subPanels.get(id_rowHeight_combosub).setVisible(checkBox_searchMultiple.isSelected());
+				subPanels.get(id_rowHeight_countPsukim).setVisible(true);
+				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
+				subPanels.get(id_rowHeight_searchMulti).setVisible(true);
+				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Regular); 
+				if (checkBox_searchMultiple.isSelected()) {
+					model = new DefaultComboBoxModel(comboBox_sub_Strings_Search_Multi);
+					comboBox_sub.setModel(model);
+				}
+				if (checkBox_searchMultiple.isSelected()) {
+					label_padding.setText(strLabel_padding_Search);
+					textField_padding.setText(paddingSearchMulti);
+				} 
 				break;
 			case combo_strCountSearch:
-				label_padding.setVisible(true);
+				subPanels.get(id_rowHeight_padding).setVisible(true);
+				subPanels.get(id_rowHeight_combosub).setVisible(false);
+				subPanels.get(id_rowHeight_countPsukim).setVisible(true);
+				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
+				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
+				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Regular); 
 				label_padding.setText(strLabel_padding_CountSearch);
 				textField_padding.setText(String.valueOf(paddingSearchIndex));
-				textField_padding.setVisible(true);
-				comboBox_sub.setVisible(false);
-				checkBox_countPsukim.setVisible(true);
-				checkBox_wholeWord.setVisible(true);
-				checkBox_searchMultiple.setVisible(false);
 				break;
 			case combo_strGimatriaSearch:
-				label_padding.setVisible(false);
-				textField_padding.setVisible(false);
-				comboBox_sub.setVisible(false);
-				checkBox_countPsukim.setVisible(false);
-				checkBox_wholeWord.setVisible(true);
-				checkBox_searchMultiple.setVisible(false);
+				subPanels.get(id_rowHeight_padding).setVisible(false);
+				subPanels.get(id_rowHeight_combosub).setVisible(false);
+				subPanels.get(id_rowHeight_countPsukim).setVisible(false);
+				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
+				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
+				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Regular); 
 				break;
 			case combo_strLetterSearch:
-				label_padding.setVisible(false);
-				textField_padding.setVisible(false);
-				comboBox_sub.setVisible(true);
-				// DefaultComboBoxModel model = new
-				// DefaultComboBoxModel(comboBox_sub_Strings_Letters);
-				// comboBox_sub.setModel( model );
-				checkBox_countPsukim.setVisible(false);
-				checkBox_wholeWord.setVisible(false);
-				checkBox_searchMultiple.setVisible(false);
+				subPanels.get(id_rowHeight_padding).setVisible(false);
+				subPanels.get(id_rowHeight_combosub).setVisible(true);
+				subPanels.get(id_rowHeight_countPsukim).setVisible(false);
+				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
+				subPanels.get(id_rowHeight_letterOrder).setVisible(true);
+				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Letters); 
+				model = new DefaultComboBoxModel(comboBox_sub_Strings_Letters);
+				comboBox_sub.setModel(model);
 				break;
 			case combo_strGimatriaCalculate:
-				label_padding.setVisible(false);
-				textField_padding.setVisible(false);
-				comboBox_sub.setVisible(false);
-				checkBox_countPsukim.setVisible(false);
-				checkBox_wholeWord.setVisible(false);
-				checkBox_searchMultiple.setVisible(false);
+				subPanels.get(id_rowHeight_padding).setVisible(false);
+				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
+				subPanels.get(id_rowHeight_combosub).setVisible(false);
+				subPanels.get(id_rowHeight_countPsukim).setVisible(false);
+				subPanels.get(id_rowHeight_wholeWord).setVisible(false);
+				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
 				break;
 			}
 			break;
 		case combo_strDilugim:
-			label_dilugMax.setVisible(true);
-			label_dilugMin.setVisible(true);
-			textField_dilugMax.setVisible(true);
-			textField_dilugMin.setVisible(true);
-			label_padding.setVisible(true);
+			subPanels.get(id_rowHeight_dilug).setVisible(true);
+			subPanels.get(id_rowHeight_padding).setVisible(true);
+			subPanels.get(id_rowHeight_combosub).setVisible(true);
+			subPanels.get(id_rowHeight_letterOrder).setVisible(false);
+			subPanels.get(id_rowHeight_countPsukim).setVisible(false);
+			subPanels.get(id_rowHeight_wholeWord).setVisible(false);
+			subPanels.get(id_rowHeight_searchMulti).setVisible(false);
 			label_padding.setText(strLabel_padding_Dilug);
 			textField_padding.setText(String.valueOf(paddingDilug));
-			textField_padding.setVisible(true);
-			comboBox_sub.setVisible(false);
-			// DefaultComboBoxModel model = new
-			// DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
-			// comboBox_sub.setModel( model );
-			checkBox_countPsukim.setVisible(false);
-			checkBox_wholeWord.setVisible(false);
-			checkBox_searchMultiple.setVisible(false);
+			model = new DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
+			comboBox_sub.setModel(model);
 			break;
 		}
 	}
@@ -732,7 +761,7 @@ public class Frame {
 	 * @throws IOException
 	 * @throws BadLocationException
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 	private void initialize() throws IOException, BadLocationException {
 		ToraApp.setGuiMode(ToraApp.id_guiMode_Frame);
 		frame = new JFrame();
@@ -746,12 +775,12 @@ public class Frame {
 		frame.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		JInternalFrame internalFrame = new JInternalFrame("חיפוש בתורה");
 		frame.getContentPane().add(internalFrame, BorderLayout.NORTH);
-		panel_1 = new JPanel();
-		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+		menuPanel = new JPanel();
+		frame.getContentPane().add(menuPanel, BorderLayout.NORTH);
+		menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.X_AXIS));
 
 		comboBox_main = new JComboBox();
-		panel_1.add(comboBox_main);
+		menuPanel.add(comboBox_main);
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(
@@ -760,85 +789,82 @@ public class Frame {
 		comboBox_main.setBackground(ColorBG_comboBox_main);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
-
-		panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		
+		panel = new JPanel();
+		GridLayout subPanelGrid1_1 = new GridLayout(1, 1, 1, 1);
+		GridLayout subPanelGrid1_2 = new GridLayout(1, 2, 1, 1);
+		GridLayout subPanelGrid2_1 = new GridLayout(2, 1, 1, 1);
+		GridLayout subPanelGrid2_2 = new GridLayout(2, 2, 1, 1);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setPreferredSize(new Dimension(300, 10));
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		frame.getContentPane().add(panel, BorderLayout.EAST);
-		gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 124, 42, 0 };
-		gbl_panel.rowHeights = new int[] { 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0 };
-		gbl_panel.columnWeights = new double[] { 1.0, 1.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		panel.setLayout(gbl_panel);
-
+		int countPanels=0;
+		
+		subPanels.add(new JPanel(subPanelGrid1_2){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
 		label_textfield_Search = new JLabel("חיפוש: ");
-		GridBagConstraints gbc_label = new GridBagConstraints();
-		gbc_label.insets = new Insets(0, 0, 5, 5);
-		gbc_label.anchor = GridBagConstraints.EAST;
-		gbc_label.gridx = 0;
-		gbc_label.gridy = 0;
-		panel.add(label_textfield_Search, gbc_label);
-
+		label_textfield_Search.setHorizontalAlignment(SwingConstants.RIGHT);
+		subPanels.get(countPanels).add(label_textfield_Search);
+		
+		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
 		textField_Search = new JTextField();
 		textField_Search.setMinimumSize(new Dimension(150, 25));
 		textField_Search.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_Search.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_textField_Search = new GridBagConstraints();
-		gbc_textField_Search.anchor = GridBagConstraints.NORTHEAST;
-		gbc_textField_Search.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_Search.gridx = 1;
-		gbc_textField_Search.gridy = 0;
-		panel.add(textField_Search, gbc_textField_Search);
+		subPanels.get(countPanels++).add(textField_Search);
 		textField_Search.setColumns(10);
 
+		subPanels.add(new JPanel(subPanelGrid2_2){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight*2);
+			   };
+			});
 		label_dilugMin = new JLabel("דילוג מינימום");
-		GridBagConstraints gbc_label_dilugMin = new GridBagConstraints();
-		gbc_label_dilugMin.anchor = GridBagConstraints.EAST;
-		gbc_label_dilugMin.insets = new Insets(0, 0, 5, 5);
-		gbc_label_dilugMin.gridx = 0;
-		gbc_label_dilugMin.gridy = 1;
-		panel.add(label_dilugMin, gbc_label_dilugMin);
-
+		label_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
+		subPanels.get(countPanels).add(label_dilugMin);
+		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
+		
 		textField_dilugMin = new JTextField();
 		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_dilugMin.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_textField_dilugMin = new GridBagConstraints();
-		gbc_textField_dilugMin.anchor = GridBagConstraints.EAST;
-		gbc_textField_dilugMin.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_dilugMin.gridx = 1;
-		gbc_textField_dilugMin.gridy = 1;
-		panel.add(textField_dilugMin, gbc_textField_dilugMin);
+		subPanels.get(countPanels).add(textField_dilugMin);
 		textField_dilugMin.setColumns(10);
 
 		label_dilugMax = new JLabel("דילוג מקסימום");
-		GridBagConstraints gbc_label_dilugMax = new GridBagConstraints();
-		gbc_label_dilugMax.anchor = GridBagConstraints.EAST;
-		gbc_label_dilugMax.insets = new Insets(0, 0, 5, 5);
-		gbc_label_dilugMax.gridx = 0;
-		gbc_label_dilugMax.gridy = 2;
-		panel.add(label_dilugMax, gbc_label_dilugMax);
+		label_dilugMax.setHorizontalAlignment(SwingConstants.RIGHT);
+		subPanels.get(countPanels).add(label_dilugMax);
+		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
 
 		textField_dilugMax = new JTextField();
 		textField_dilugMax.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMax.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_dilugMax.setColumns(10);
 		textField_dilugMax.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_textField_dilugMax = new GridBagConstraints();
-		gbc_textField_dilugMax.anchor = GridBagConstraints.EAST;
-		gbc_textField_dilugMax.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_dilugMax.gridx = 1;
-		gbc_textField_dilugMax.gridy = 2;
-		panel.add(textField_dilugMax, gbc_textField_dilugMax);
-		GridBagConstraints gbc_button_search = new GridBagConstraints();
-		gbc_button_search.insets = new Insets(0, 0, 5, 0);
-		gbc_button_search.gridx = 1;
-		gbc_button_search.gridy = 16;
-
+		subPanels.get(countPanels++).add(textField_dilugMax);
+		
+		label_padding = new JLabel(strLabel_padding_Dilug);
+		label_padding.setHorizontalAlignment(SwingConstants.RIGHT);
+		subPanels.add(new JPanel(subPanelGrid1_2){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels).add(label_padding);
+		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
+		textField_padding = new JTextField();
+		textField_padding.setText((String) null);
+		textField_padding.setMinimumSize(new Dimension(150, 25));
+		textField_padding.setHorizontalAlignment(SwingConstants.RIGHT);
+		textField_padding.setColumns(10);
+		textField_padding.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		subPanels.get(countPanels++).add(textField_padding);
+		
 		popupMenu = new JPopupMenu();
 		popupMenu.setLabel("");
 		// Then on your component(s)
@@ -878,124 +904,118 @@ public class Frame {
 
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
-		label_padding = new JLabel(strLabel_padding_Dilug);
-		GridBagConstraints gbc_label_padding = new GridBagConstraints();
-		gbc_label_padding.anchor = GridBagConstraints.EAST;
-		gbc_label_padding.insets = new Insets(0, 0, 5, 5);
-		gbc_label_padding.gridx = 0;
-		gbc_label_padding.gridy = 3;
-		panel.add(label_padding, gbc_label_padding);
-		textField_padding = new JTextField();
-		textField_padding.setText((String) null);
-		textField_padding.setMinimumSize(new Dimension(150, 25));
-		textField_padding.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_padding.setColumns(10);
-		textField_padding.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_textField_padding = new GridBagConstraints();
-		gbc_textField_padding.anchor = GridBagConstraints.EAST;
-		gbc_textField_padding.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_padding.gridx = 1;
-		gbc_textField_padding.gridy = 3;
-		panel.add(textField_padding, gbc_textField_padding);
-		GridBagConstraints gbc_comboBox_sub = new GridBagConstraints();
-		gbc_comboBox_sub.anchor = GridBagConstraints.EAST;
-		gbc_comboBox_sub.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox_sub.gridx = 0;
-		gbc_comboBox_sub.gridy = 4;
-		panel.add(comboBox_sub, gbc_comboBox_sub);
-		checkBox_wholeWord = new JCheckBox("מילים שלמות");
+		
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels++).add(comboBox_sub);
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		checkBox_letterOrder = new JCheckBox(checkBox_letterOrder_String);
+		checkBox_letterOrder.setToolTipText(checkBox_letterOrder_Tooltip);
+		checkBox_letterOrder.setSelected(false);
+		checkBox_letterOrder.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		checkBox_letterOrder.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		subPanels.get(countPanels++).add(checkBox_letterOrder);
+	
+		checkBox_wholeWord = new JCheckBox(checkBox_wholeWord_Regular);
 		checkBox_wholeWord.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_wholeWord.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-
-		GridBagConstraints gbc_checkBox_wholeWord = new GridBagConstraints();
-		gbc_checkBox_wholeWord.anchor = GridBagConstraints.EAST;
-		gbc_checkBox_wholeWord.insets = new Insets(0, 0, 5, 5);
-		gbc_checkBox_wholeWord.gridx = 0;
-		gbc_checkBox_wholeWord.gridy = 5;
-		panel.add(checkBox_wholeWord, gbc_checkBox_wholeWord);
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels++).add(checkBox_wholeWord);
 		checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
 		checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_gimatriaSofiot.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-		GridBagConstraints gbc_checkBox_gimatriaSofiot = new GridBagConstraints();
-		gbc_checkBox_gimatriaSofiot.anchor = GridBagConstraints.EAST;
-		gbc_checkBox_gimatriaSofiot.insets = new Insets(0, 0, 5, 5);
-		gbc_checkBox_gimatriaSofiot.gridx = 0;
-		gbc_checkBox_gimatriaSofiot.gridy = 6;
-		panel.add(checkBox_gimatriaSofiot, gbc_checkBox_gimatriaSofiot);
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels++).add(checkBox_gimatriaSofiot);
 
 		checkBox_countPsukim = new JCheckBox(checkBox_countPsukim_true);
 		checkBox_countPsukim.setSelected(true);
 		checkBox_countPsukim.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_countPsukim.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_checkBox_countPsukim = new GridBagConstraints();
-		gbc_checkBox_countPsukim.anchor = GridBagConstraints.EAST;
-		gbc_checkBox_countPsukim.insets = new Insets(0, 0, 5, 5);
-		gbc_checkBox_countPsukim.gridx = 0;
-		gbc_checkBox_countPsukim.gridy = 7;
-		panel.add(checkBox_countPsukim, gbc_checkBox_countPsukim);
-		checkBox_searchMultiple = new JCheckBox("<html><p align='right'>" + "חיפוש יותר<br> ממילה אחת" + "</p></html>");
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels++).add(checkBox_countPsukim);
+		checkBox_searchMultiple = new JCheckBox(checkBox_searchMultiple_String);
 		checkBox_searchMultiple.setSelected(false);
 		checkBox_searchMultiple.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_searchMultiple.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_checkBox_searchMultiple = new GridBagConstraints();
-		gbc_checkBox_searchMultiple.anchor = GridBagConstraints.EAST;
-		gbc_checkBox_searchMultiple.insets = new Insets(0, 0, 5, 5);
-		gbc_checkBox_searchMultiple.gridx = 0;
-		gbc_checkBox_searchMultiple.gridy = 8;
-		panel.add(checkBox_searchMultiple, gbc_checkBox_searchMultiple);
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels++).add(checkBox_searchMultiple);
 		// Change countPsukim checkbox text when changing selected state
 		progressBar = new JProgressBar();
 		progressBar.setMinimumSize(new Dimension(150, 30));
 		progressBar.setVisible(false);
 
 		button_searchRange = new JButton("טווח חיפוש");
-		GridBagConstraints gbc_button_searchRange = new GridBagConstraints();
-		gbc_button_searchRange.anchor = GridBagConstraints.EAST;
-		gbc_button_searchRange.insets = new Insets(0, 0, 5, 5);
-		gbc_button_searchRange.gridx = 0;
-		gbc_button_searchRange.gridy = 10;
-		panel.add(button_searchRange, gbc_button_searchRange);
+		subPanels.add(new JPanel(subPanelGrid1_2){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),(int)(rowHeight*1.8));
+			   };
+			});
+		subPanels.get(countPanels).add(button_searchRange);
 
 		checkBox_searchRange = new JCheckBox("הכול");
 		checkBox_searchRange.setHorizontalAlignment(SwingConstants.RIGHT);
 		checkBox_searchRange.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GridBagConstraints gbc_checkBox_searchRange = new GridBagConstraints();
-		gbc_checkBox_searchRange.anchor = GridBagConstraints.EAST;
-		gbc_checkBox_searchRange.insets = new Insets(0, 0, 5, 0);
-		gbc_checkBox_searchRange.gridx = 1;
-		gbc_checkBox_searchRange.gridy = 10;
-		panel.add(checkBox_searchRange, gbc_checkBox_searchRange);
+		subPanels.get(countPanels++).add(checkBox_searchRange);
+		
+		subPanels.add(new JPanel(subPanelGrid1_2){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),(int)(rowHeight*1.1));
+			   };
+			});
 		progressBar.setStringPainted(true);
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(100);
-		GridBagConstraints gbc_progressBar = new GridBagConstraints();
-		gbc_progressBar.gridheight = 2;
-		gbc_progressBar.insets = new Insets(0, 0, 5, 5);
-		gbc_progressBar.gridx = 0;
-		gbc_progressBar.gridy = 14;
-		panel.add(progressBar, gbc_progressBar);
+		subPanels.get(countPanels).add(progressBar);
 
+		subPanelProgressLabels = new JPanel(subPanelGrid2_1);
 		label_countMatch = new JLabel("dilug progress");
 		label_countMatch.setVisible(false);
-
 		label_dProgress = new JLabel("dilug progress");
 		label_dProgress.setVisible(false);
-		GridBagConstraints gbc_label_dProgress = new GridBagConstraints();
-		gbc_label_dProgress.anchor = GridBagConstraints.EAST;
-		gbc_label_dProgress.insets = new Insets(0, 0, 5, 0);
-		gbc_label_dProgress.gridx = 1;
-		gbc_label_dProgress.gridy = 14;
-		panel.add(label_dProgress, gbc_label_dProgress);
-		GridBagConstraints gbc_label_dCountMatch = new GridBagConstraints();
-		gbc_label_dCountMatch.anchor = GridBagConstraints.EAST;
-		gbc_label_dCountMatch.insets = new Insets(0, 0, 5, 0);
-		gbc_label_dCountMatch.gridx = 1;
-		gbc_label_dCountMatch.gridy = 15;
-		panel.add(label_countMatch, gbc_label_dCountMatch);
-
-		panel.add(button_search, gbc_button_search);
-
+		subPanelProgressLabels.add(label_dProgress);
+		subPanelProgressLabels.add(label_countMatch);
+		label_dProgress.setHorizontalAlignment(SwingConstants.CENTER);
+		label_countMatch.setHorizontalAlignment(SwingConstants.CENTER);
+		subPanels.get(countPanels++).add(subPanelProgressLabels);
+		
+		subPanels.add(new JPanel(subPanelGrid1_1){
+			   public Dimension getPreferredSize() {
+			       return new Dimension(panel.getWidth(),rowHeight);
+			   };
+			});
+		subPanels.get(countPanels++).add(button_search);
+		panelGroup = new JPanel();
+		for (JPanel thisPanel:subPanels) {
+			thisPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+			
+			panelGroup.add(thisPanel);
+		}
+		panel.add(panelGroup);
+		//panelGroup.setBorder(new EmptyBorder(20, 20, 20, 20));
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 
@@ -1115,13 +1135,20 @@ public class Frame {
 			public void actionPerformed(ActionEvent event) {
 				if (getComboBox_main() == combo_strSearch) {
 					JCheckBox cb = (JCheckBox) event.getSource();
-					textField_padding.setVisible(cb.isSelected());
-					frame_instance.frame.repaint();
-					frame_instance.frame.revalidate();
+					subPanels.get(id_rowHeight_padding).setVisible(cb.isSelected());
+					subPanels.get(id_rowHeight_combosub).setVisible(cb.isSelected());
+					if (checkBox_searchMultiple.isSelected()) {
+						label_padding.setText(strLabel_padding_Search);
+						DefaultComboBoxModel model;
+						model = new DefaultComboBoxModel(comboBox_sub_Strings_Search_Multi);
+						comboBox_sub.setModel(model);
+					} 
+					//frame_instance.frame.repaint();
+					//frame_instance.frame.revalidate();
 				}
 			}
 		});
-
+	
 		// Button to save settings
 		button_defaultSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1398,6 +1425,9 @@ public class Frame {
 
 	public static Boolean getCheckbox_searchMultiple() {
 		return checkBox_searchMultiple.isSelected();
+	}
+	public static Boolean getCheckbox_letterOrder() {
+		return checkBox_letterOrder.isSelected();
 	}
 
 }

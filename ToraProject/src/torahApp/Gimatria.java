@@ -224,11 +224,16 @@ public class Gimatria {
 				// changed to current loop index
 			}
 			String Title = ((bool_wholeWords) ? "גימטריה: מילים שלמות" : "גימטריה: צירוף אותיות");
+			String Title2="";
 			String fileName = String.valueOf(searchGmt);
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
+			if (bool_sofiot) {
+				sheet += "_"+"ף";
+				Title2 += "התחשבות בסופיות";
+			}
 			if (count > 0) {
 				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true,String.valueOf(searchGmt)
-						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
+						,Title2,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
 						);
 			}
 			Output.printText("\u202B" + "סיים חיפוש");

@@ -1,6 +1,9 @@
 package ioManagement;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import frame.Frame;
 import frame.Tree;
@@ -19,6 +22,7 @@ public class Output {
 		}
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
 		String lineHtml = "";
+		//checks for same lines to merge mark
 		for (int[] i : charPOSArray) {
 			if (charPOSArray[indexOfArray][0] == i[0]) {
 				indexes.add(i[1] - 1);
@@ -48,6 +52,44 @@ public class Output {
 		return lineHtml;
 	}
 
+	public static String markMatchesFromArrayList(ArrayList<Integer> indexes,
+			stringFormatting.HtmlGenerator htmlFormat) {
+		// Does not mark, if in console mode
+		String line="";
+		try (BufferedReader bReader2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile,
+				ToraApp.subTorahLineFile); Stream<String> lines = bReader2.lines()) {
+			// Recieves words of Pasuk
+			line = lines.skip(indexes.get(0) - 1).findFirst().get();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return line;
+		}
+		String lineHtml = "";
+		//checks for same lines to merge mark
+		int lastIndex = 0;
+		int countIndex=0;
+		for (Integer thisIndex : indexes) {
+			//skip first 1 line(s)
+			if (countIndex<1) {
+				countIndex++;
+				continue;
+			}
+			String tempStr = "";
+			if (thisIndex > 0) {
+				tempStr = line.substring(lastIndex, thisIndex);
+		}
+			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex, 1 + thisIndex)
+					+ htmlFormat.getHtml(1);
+
+			lastIndex = thisIndex + 1;
+		}
+		lineHtml += line.substring(lastIndex);
+		return lineHtml;
+	}
+	
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
 			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) {
 		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot, bool_wholeWords, -1);
@@ -279,6 +321,54 @@ public class Output {
 		return (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
 	}
 
+	public static LineHtmlReport markTextOrderedLetters(String searchSTR, String line,Boolean bool_sofiot,Boolean firstLast,stringFormatting.HtmlGenerator htmlFormat) {
+		String lineConvert;
+		String searchConvert;
+		if (!bool_sofiot) {
+			searchConvert = HebrewLetters.switchSofiotStr(searchSTR);
+			lineConvert = HebrewLetters.switchSofiotStr(line);
+		} else {
+			searchConvert = searchSTR;
+			lineConvert = line;
+		}
+		int oldIndex=0;
+		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
+		int indexCounter=0;
+		for (char ch:searchConvert.toCharArray()) {
+			if ((firstLast)
+				&&(indexCounter==(searchConvert.length()-1))) {
+				int tempIndex = lineConvert.lastIndexOf(ch);
+				indexes.add(new Integer[] {tempIndex,tempIndex+1});
+			} else {
+				int tempIndex = lineConvert.indexOf(ch,oldIndex);
+				indexes.add(new Integer[] {tempIndex,tempIndex+1});
+			}
+			if (indexes.get(indexCounter)[0]==-1) {
+				return  new LineHtmlReport(line,null);
+			} else {
+				oldIndex=indexes.get(indexCounter++)[0];
+			}
+		}
+		String lineHtml = "";
+		int lastIndex = 0;
+		for (Integer[] thisIndex : indexes) {
+			String tempStr = "";
+			if (thisIndex[0] > 0) {
+				tempStr = line.substring(lastIndex, thisIndex[0]);
+			}
+			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex[0], thisIndex[1])
+					+ htmlFormat.getHtml(1);
+
+			lastIndex = thisIndex[1];
+		}
+		lineHtml += line.substring(lastIndex);
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			return new LineHtmlReport(line,indexes);
+		} else {
+			return new LineHtmlReport(lineHtml,indexes);
+		}
+	}
+	
 	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
 		// Does not mark, if in console mode
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -356,15 +446,14 @@ public class Output {
 			return;
 		}
 		// System.out.println(width);
+		try {
 		Tree.getInstance().addNodeParasha(lineNum,
 				"<html><body style='width: " + width + "px'>" + frame.Frame.mainStyleHTML.getHtml(0) + text
 						+ frame.Frame.mainStyleHTML.getHtml(1) + getLine(1) + "</body></html>",
 				isDilug);
-
-		// Tree.getInstance().addNodeParasha(lineNum, "<html><body style='width:
-		// "+width+"px'><p align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
-		// Tree.getInstance().addNodeParasha(lineNum, "<html><body><p
-		// align='right'>"+text+"</p>"+getLine(1)+"</body></html>");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void printText(String text) {

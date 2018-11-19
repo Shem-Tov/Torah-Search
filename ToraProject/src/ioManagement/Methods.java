@@ -6,6 +6,7 @@ import java.util.List;
 import extras.Console;
 import extras.extraFunctions;
 import torahApp.CountSearch;
+import torahApp.DilugWordPasuk;
 import torahApp.Dilugim;
 import torahApp.Gimatria;
 import torahApp.LetterSearch;
@@ -20,10 +21,11 @@ public class Methods {
 	public static final int id_searchGimatria=2;
 	public static final int id_calculateGimatria=3;
 	public static final int id_searchDilugim=4;
-	public static final int id_searchLetters=5;
-	public static final int id_searchCount=6;
-	public static final int id_settings=7;
-	public static final int id_printTorah=8;
+	public static final int id_searchDilugWordPasuk=5;
+	public static final int id_searchLetters=6;
+	public static final int id_searchCount=7;
+	public static final int id_settings=8;
+	public static final int id_printTorah=9;
 	
 	// Add method references here
 	public static List<MethodRunner> arrayMethods = new ArrayList<>();
@@ -63,6 +65,15 @@ public class Methods {
 			public void run(Object... args) throws IOException {
 				Dilugim dilug = Dilugim.getInstance();
 				dilug.searchWordsDilugim(args);
+			}
+		});
+		getArrayMethodID().add(id_searchDilugWordPasuk);
+		getArrayMethodTitle().add("Search Dilugim");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				DilugWordPasuk dilug = DilugWordPasuk.getInstance();
+				dilug.searchDilugWordPasuk(args);
 			}
 		});
 		getArrayMethodID().add(id_searchLetters);

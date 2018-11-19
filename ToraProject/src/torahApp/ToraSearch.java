@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
+import extras.extraFunctions;
 import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
@@ -36,6 +37,7 @@ public class ToraSearch {
 		boolean bool_wholeWords;
 		boolean bool_sofiot;
 		boolean bool_multiSearch;
+		boolean bool_multiMustFindBoth = true;
 		String searchSTR2 = "", searchConvert2 = "";
 		// FileWriter outputStream2 = null;
 		try {
@@ -51,6 +53,7 @@ public class ToraSearch {
 			if (bool_multiSearch) {
 				searchSTR2 = ((String) args[5]).trim();
 				searchConvert2 = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR2) : searchSTR2;
+				bool_multiMustFindBoth = (args[6] != null) ? (Boolean) args[6] : true;
 			}
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
@@ -99,9 +102,9 @@ public class ToraSearch {
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				String tempStr=searchSTR;
+				String tempStr = searchSTR;
 				if (bool_multiSearch) {
-					tempStr += " | "+searchSTR2;
+					tempStr += " | " + searchSTR2;
 				}
 				Tree.getInstance().changeRootText(Output.markText(tempStr, Frame.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
@@ -146,6 +149,7 @@ public class ToraSearch {
 							}
 						}
 						if (((bool_multiSearch) && (found1) && (found2))
+								|| ((bool_multiSearch) && (!bool_multiMustFindBoth) && ((found1) || (found2)))
 								|| ((!bool_multiSearch) && (s.equals(searchConvert)))) {
 							count++;
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
@@ -155,8 +159,16 @@ public class ToraSearch {
 							// fill results array
 
 							if (bool_multiSearch) {
-								results.add(Output.printPasukInfo(countLines, searchSTR, line,
-										frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords, searchSTR2));
+								if ((found1) && (found2)) {
+									results.add(Output.printPasukInfo(countLines, searchSTR, line,
+											frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords, searchSTR2));
+								} else if (found1) {
+									results.add(Output.printPasukInfo(countLines, searchSTR, line,
+											frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+								} else { // then (found2)
+									results.add(Output.printPasukInfo(countLines, searchSTR2, line,
+											frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+								}
 								break;
 							} else {
 								results.add(Output.printPasukInfo(countLines, searchSTR, line,
@@ -178,17 +190,28 @@ public class ToraSearch {
 					} else {
 						combineConvertedLines = ((!bool_sofiot) ? HebrewLetters.switchSofiotStr(line) : line);
 					}
-					if (combineConvertedLines.contains(searchConvert)) {
-						if ((!bool_multiSearch)) {
+					boolean found1 = (combineConvertedLines.contains(searchConvert));
+					boolean found2 = ((bool_multiSearch) && (combineConvertedLines.contains(searchConvert2)));
+					if ((found1) || ((found2) && (!bool_multiMustFindBoth))) {
+
+						if ((!bool_multiSearch)
+								|| ((extraFunctions.logicalXOR(found1, found2)) && (!bool_multiMustFindBoth))) {
 							boolean foundInLine2 = false;
 							if (searchSTRinLine2 > 0) {
-								if ((combineConvertedLines.lastIndexOf(searchConvert) + searchConvert.length()) > line
-										.length()) {
-									foundInLine2 = true;
+								if (found1) {
+									if ((combineConvertedLines.lastIndexOf(searchConvert)
+											+ searchConvert.length()) > line.length()) {
+										foundInLine2 = true;
+									}
+								} else {
+									if ((combineConvertedLines.lastIndexOf(searchConvert2)
+											+ searchConvert2.length()) > line.length()) {
+										foundInLine2 = true;
+									}	
 								}
 							}
 							int countMatch;
-							countMatch = StringUtils.countMatches(combineConvertedLines, searchConvert);
+							countMatch = StringUtils.countMatches(combineConvertedLines, (found1)?searchConvert:searchConvert2);
 							count = count + countMatch;
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
@@ -196,7 +219,7 @@ public class ToraSearch {
 							countPsukim++;
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
-							results.add(Output.printPasukInfo(countLines, searchSTR,
+							results.add(Output.printPasukInfo(countLines, (found1) ? searchSTR:searchSTR2,
 									((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
 						} else if ((combineConvertedLines.contains(searchConvert2))) {
@@ -256,14 +279,30 @@ public class ToraSearch {
 				Tree.getInstance().flushBuffer((count < 50));
 			}
 			String Title = ((bool_wholeWords) ? "חיפוש מילים שלמות בתורה" : "חיפוש צירוף אותיות בתורה");
-			String fileName = searchSTR.replace(' ','_');
+			String Title2 ="";
+			String Title3 ="";
+			String fileName = searchSTR.replace(' ', '_');
 			if (bool_multiSearch) {
-				fileName += "_"+searchSTR2.replace(' ','_');
+				fileName += "_" + searchSTR2.replace(' ', '_');
 			}
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
+			if (bool_multiSearch) {
+				sheet += "_מולטי";
+				Title2+="חיפוש מכמה מילים";
+				if (bool_multiMustFindBoth) {
+					sheet += "_כל";
+					Title3+="פסוקים הכוללים את שני המילים";
+				} else {
+					sheet += "_אחד";
+					Title3+="פסוקים שיש בו לפחות מילה אחת";
+					
+				}
+			}
+			
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true,
-						searchSTR,searchSTR2,((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
+				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true, searchSTR,
+						searchSTR2,Title2,Title3,
+						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
 

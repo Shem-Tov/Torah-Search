@@ -345,12 +345,17 @@ public class Dilugim {
 								frame.Frame.footerStyleHTML));
 				Output.printLine(2, "orange");
 				Output.printText("");
-				String Title = "חיפוש מילים בדילוגים בתורה" + ((bool_sofiot) ? " (מתעלם מסופיות)." : ".");
+				String Title = "חיפוש מילים בדילוגים בתורה" +".";
+				String Title2="";
 				String fileName = searchOriginal.replace(' ','_');
-				String sheet = "דילוגים" + String.valueOf(thisDilug) + ((bool_sofiot) ? "סופיות" : "ללא_סופיות");
+				String sheet = "דילוגים" + String.valueOf(thisDilug);
+				if (bool_sofiot) {
+					sheet += "_"+"ף";
+					Title2 += "התחשבות בסופיות";
+				}
 				if (count > 0) {
 					ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, bool_filePaddingFound,
-							searchOriginal,((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
+							searchOriginal,Title2,((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 				}
 				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
 					maxDilug = thisDilug;

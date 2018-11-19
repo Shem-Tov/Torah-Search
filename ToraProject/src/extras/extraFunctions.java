@@ -9,6 +9,10 @@ import ioManagement.Output;
 import torahApp.ToraApp;
 
 public class extraFunctions {
+	public static boolean logicalXOR(boolean x, boolean y) {
+	    return ( ( x || y ) && ! ( x && y ) );
+	}
+	
 	public static void findWords() throws IOException {
 
 		BufferedReader inputStream = null;
