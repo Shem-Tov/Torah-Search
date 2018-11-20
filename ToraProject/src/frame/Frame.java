@@ -165,7 +165,7 @@ public class Frame {
 	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">" + "חישוב מיוחד"
 			+ " לסופיות" + "</p> </html>";
 	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" 
-			+ "שנמצאו" + "</p></html>";
+			+ "</p></html>";
 	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
 	private static Boolean methodCancelRequest = false;
@@ -447,7 +447,7 @@ public class Frame {
 		} catch (Exception e) {
 			color_markupStyleHTML = color_markupStyleHTML_hardCoded.clone();
 		}
-
+		checkBox_letterOrder.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_letterOrder)));
 		checkBox_gimatriaSofiot.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_gimatriaSofiot)));
 		checkBox_wholeWord.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_wholeWord)));
 		checkBox_countPsukim.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_countPsukim)));
@@ -499,6 +499,7 @@ public class Frame {
 		PropStore.addNotNull(PropStore.bool_createDocument, String.valueOf(checkbox_createDocument.isSelected()));
 		PropStore.addNotNull(PropStore.bool_createExcel, String.valueOf(checkbox_createExcel.isSelected()));
 		PropStore.addNotNull(PropStore.bool_createTree, String.valueOf(checkbox_createTree.isSelected()));
+		PropStore.addNotNull(PropStore.bool_letterOrder, String.valueOf(checkBox_letterOrder.isSelected()));
 
 		PropStore.store();
 	}

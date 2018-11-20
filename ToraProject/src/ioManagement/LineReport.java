@@ -2,6 +2,9 @@ package ioManagement;
 
 import java.util.ArrayList;
 
+//String[][] results = new String[][] { { searchSTR, pBookInstance.getBookName(), pBookInstance.getPerekLetters(),
+//	pBookInstance.getPasukLetters(), line } };
+
 public class LineReport {
 	String[][] results;
 	ArrayList<Integer[]> indexes;

@@ -1,5 +1,5 @@
 package torahApp;
-
+//Did not create Excel Sheet for this
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -240,7 +240,9 @@ public class DilugWordPasuk {
 					if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 						continue;
 					}
-
+					if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
+						frame.SwingActivity.getInstance().callProcess(countLines, thisDilug, minDilug, maxDilug);
+					}
 					String[] splitStr;
 					String lineConvert;
 					if (!bool_sofiot) {
@@ -414,6 +416,7 @@ public class DilugWordPasuk {
 								frame.Frame.footerStyleHTML));
 				Output.printLine(2, "orange");
 				Output.printText("");
+				/*
 				String Title = "חיפוש מילים בדילוגים בתורה" + ".";
 				String Title2 = "";
 				String fileName = searchSTR.replace(' ', '_');
@@ -427,7 +430,7 @@ public class DilugWordPasuk {
 							Title2,
 							((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 				}
-	
+				*/
 			}
 			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
 				Tree.getInstance().flushBuffer((countAll < 50), true);
