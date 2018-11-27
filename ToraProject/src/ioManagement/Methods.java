@@ -10,6 +10,7 @@ import torahApp.DilugWordPasuk;
 import torahApp.Dilugim;
 import torahApp.Gimatria;
 import torahApp.LetterSearch;
+import torahApp.ReportTorahCount;
 import torahApp.ToraSearch;
 
 public class Methods {
@@ -17,15 +18,16 @@ public class Methods {
 		public void run(Object... args) throws IOException;
 	}
 
-	public static final int id_searchWords=1;
-	public static final int id_searchGimatria=2;
-	public static final int id_calculateGimatria=3;
-	public static final int id_searchDilugim=4;
-	public static final int id_searchDilugWordPasuk=5;
-	public static final int id_searchLetters=6;
-	public static final int id_searchCount=7;
-	public static final int id_settings=8;
-	public static final int id_printTorah=9;
+	public static final int id_searchWords=0;
+	public static final int id_searchGimatria=1;
+	public static final int id_calculateGimatria=2;
+	public static final int id_searchDilugim=3;
+	public static final int id_searchDilugWordPasuk=4;
+	public static final int id_searchLetters=5;
+	public static final int id_searchCount=6;
+	public static final int id_settings=7;
+	public static final int id_printTorah=8;
+	public static final int id_ReportTorahCount=9;
 	
 	// Add method references here
 	public static List<MethodRunner> arrayMethods = new ArrayList<>();
@@ -110,7 +112,16 @@ public class Methods {
 				extras.printFile.printTorah();
 			}
 		});
-		getArrayMethodID().add(9);
+		getArrayMethodID().add(id_ReportTorahCount);
+		getArrayMethodTitle().add("Report Torah Count");
+		arrayMethods.add(new MethodRunner() {
+			@Override
+			public void run(Object... args) throws IOException {
+				ReportTorahCount tCount = ReportTorahCount.getInstance();
+				tCount.createReport(args);
+			}
+		});
+		getArrayMethodID().add(11);
 		getArrayMethodTitle().add("Find Words");
 		arrayMethods.add(new MethodRunner() {
 			@Override
@@ -118,7 +129,7 @@ public class Methods {
 				extraFunctions.findWords();
 			}
 		});
-		getArrayMethodID().add(10);
+		getArrayMethodID().add(12);
 		getArrayMethodTitle().add("Find First Letters");
 		arrayMethods.add(new MethodRunner() {
 			@Override

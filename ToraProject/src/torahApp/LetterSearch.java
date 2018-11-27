@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import frame.ColorClass;
 import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
@@ -105,7 +106,8 @@ public class LetterSearch {
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(
+				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -123,12 +125,12 @@ public class LetterSearch {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
-			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
+				Tree.getInstance().changeRootText(Output.markText(searchSTR, ColorClass.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
@@ -184,26 +186,27 @@ public class LetterSearch {
 						// fill results array
 						if (modePsukim) {
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\"" + Output.markText(searchSTR,frame.Frame.markupStyleHTML) + "\" " + "נמצא ב"
-									+ StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+							String tempStr1 = "\u202B" + "\"" + Output.markText(searchSTR,frame.ColorClass.markupStyleHTML) + "\" " + "נמצא ב"
+									+ Output.markText(StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters(),
+									ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()%ColorClass.highlightStyleHTML.length]);
 							// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 							String lineHtml;
-							LineHtmlReport lineHtmlReport = null;
+							LineHtmlReport lineHtmlReport = new LineHtmlReport(null, null);
 							if (bool_keepOrder) {
-								lineHtmlReport = Output.markTextOrderedLetters(searchSTR, line, bool_sofiot,bool_firstLastLetters, frame.Frame.markupStyleHTML);
+								lineHtmlReport = Output.markTextOrderedLetters(searchSTR, line, bool_sofiot,bool_firstLastLetters, frame.ColorClass.markupStyleHTML);
 								lineHtml=lineHtmlReport.getLineHtml();
 							} else {
 								lineHtml=line;
 							}
 							String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
 							Output.printText(tempStr2);
-							results.add(new LineReport ( new String[][] { { searchSTR, pBookInstance.getBookName(),
-									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } },lineHtmlReport.getIndexes()));
+							results.add(new LineReport ( new String[]  { searchSTR, pBookInstance.getBookName(),
+									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } ,lineHtmlReport.getIndexes()));
 							Output.printTree(countLines,tempStr2,false);
 						} 
 						else {
-							results.add(Output.printPasukInfo(countLines, s, line, frame.Frame.markupStyleHTML,
+							results.add(Output.printPasukInfo(countLines, s, line, frame.ColorClass.markupStyleHTML,
 									bool_sofiot, true));
 						}
 					}
@@ -243,7 +246,7 @@ public class LetterSearch {
 			}
 					
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, true, searchSTR,Title2,Title3,Title4,
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, searchSTR,Title2,Title3,Title4,
 						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
@@ -255,9 +258,9 @@ public class LetterSearch {
 			Output.printText("");
 			Output.printText(Output.markText(
 					"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים" + ".",
-					frame.Frame.footerStyleHTML));
+					frame.ColorClass.footerStyleHTML));
 			Output.printText("");
-			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.ColorClass.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}

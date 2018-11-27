@@ -32,6 +32,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import org.apache.commons.lang3.StringUtils;
 import ioManagement.ExcelFunctions;
+import ioManagement.Output;
 import ioManagement.PropStore;
 import torahApp.ToraApp;
 import java.awt.event.ActionListener;
@@ -46,6 +47,7 @@ import java.awt.Font;
 import java.awt.Dimension;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPopupMenu;
 import java.awt.event.MouseAdapter;
@@ -70,25 +72,23 @@ public class Frame {
 
 	private static final int rowHeight_hardCoded = 30;
 	private static int rowHeight = rowHeight_hardCoded;
+	private static final int id_panel_search = 0;
+	private static final int id_panel_dilug = 1;
+	private static final int id_panel_padding = 2;
+	private static final int id_panel_combosub = 3;
+	private static final int id_panel_letterOrder = 4;
+	private static final int id_panel_wholeWord = 5;
+	private static final int id_panel_gimatriaSofiot = 6;
+	private static final int id_panel_countPsukim = 7;
+	private static final int id_panel_searchMulti = 8;
+	private static final int id_panel_searchRange = 9;
 	@SuppressWarnings("unused")
-	private static final int id_rowHeight_search=0;
-	private static final int id_rowHeight_dilug=1;
-	private static final int id_rowHeight_padding=2;
-	private static final int id_rowHeight_combosub=3;
-	private static final int id_rowHeight_letterOrder=4;
-	private static final int id_rowHeight_wholeWord=5;
+	private static final int id_panel_progress = 10;
 	@SuppressWarnings("unused")
-	private static final int id_rowHeight_gimatriaSofiot=6;
-	private static final int id_rowHeight_countPsukim=7;
-	private static final int id_rowHeight_searchMulti=8;
-	@SuppressWarnings("unused")
-	private static final int id_rowHeight_searchRange=9;
-	@SuppressWarnings("unused")
-	private static final int id_rowHeight_progress=10;
-	@SuppressWarnings("unused")
-	private static final int id_rowHeight_BUTTON=11;
+	private static final int id_panel_BUTTON = 11;
 	public static final String[] comboBox_sub_Strings_Letters = new String[] { "מילים", "פסוקים" };
-	public static final String[] comboBox_sub_Strings_Dilugim = new String[] { "רגיל","ראש פסוק" , "סוף פסוק","ראש מילה","סוף מילה" };
+	public static final String[] comboBox_sub_Strings_Dilugim = new String[] { "רגיל", "ראש פסוק", "סוף פסוק",
+			"ראש מילה", "סוף מילה" };
 	public static final String[] comboBox_sub_Strings_Search_Multi = new String[] { "חובה שתי המילים",
 			"מספיק מילה אחת" };
 	static final String combo_strSearch = "חיפוש רגיל";
@@ -98,10 +98,15 @@ public class Frame {
 	static final String combo_strLetterSearch = "חיפוש אותיות";
 	static final String combo_strCountSearch = "חיפוש אינדקס";
 	static final String combo_strTorahPrint = "הדפסת התורה";
-	static final String strLabel_padding_Dilug = "מספר אותיות";
-	static final String strLabel_padding_CountSearch = "מספר אינדקס";
-	static final String strLabel_padding_Search = "מילה שניה";
-	static final String checkBox_searchMultiple_String =  "<html><p align='right'>" + "חיפוש יותר ממילה אחת" + "</p></html>";
+	static final String combo_strTorahRangeReport = "דוח ספירה";
+	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" + "</p></html>";
+	private static final String checkBox_countPsukim_false = "ספירת מציאות";
+	private static final String strLabel_padding_Dilug = "מספר אותיות";
+	private static final String strLabel_padding_CountSearch = "מספר אינדקס";
+	private static final String strLabel_padding_Search = "מילה שניה";
+	private static final String checkBox_searchMultiple_String = "<html><p align='right'>" + "חיפוש יותר ממילה אחת"
+			+ "</p></html>";
+	private static final String checkBox_searchMultiple_ReverseDilug = "חיפוש דילוג הפוך";
 	static final String checkBox_letterOrder_String = "שמור סדר האותיות";
 	static final String checkBox_letterOrder_Tooltip = "שמור על סדר האותיות";
 	static final String checkBox_wholeWord_Letters = "שמור על ראשי וסופי תיבות";
@@ -118,15 +123,6 @@ public class Frame {
 
 	private static int textHtmlSize = 5;
 	public static final int lineHeaderSize = 5;
-	private static final int[] color_mainStyleHTML_hardCoded = new int[] { 128, 88, 255 };
-	private static final int[] color_markupStyleHTML_hardCoded = new int[] { 245, 195, 92 };
-	private static final int[] color_attentionHTML = new int[] { 250, 40, 40 };
-	private static final int[] color_headerStyleHTML = new int[] { 58, 124, 240 };
-	private static final int[] color_footerStyleHTML = new int[] { 255, 144, 180 };
-
-	private static int[] color_mainStyleHTML = color_mainStyleHTML_hardCoded.clone();
-	private static int[] color_markupStyleHTML = color_markupStyleHTML_hardCoded.clone();
-
 	// searchRange, has two line numbers to search through in the Torah
 	// if {0,0} then search through ALL
 	private static int[] searchRange = new int[] { 0, 0 };
@@ -139,41 +135,25 @@ public class Frame {
 	private static int paddingDilug = 1;
 	// JTextPane Formatting
 	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
-			color_attentionHTML[0], color_attentionHTML[1], color_attentionHTML[2], 0b111);
-	public static stringFormatting.HtmlGenerator mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
-			color_mainStyleHTML_hardCoded[0], color_mainStyleHTML_hardCoded[1], color_mainStyleHTML_hardCoded[2],
-			0b111);
-	// public static StringFormatting.HtmlGenerator markupStyleHTML = new
-	// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
-	public static stringFormatting.HtmlGenerator markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
-			color_markupStyleHTML_hardCoded[0], color_markupStyleHTML_hardCoded[1], color_markupStyleHTML_hardCoded[2],
-			0b100);
-
-	public static stringFormatting.HtmlGenerator headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
-			color_headerStyleHTML[0], color_headerStyleHTML[1], color_headerStyleHTML[2], 0b100);
-	public static stringFormatting.HtmlGenerator footerStyleHTML = new stringFormatting.HtmlGenerator(0,
-			color_footerStyleHTML[0], color_footerStyleHTML[1], color_footerStyleHTML[2], 0b100);
-
+			ColorClass.color_attentionHTML[0], ColorClass.color_attentionHTML[1], ColorClass.color_attentionHTML[2], 0b111);
 	private static Color ColorBG_comboBox_main = new Color(255, 240, 240);
 	private static Color ColorBG_textPane = new Color(251, 255, 253);
 	private static Color ColorBG_Panel = new Color(240, 240, 255);
 	private static Color customBGColor = ColorBG_Panel;
 
+	private static final String buttonRunTorahRangeReport = "צור דוח";
 	private static final String buttonRunText = "חפש";
 	private static final String buttonCancelText = "בטל";
 	private static final String buttonCancelRequestText = "מבטל..";
 	private static final String checkBox_gimatriaSofiot_text = "<html>" + "<p align=\"right\">" + "חישוב מיוחד"
 			+ " לסופיות" + "</p> </html>";
-	private static final String checkBox_countPsukim_true = "<html><p align='right'>" + "ספירת פסוקים" 
-			+ "</p></html>";
-	private static final String checkBox_countPsukim_false = "ספירת מציאות";
 
 	private static Boolean methodCancelRequest = false;
 	private static Boolean methodRunning = false;
 
 	private JFrame frame;
 	private static ArrayList<JPanel> subPanels = new ArrayList<JPanel>();
-    private static JPanel panel,subPanelProgressLabels,panelGroup, menuPanel;
+	private static JPanel panel, subPanelProgressLabels, panelGroup, menuPanel;
 	private static JButton button_search;
 	private static JButton button_defaultSettings;
 	private static JButton button_searchRange;
@@ -205,9 +185,11 @@ public class Frame {
 	private JPopupMenu popupMenu;
 	private static JProgressBar progressBar;
 	private static JComboBox<?> comboBox_sub;
+	private static JCheckBoxMenuItem checkBox_DifferentSearch;
 	private static JMenuItem menuItem_bgColor;
 	private static JMenu menuItem_textColor;
 	private static JMenu menuFiles;
+	private static JMenuItem menuDifferentFile;
 	private static JMenuItem menuNoTevotFile;
 	private static JMenuItem menuLinesFile;
 	private static JMenuItem menuTorahTable;
@@ -301,7 +283,8 @@ public class Frame {
 	}
 
 	public static int[] get_searchRange() {
-		if (checkBox_searchRange.isSelected()) {
+		// Functions only with Torah file, not with custom files
+		if ((checkBox_searchRange.isSelected()) && (!getCheckBox_DifferentSearch())) {
 			return searchRange;
 		} else {
 			return new int[] { 0, 0 };
@@ -366,11 +349,19 @@ public class Frame {
 		if (bool) {
 			button_search.setText(buttonCancelText);
 		} else {
-			button_search.setText(buttonRunText);
+			setButtonText();
 			methodCancelRequest = false;
 		}
 	}
 
+	public static void setButtonText() {
+		if (getComboBox_main()==combo_strTorahRangeReport) {
+			button_search.setText(buttonRunTorahRangeReport);
+		} else {
+			button_search.setText(buttonRunText);
+		}
+	}
+	
 	public static void showProgressBar(Boolean bool, int flag) {
 		// 0b01 - progressBar and countLabel
 		// 0b10 - label
@@ -413,6 +404,17 @@ public class Frame {
 		ToraApp.subTorahTableFile = PropStore.map.get(PropStore.subTorahTablesFile);
 		ToraApp.subTorahLineFile = PropStore.map.get(PropStore.subTorahLineFile);
 		ToraApp.subTorahLetterFile = PropStore.map.get(PropStore.subTorahLettersFile);
+		ToraApp.differentSearchFile = PropStore.map.get(PropStore.differentSearchFile);
+		if ((ToraApp.differentSearchFile!=null) && (ToraApp.differentSearchFile.length()>0)) {
+			checkBox_DifferentSearch.setToolTipText(Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML,true));
+		} else {
+			checkBox_DifferentSearch.setToolTipText(Output.markText
+					("להגדרת קובץ לחיפוש -> הגדרות<br> -> קבצים -> קובץ אחר לחיפוש", ColorClass.headerStyleHTML,true));
+		}
+		String excelFolder = PropStore.map.get(PropStore.excelFolder);
+		if ((excelFolder != null) && (excelFolder.length() > 0)) {
+			ExcelFunctions.setExcel_File_Location(excelFolder);
+		}
 		try {
 			customBGColor = new Color(Integer.parseInt(PropStore.map.get(PropStore.bgColor)));
 		} catch (Exception e) {
@@ -426,26 +428,26 @@ public class Frame {
 
 		try {
 			Color temp = new Color(Integer.parseInt(PropStore.map.get(PropStore.mainHtmlColor)));
-			color_mainStyleHTML[0] = temp.getRed();
-			color_mainStyleHTML[1] = temp.getGreen();
-			color_mainStyleHTML[2] = temp.getBlue();
-			mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_mainStyleHTML[0],
-					color_mainStyleHTML[1], color_mainStyleHTML[2], 0b111);
+			ColorClass.color_mainStyleHTML[0] = temp.getRed();
+			ColorClass.color_mainStyleHTML[1] = temp.getGreen();
+			ColorClass.color_mainStyleHTML[2] = temp.getBlue();
+			ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0],
+					ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2], 0b111);
 			// public static StringFormatting.HtmlGenerator markupStyleHTML = new
 			// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
 		} catch (Exception e) {
-			color_mainStyleHTML = color_mainStyleHTML_hardCoded.clone();
+			ColorClass.color_mainStyleHTML = ColorClass.color_mainStyleHTML_hardCoded.clone();
 		}
 
 		try {
 			Color temp = new Color(Integer.parseInt(PropStore.map.get(PropStore.markupHtmlColor)));
-			color_markupStyleHTML[0] = temp.getRed();
-			color_markupStyleHTML[1] = temp.getGreen();
-			color_markupStyleHTML[2] = temp.getBlue();
-			markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, color_markupStyleHTML[0],
-					color_markupStyleHTML[1], color_markupStyleHTML[2], 0b100);
+			ColorClass.color_markupStyleHTML[0] = temp.getRed();
+			ColorClass.color_markupStyleHTML[1] = temp.getGreen();
+			ColorClass.color_markupStyleHTML[2] = temp.getBlue();
+			ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_markupStyleHTML[0],
+					ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2], 0b100);
 		} catch (Exception e) {
-			color_markupStyleHTML = color_markupStyleHTML_hardCoded.clone();
+			ColorClass.color_markupStyleHTML = ColorClass.color_markupStyleHTML_hardCoded.clone();
 		}
 		checkBox_letterOrder.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_letterOrder)));
 		checkBox_gimatriaSofiot.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_gimatriaSofiot)));
@@ -489,9 +491,9 @@ public class Frame {
 		PropStore.addNotNull(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
 		PropStore.addNotNull(PropStore.bgColor, String.valueOf(customBGColor.getRGB()));
 		PropStore.addNotNull(PropStore.mainHtmlColor, String
-				.valueOf(new Color(color_mainStyleHTML[0], color_mainStyleHTML[1], color_mainStyleHTML[2]).getRGB()));
+				.valueOf(new Color(ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2]).getRGB()));
 		PropStore.addNotNull(PropStore.markupHtmlColor, String.valueOf(
-				new Color(color_markupStyleHTML[0], color_markupStyleHTML[1], color_markupStyleHTML[2]).getRGB()));
+				new Color(ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2]).getRGB()));
 		PropStore.addNotNull(PropStore.fontSize, String.valueOf(getFontSize()));
 		PropStore.addNotNull(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
 		PropStore.addNotNull(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
@@ -520,7 +522,7 @@ public class Frame {
 			switch (mode) {
 			case 0:
 				// kit.insertHTML(doc, doc.getLength(), "<b>hello", 0, 0, HTML.Tag.B);
-				kit.insertHTML(doc, doc.getLength(), (mainStyleHTML.getHtml(0) + str + mainStyleHTML.getHtml(1)), 0, 0,
+				kit.insertHTML(doc, doc.getLength(), (ColorClass.mainStyleHTML.getHtml(0) + str + ColorClass.mainStyleHTML.getHtml(1)), 0, 0,
 						null);
 				break;
 			case 1:
@@ -577,11 +579,13 @@ public class Frame {
 		menuItem_textColor.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_textSize.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuNoTevotFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuDifferentFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuLinesFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuTorahTable.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuFiles.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuResetExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkBox_DifferentSearch.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
@@ -597,17 +601,17 @@ public class Frame {
 		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) getFontSize() / 16)), 10));
 		// textHtmlSize = 5;
 		textHtmlSize = (int) (5 * ((float) getFontSize() / 16));
-		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_attentionHTML[0], color_attentionHTML[1],
-				color_attentionHTML[2], 0b111);
-		mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, color_mainStyleHTML[0], color_mainStyleHTML[1],
-				color_mainStyleHTML[2], 0b111);
-		markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, color_markupStyleHTML[0],
-				color_markupStyleHTML[1], color_markupStyleHTML[2], 0b100);
+		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_attentionHTML[0], ColorClass.color_attentionHTML[1],
+				ColorClass.color_attentionHTML[2], 0b111);
+		ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1],
+				ColorClass.color_mainStyleHTML[2], 0b111);
+		ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_markupStyleHTML[0],
+				ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2], 0b100);
 
-		headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, color_headerStyleHTML[0],
-				color_headerStyleHTML[1], color_headerStyleHTML[2], 0b100);
-		footerStyleHTML = new stringFormatting.HtmlGenerator(0, color_footerStyleHTML[0], color_footerStyleHTML[1],
-				color_footerStyleHTML[2], 0b100);
+		ColorClass.headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_headerStyleHTML[0],
+				ColorClass.color_headerStyleHTML[1], ColorClass.color_headerStyleHTML[2], 0b100);
+		ColorClass.footerStyleHTML = new stringFormatting.HtmlGenerator(0, ColorClass.color_footerStyleHTML[0], ColorClass.color_footerStyleHTML[1],
+				ColorClass.color_footerStyleHTML[2], 0b100);
 
 //		thisFrame.frame.setMinimumSize(new Dimension(550, 520));
 		if (frame_instance != null) {
@@ -624,9 +628,10 @@ public class Frame {
 		customBGColor = c;
 		panel.setBackground(c);
 		panelGroup.setBackground(c);
-		for (JPanel thisPanel:subPanels) {
+		for (JPanel thisPanel : subPanels) {
 			thisPanel.setBackground(c);
 		}
+		menuBar.setBackground(c);
 		subPanelProgressLabels.setBackground(c);
 		comboBox_sub.setBackground(c);
 		checkBox_wholeWord.setBackground(c);
@@ -642,22 +647,32 @@ public class Frame {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void changeLayout(String str) {
 		DefaultComboBoxModel model;
+		if (str!=combo_strTorahRangeReport) {
+			if (!checkbox_createDocument.isSelected()) {
+				noDocumentMessage();
+			}
+		} 
+		setButtonText();
 		switch (str) {
 		case combo_strSearch:
 		case combo_strCountSearch:
 		case combo_strGimatriaSearch:
 		case combo_strGimatriaCalculate:
 		case combo_strLetterSearch:
-			subPanels.get(id_rowHeight_dilug).setVisible(false);
+			subPanels.get(id_panel_search).setVisible(true);
+			subPanels.get(id_panel_dilug).setVisible(false);
+			subPanels.get(id_panel_gimatriaSofiot).setVisible(true);
+			subPanels.get(id_panel_searchRange).setVisible(true);
 			switch (str) {
 			case combo_strSearch:
-				subPanels.get(id_rowHeight_padding).setVisible(checkBox_searchMultiple.isSelected());
-				subPanels.get(id_rowHeight_combosub).setVisible(checkBox_searchMultiple.isSelected());
-				subPanels.get(id_rowHeight_countPsukim).setVisible(true);
-				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
-				subPanels.get(id_rowHeight_searchMulti).setVisible(true);
-				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
-				checkBox_wholeWord.setText(checkBox_wholeWord_Regular); 
+				subPanels.get(id_panel_padding).setVisible(checkBox_searchMultiple.isSelected());
+				subPanels.get(id_panel_combosub).setVisible(checkBox_searchMultiple.isSelected());
+				subPanels.get(id_panel_countPsukim).setVisible(true);
+				subPanels.get(id_panel_wholeWord).setVisible(true);
+				subPanels.get(id_panel_searchMulti).setVisible(true);
+				subPanels.get(id_panel_letterOrder).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Regular);
+				checkBox_searchMultiple.setText(checkBox_searchMultiple_String);
 				if (checkBox_searchMultiple.isSelected()) {
 					model = new DefaultComboBoxModel(comboBox_sub_Strings_Search_Multi);
 					comboBox_sub.setModel(model);
@@ -665,62 +680,77 @@ public class Frame {
 				if (checkBox_searchMultiple.isSelected()) {
 					label_padding.setText(strLabel_padding_Search);
 					textField_padding.setText(paddingSearchMulti);
-				} 
+				}
 				break;
 			case combo_strCountSearch:
-				subPanels.get(id_rowHeight_padding).setVisible(true);
-				subPanels.get(id_rowHeight_combosub).setVisible(false);
-				subPanels.get(id_rowHeight_countPsukim).setVisible(true);
-				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
-				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
-				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
-				checkBox_wholeWord.setText(checkBox_wholeWord_Regular); 
+				subPanels.get(id_panel_padding).setVisible(true);
+				subPanels.get(id_panel_combosub).setVisible(false);
+				subPanels.get(id_panel_countPsukim).setVisible(true);
+				subPanels.get(id_panel_wholeWord).setVisible(true);
+				subPanels.get(id_panel_searchMulti).setVisible(false);
+				subPanels.get(id_panel_letterOrder).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Regular);
 				label_padding.setText(strLabel_padding_CountSearch);
 				textField_padding.setText(String.valueOf(paddingSearchIndex));
 				break;
 			case combo_strGimatriaSearch:
-				subPanels.get(id_rowHeight_padding).setVisible(false);
-				subPanels.get(id_rowHeight_combosub).setVisible(false);
-				subPanels.get(id_rowHeight_countPsukim).setVisible(false);
-				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
-				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
-				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
-				checkBox_wholeWord.setText(checkBox_wholeWord_Regular); 
+				subPanels.get(id_panel_padding).setVisible(false);
+				subPanels.get(id_panel_combosub).setVisible(false);
+				subPanels.get(id_panel_countPsukim).setVisible(false);
+				subPanels.get(id_panel_wholeWord).setVisible(true);
+				subPanels.get(id_panel_letterOrder).setVisible(false);
+				subPanels.get(id_panel_searchMulti).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Regular);
 				break;
 			case combo_strLetterSearch:
-				subPanels.get(id_rowHeight_padding).setVisible(false);
-				subPanels.get(id_rowHeight_combosub).setVisible(true);
-				subPanels.get(id_rowHeight_countPsukim).setVisible(false);
-				subPanels.get(id_rowHeight_wholeWord).setVisible(true);
-				subPanels.get(id_rowHeight_letterOrder).setVisible(true);
-				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
-				checkBox_wholeWord.setText(checkBox_wholeWord_Letters); 
+				subPanels.get(id_panel_padding).setVisible(false);
+				subPanels.get(id_panel_combosub).setVisible(true);
+				subPanels.get(id_panel_countPsukim).setVisible(false);
+				subPanels.get(id_panel_wholeWord).setVisible(true);
+				subPanels.get(id_panel_letterOrder).setVisible(true);
+				subPanels.get(id_panel_searchMulti).setVisible(false);
+				checkBox_wholeWord.setText(checkBox_wholeWord_Letters);
 				model = new DefaultComboBoxModel(comboBox_sub_Strings_Letters);
 				comboBox_sub.setModel(model);
 				break;
 			case combo_strGimatriaCalculate:
-				subPanels.get(id_rowHeight_padding).setVisible(false);
-				subPanels.get(id_rowHeight_letterOrder).setVisible(false);
-				subPanels.get(id_rowHeight_combosub).setVisible(false);
-				subPanels.get(id_rowHeight_countPsukim).setVisible(false);
-				subPanels.get(id_rowHeight_wholeWord).setVisible(false);
-				subPanels.get(id_rowHeight_searchMulti).setVisible(false);
+				subPanels.get(id_panel_padding).setVisible(false);
+				subPanels.get(id_panel_letterOrder).setVisible(false);
+				subPanels.get(id_panel_combosub).setVisible(false);
+				subPanels.get(id_panel_countPsukim).setVisible(false);
+				subPanels.get(id_panel_wholeWord).setVisible(false);
+				subPanels.get(id_panel_searchMulti).setVisible(false);
 				break;
 			}
 			break;
 		case combo_strDilugim:
-			subPanels.get(id_rowHeight_dilug).setVisible(true);
-			subPanels.get(id_rowHeight_padding).setVisible(true);
-			subPanels.get(id_rowHeight_combosub).setVisible(true);
-			subPanels.get(id_rowHeight_letterOrder).setVisible(false);
-			subPanels.get(id_rowHeight_countPsukim).setVisible(false);
-			subPanels.get(id_rowHeight_wholeWord).setVisible(false);
-			subPanels.get(id_rowHeight_searchMulti).setVisible(false);
+			subPanels.get(id_panel_search).setVisible(true);
+			subPanels.get(id_panel_dilug).setVisible(true);
+			subPanels.get(id_panel_gimatriaSofiot).setVisible(true);
+			subPanels.get(id_panel_padding).setVisible(true);
+			subPanels.get(id_panel_combosub).setVisible(true);
+			subPanels.get(id_panel_letterOrder).setVisible(false);
+			subPanels.get(id_panel_countPsukim).setVisible(false);
+			subPanels.get(id_panel_wholeWord).setVisible(false);
+			subPanels.get(id_panel_searchMulti).setVisible(true);
+			subPanels.get(id_panel_searchRange).setVisible(true);			
 			label_padding.setText(strLabel_padding_Dilug);
+			checkBox_searchMultiple.setText(checkBox_searchMultiple_ReverseDilug);
 			textField_padding.setText(String.valueOf(paddingDilug));
 			model = new DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
 			comboBox_sub.setModel(model);
 			break;
+		case combo_strTorahRangeReport:
+			subPanels.get(id_panel_search).setVisible(false);
+			subPanels.get(id_panel_dilug).setVisible(false);
+			subPanels.get(id_panel_gimatriaSofiot).setVisible(false);
+			subPanels.get(id_panel_padding).setVisible(false);
+			subPanels.get(id_panel_combosub).setVisible(false);
+			subPanels.get(id_panel_letterOrder).setVisible(false);
+			subPanels.get(id_panel_countPsukim).setVisible(false);
+			subPanels.get(id_panel_wholeWord).setVisible(false);
+			subPanels.get(id_panel_searchMulti).setVisible(false);
+			subPanels.get(id_panel_searchRange).setVisible(false);
 		}
 	}
 
@@ -781,16 +811,16 @@ public class Frame {
 		menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.X_AXIS));
 
 		comboBox_main = new JComboBox();
-		menuPanel.add(comboBox_main);
+		//menuPanel.add(comboBox_main);
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(
 				new String[] { combo_strSearch, combo_strGimatriaSearch, combo_strGimatriaCalculate, combo_strDilugim,
-						combo_strLetterSearch, combo_strCountSearch, combo_strTorahPrint }));
+						combo_strLetterSearch, combo_strCountSearch, combo_strTorahPrint, combo_strTorahRangeReport }));
 		comboBox_main.setBackground(ColorBG_comboBox_main);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
-		
+
 		panel = new JPanel();
 		GridLayout subPanelGrid1_1 = new GridLayout(1, 1, 1, 1);
 		GridLayout subPanelGrid1_2 = new GridLayout(1, 2, 1, 1);
@@ -801,18 +831,18 @@ public class Frame {
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		frame.getContentPane().add(panel, BorderLayout.EAST);
-		int countPanels=0;
-		
-		subPanels.add(new JPanel(subPanelGrid1_2){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		int countPanels = 0;
+
+		subPanels.add(new JPanel(subPanelGrid1_2) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		label_textfield_Search = new JLabel("חיפוש: ");
 		label_textfield_Search.setHorizontalAlignment(SwingConstants.RIGHT);
 		subPanels.get(countPanels).add(label_textfield_Search);
-		
-		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
+
+		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 		textField_Search = new JTextField();
 		textField_Search.setMinimumSize(new Dimension(150, 25));
 		textField_Search.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -820,16 +850,16 @@ public class Frame {
 		subPanels.get(countPanels++).add(textField_Search);
 		textField_Search.setColumns(10);
 
-		subPanels.add(new JPanel(subPanelGrid2_2){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight*2);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid2_2) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight * 2);
+			};
+		});
 		label_dilugMin = new JLabel("דילוג מינימום");
 		label_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
 		subPanels.get(countPanels).add(label_dilugMin);
-		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
-		
+		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
+
 		textField_dilugMin = new JTextField();
 		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -840,7 +870,7 @@ public class Frame {
 		label_dilugMax = new JLabel("דילוג מקסימום");
 		label_dilugMax.setHorizontalAlignment(SwingConstants.RIGHT);
 		subPanels.get(countPanels).add(label_dilugMax);
-		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
+		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 
 		textField_dilugMax = new JTextField();
 		textField_dilugMax.setMinimumSize(new Dimension(150, 25));
@@ -848,16 +878,16 @@ public class Frame {
 		textField_dilugMax.setColumns(10);
 		textField_dilugMax.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		subPanels.get(countPanels++).add(textField_dilugMax);
-		
+
 		label_padding = new JLabel(strLabel_padding_Dilug);
 		label_padding.setHorizontalAlignment(SwingConstants.RIGHT);
-		subPanels.add(new JPanel(subPanelGrid1_2){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_2) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels).add(label_padding);
-		//subPanels.get(countPanels).add(Box.createHorizontalGlue());
+		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 		textField_padding = new JTextField();
 		textField_padding.setText((String) null);
 		textField_padding.setMinimumSize(new Dimension(150, 25));
@@ -865,7 +895,7 @@ public class Frame {
 		textField_padding.setColumns(10);
 		textField_padding.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		subPanels.get(countPanels++).add(textField_padding);
-		
+
 		popupMenu = new JPopupMenu();
 		popupMenu.setLabel("");
 		// Then on your component(s)
@@ -873,6 +903,7 @@ public class Frame {
 		textPane = new JTextPane();
 		textPane.setEditable(false);
 		scrollPane = new JScrollPane(textPane);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(7);
 		panelWidth = scrollPane.getWidth();
 		textPane.setBackground(ColorBG_textPane);
 		textPane.addMouseListener(new PopClickListener());
@@ -893,7 +924,9 @@ public class Frame {
 		// add JTree here
 		tree = Tree.getInstance();
 		tree.setBackground(ColorBG_textPane);
-		tabbedPane.addTab("עץ", new JScrollPane(tree));
+		JScrollPane treeScrollPane = new JScrollPane(tree);
+		treeScrollPane.getVerticalScrollBar().setUnitIncrement(7);
+		tabbedPane.addTab("עץ", treeScrollPane);
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		internalFrame.setVisible(true);
 
@@ -905,64 +938,64 @@ public class Frame {
 
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_sub.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
-		
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels++).add(comboBox_sub);
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		checkBox_letterOrder = new JCheckBox(checkBox_letterOrder_String);
 		checkBox_letterOrder.setToolTipText(checkBox_letterOrder_Tooltip);
 		checkBox_letterOrder.setSelected(false);
 		checkBox_letterOrder.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_letterOrder.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		subPanels.get(countPanels++).add(checkBox_letterOrder);
-	
+
 		checkBox_wholeWord = new JCheckBox(checkBox_wholeWord_Regular);
 		checkBox_wholeWord.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_wholeWord.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels++).add(checkBox_wholeWord);
 		checkBox_gimatriaSofiot = new JCheckBox(checkBox_gimatriaSofiot_text);
 		checkBox_gimatriaSofiot.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_gimatriaSofiot.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels++).add(checkBox_gimatriaSofiot);
 
 		checkBox_countPsukim = new JCheckBox(checkBox_countPsukim_true);
 		checkBox_countPsukim.setSelected(true);
 		checkBox_countPsukim.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_countPsukim.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels++).add(checkBox_countPsukim);
 		checkBox_searchMultiple = new JCheckBox(checkBox_searchMultiple_String);
 		checkBox_searchMultiple.setSelected(false);
 		checkBox_searchMultiple.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		checkBox_searchMultiple.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels++).add(checkBox_searchMultiple);
 		// Change countPsukim checkbox text when changing selected state
 		progressBar = new JProgressBar();
@@ -970,23 +1003,23 @@ public class Frame {
 		progressBar.setVisible(false);
 
 		button_searchRange = new JButton("טווח חיפוש");
-		subPanels.add(new JPanel(subPanelGrid1_2){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),(int)(rowHeight*1.8));
-			   };
-			});
+		subPanels.add(new JPanel(subPanelGrid1_2) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), (int) (rowHeight * 1.8));
+			};
+		});
 		subPanels.get(countPanels).add(button_searchRange);
 
 		checkBox_searchRange = new JCheckBox("הכול");
 		checkBox_searchRange.setHorizontalAlignment(SwingConstants.RIGHT);
 		checkBox_searchRange.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		subPanels.get(countPanels++).add(checkBox_searchRange);
-		
-		subPanels.add(new JPanel(subPanelGrid1_2){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),(int)(rowHeight*1.1));
-			   };
-			});
+
+		subPanels.add(new JPanel(subPanelGrid1_2) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), (int) (rowHeight * 1.1));
+			};
+		});
 		progressBar.setStringPainted(true);
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(100);
@@ -1002,29 +1035,37 @@ public class Frame {
 		label_dProgress.setHorizontalAlignment(SwingConstants.CENTER);
 		label_countMatch.setHorizontalAlignment(SwingConstants.CENTER);
 		subPanels.get(countPanels++).add(subPanelProgressLabels);
-		
-		subPanels.add(new JPanel(subPanelGrid1_1){
-			   public Dimension getPreferredSize() {
-			       return new Dimension(panel.getWidth(),rowHeight);
-			   };
-			});
+
+		subPanels.add(new JPanel(subPanelGrid1_1) {
+			public Dimension getPreferredSize() {
+				return new Dimension(panel.getWidth(), rowHeight);
+			};
+		});
 		subPanels.get(countPanels++).add(button_search);
 		panelGroup = new JPanel();
-		for (JPanel thisPanel:subPanels) {
+		for (JPanel thisPanel : subPanels) {
 			thisPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-			
+
 			panelGroup.add(thisPanel);
 		}
 		panel.add(panelGroup);
-		//panelGroup.setBorder(new EmptyBorder(20, 20, 20, 20));
+		// panelGroup.setBorder(new EmptyBorder(20, 20, 20, 20));
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-
+		menuBar.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuSettings = new JMenu("הגדרות");
 		menuSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuSettings.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuBar.add(menuSettings);
+		menuBar.add(Box.createHorizontalGlue());
+		menuBar.add(comboBox_main);
+		checkBox_DifferentSearch = new JCheckBoxMenuItem("<html> <p align=\"right\">"+"חיפוש בקובץ<br> של המשתמש"+"</p></html>");
+		checkBox_DifferentSearch.setSelected(false);
+		checkBox_DifferentSearch.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		checkBox_DifferentSearch.setHorizontalTextPosition(SwingConstants.RIGHT);
+		checkBox_DifferentSearch.setHorizontalAlignment(SwingConstants.RIGHT);
+		checkBox_DifferentSearch.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuItem_bgColor = new JMenuItem("צבע רקע");
 		menuItem_bgColor.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_bgColor.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -1071,18 +1112,24 @@ public class Frame {
 		checkbox_createTree.setHorizontalAlignment(SwingConstants.RIGHT);
 		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createTree.setSelected(true);
+		menuSettings.add(checkBox_DifferentSearch);
 		menuSettings.add(menuItem_bgColor);
 		menuSettings.add(menuItem_textColor);
 		menuSettings.add(menuItem_textSize);
 		menuSettings.add(checkbox_createDocument);
 		menuSettings.add(checkbox_createExcel);
 		menuSettings.add(checkbox_createTree);
-		menuFiles = new JMenu("טעינת קובץ חדש");
+		menuFiles = new JMenu("קבצים");
 		menuSettings.add(menuFiles);
 		menuFiles.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuFiles.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuFiles.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuFiles.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuDifferentFile = new JMenuItem("קובץ אחר לחיפוש");
+		menuDifferentFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		menuDifferentFile.setHorizontalTextPosition(SwingConstants.RIGHT);
+		menuDifferentFile.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuDifferentFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuExcelFolder = new JMenuItem("שינוי תיקיה לדוחות אקסל");
 		menuExcelFolder.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuExcelFolder.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -1094,20 +1141,24 @@ public class Frame {
 		menuResetExcelFolder.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuResetExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuTorahTable = new JMenuItem("טבלת אינדקס - TorahTables.xls");
+		menuTorahTable.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה לא מוצאת את הקובץ בעצמה"+" <br> https://github.com/Shem-Tov/Torah-Search/blob/master/TorahTables.xls",ColorClass.headerStyleHTML,true));
 		menuTorahTable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuTorahTable.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuTorahTable.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuTorahTable.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuLinesFile = new JMenuItem("קובץ תורה מחולק בשורות - Lines.txt");
+		menuLinesFile.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה <br> לא מוצאת את הקובץ בעצמה",ColorClass.headerStyleHTML,true));
 		menuLinesFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuLinesFile.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuLinesFile.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuLinesFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuNoTevotFile = new JMenuItem("קובץ תורה אותיות - NoTevot.txt");
+		menuNoTevotFile.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה <br> לא מוצאת את הקובץ בעצמה",ColorClass.headerStyleHTML,true));
 		menuNoTevotFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuNoTevotFile.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuNoTevotFile.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuNoTevotFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuFiles.add(menuDifferentFile);
 		menuFiles.add(menuExcelFolder);
 		menuFiles.add(menuResetExcelFolder);
 		menuFiles.add(menuTorahTable);
@@ -1115,13 +1166,12 @@ public class Frame {
 		menuFiles.add(menuNoTevotFile);
 		button_defaultSettings = new JButton("קבע ברירת מחדל");
 		button_defaultSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		button_defaultSettings.setPreferredSize(new Dimension(63, 25));
+		//bad - choice = button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		button_defaultSettings.setMargin(new Insets(2, 2, 2, 2));
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		button_defaultSettings.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuSettings.add(button_defaultSettings);
-		button_defaultSettings.setToolTipText("שמירת ערכי חיפוש לברירת מחדל");
+		button_defaultSettings.setToolTipText(Output.markText("שמירת ערכי חיפוש לברירת מחדל",ColorClass.headerStyleHTML,true));
 		// Change countPsukim checkbox text when changing selected state
 		checkBox_countPsukim.addActionListener(new ActionListener() {
 			@Override
@@ -1136,20 +1186,20 @@ public class Frame {
 			public void actionPerformed(ActionEvent event) {
 				if (getComboBox_main() == combo_strSearch) {
 					JCheckBox cb = (JCheckBox) event.getSource();
-					subPanels.get(id_rowHeight_padding).setVisible(cb.isSelected());
-					subPanels.get(id_rowHeight_combosub).setVisible(cb.isSelected());
+					subPanels.get(id_panel_padding).setVisible(cb.isSelected());
+					subPanels.get(id_panel_combosub).setVisible(cb.isSelected());
 					if (checkBox_searchMultiple.isSelected()) {
 						label_padding.setText(strLabel_padding_Search);
 						DefaultComboBoxModel model;
 						model = new DefaultComboBoxModel(comboBox_sub_Strings_Search_Multi);
 						comboBox_sub.setModel(model);
-					} 
-					//frame_instance.frame.repaint();
-					//frame_instance.frame.revalidate();
+					}
+					// frame_instance.frame.repaint();
+					// frame_instance.frame.revalidate();
 				}
 			}
 		});
-	
+
 		// Button to save settings
 		button_defaultSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1236,8 +1286,8 @@ public class Frame {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					// System.out.println("You chose this folder: " +
 					// chooser.getSelectedFile().getAbsolutePath());
-					System.out.println("You chose this folder: " + chooser.getSelectedFile().getName());
-					ExcelFunctions.setExcel_File_Location("./" + chooser.getSelectedFile().getName() + "/");
+					System.out.println("You chose this folder: " + chooser.getSelectedFile().getAbsolutePath());
+					ExcelFunctions.setExcel_File_Location(chooser.getSelectedFile().getAbsolutePath() + "/");
 					// chooser.getSelectedFile().getAbsolutePath();
 					PropStore.map.put(PropStore.excelFolder, ExcelFunctions.getExcel_File_Location());
 					PropStore.store();
@@ -1250,6 +1300,7 @@ public class Frame {
 				JFileChooser chooser = new JFileChooser();
 				File workingDirectory = new File(System.getProperty("user.dir"));
 				chooser.setCurrentDirectory(workingDirectory);
+				chooser.setDialogTitle("בחר קובץ גיבוי טבלת פסוקים (TorahTables.xls)");
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("XLS files", "xls");
 				chooser.setFileFilter(filter);
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
@@ -1271,6 +1322,7 @@ public class Frame {
 				JFileChooser chooser = new JFileChooser();
 				File workingDirectory = new File(System.getProperty("user.dir"));
 				chooser.setCurrentDirectory(workingDirectory);
+				chooser.setDialogTitle("בחר קובץ גיבוי תורה (שורות ורווחים בין מילים)");
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
 				chooser.setFileFilter(filter);
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
@@ -1290,6 +1342,7 @@ public class Frame {
 				JFileChooser chooser = new JFileChooser();
 				File workingDirectory = new File(System.getProperty("user.dir"));
 				chooser.setCurrentDirectory(workingDirectory);
+				chooser.setDialogTitle("בחר קובץ גיבוי תורה (ללא רווחים או שורות)");
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
 				chooser.setFileFilter(filter);
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
@@ -1303,29 +1356,50 @@ public class Frame {
 				}
 			}
 		});
+		menuDifferentFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JFileChooser chooser = new JFileChooser();
+				File workingDirectory = new File(System.getProperty("user.dir"));
+				chooser.setDialogTitle("בחר קובץ לחיפוש");
+				chooser.setCurrentDirectory(workingDirectory);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
+				chooser.setFileFilter(filter);
+				int returnVal = chooser.showOpenDialog((Component) event.getSource());
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
+					ToraApp.differentSearchFile = chooser.getSelectedFile().getAbsolutePath();
+					checkBox_DifferentSearch.setToolTipText(Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML,true));
+					// There are identical calls like this, one here the another in
+					// ToraApp.starter()
+					PropStore.map.put(PropStore.differentSearchFile, ToraApp.differentSearchFile);
+					PropStore.store();
+				}
+			}
+		});
 		menuItem_textColorMain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color c = JColorChooser.showDialog(null, "בחר צבע", new Color(color_mainStyleHTML_hardCoded[0],
-						color_mainStyleHTML_hardCoded[1], color_mainStyleHTML_hardCoded[2]));
+				Color c = JColorChooser.showDialog(null, "בחר צבע", new Color(ColorClass.color_mainStyleHTML_hardCoded[0],
+						ColorClass.color_mainStyleHTML_hardCoded[1], ColorClass.color_mainStyleHTML_hardCoded[2]));
 				if (c != null) {
-					color_mainStyleHTML[0] = c.getRed();
-					color_mainStyleHTML[1] = c.getGreen();
-					color_mainStyleHTML[2] = c.getBlue();
-					mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, color_mainStyleHTML[0],
-							color_mainStyleHTML[1], color_mainStyleHTML[2], 0b100);
+					ColorClass.color_mainStyleHTML[0] = c.getRed();
+					ColorClass.color_mainStyleHTML[1] = c.getGreen();
+					ColorClass.color_mainStyleHTML[2] = c.getBlue();
+					ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_mainStyleHTML[0],
+							ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2], 0b100);
 				}
 			}
 		});
 		menuItem_textColorMarkup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color c = JColorChooser.showDialog(null, "בחר צבע", new Color(color_markupStyleHTML_hardCoded[0],
-						color_markupStyleHTML_hardCoded[1], color_markupStyleHTML_hardCoded[2]));
+				Color c = JColorChooser.showDialog(null, "בחר צבע", new Color(ColorClass.color_markupStyleHTML_hardCoded[0],
+						ColorClass.color_markupStyleHTML_hardCoded[1], ColorClass.color_markupStyleHTML_hardCoded[2]));
 				if (c != null) {
-					color_markupStyleHTML[0] = c.getRed();
-					color_markupStyleHTML[1] = c.getGreen();
-					color_markupStyleHTML[2] = c.getBlue();
-					markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, color_markupStyleHTML[0],
-							color_markupStyleHTML[1], color_markupStyleHTML[2], 0b100);
+					ColorClass.color_markupStyleHTML[0] = c.getRed();
+					ColorClass.color_markupStyleHTML[1] = c.getGreen();
+					ColorClass.color_markupStyleHTML[2] = c.getBlue();
+					ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_markupStyleHTML[0],
+							ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2], 0b100);
 				}
 			}
 		});
@@ -1360,11 +1434,6 @@ public class Frame {
 				 */
 			}
 		});
-		checkbox_createDocument.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				textPane.setVisible(checkbox_createDocument.isSelected());
-			}
-		});
 		checkbox_createTree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				tree.setVisible(checkbox_createTree.isSelected());
@@ -1373,7 +1442,7 @@ public class Frame {
 		// Open Dialog for Search Range
 		button_searchRange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				DialogSearchRangeFrame dFrame = DialogSearchRangeFrame.getInstance();
+				DialogSearchRangeFrame dFrame = DialogSearchRangeFrame.getInstance(true);
 				dFrame.setVisible(true);
 			}
 		});
@@ -1427,8 +1496,31 @@ public class Frame {
 	public static Boolean getCheckbox_searchMultiple() {
 		return checkBox_searchMultiple.isSelected();
 	}
+
 	public static Boolean getCheckbox_letterOrder() {
 		return checkBox_letterOrder.isSelected();
 	}
 
+	public static void setTextPaneVisible(Boolean bool) {
+		textPane.setVisible(bool);
+	}
+
+	public static Boolean getCheckBox_DifferentSearch() {
+		try {
+			return checkBox_DifferentSearch.isSelected();
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	static void noDocumentMessage() {
+		clearTextPane();
+		Output.printText("התוכנה כרגע אינה מכינה דוחות", 1);
+		Output.printText("בכדי להפעיל אפשרות זו צריך לשנות את ההגדרה", 1);
+		Output.printText("בהגדרות -> להכין דוח", 1);
+	}
+	
+	static int getTextHtmlSize() {
+		return textHtmlSize;
+	}
 }

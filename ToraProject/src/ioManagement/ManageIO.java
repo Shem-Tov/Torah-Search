@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.io.UnsupportedEncodingException;
@@ -38,16 +39,35 @@ public class ManageIO {
 		return file;
 	}
 
-	public static BufferedReader getBufferedReader(String fileName1, String fileName2) {
+	public enum fileMode {Line,NoTevot,Different};
+	
+	public static BufferedReader getBufferedReader(fileMode mode) {
 		BufferedReader bReader = null;
+		String fileName1="", fileName2="";
+		switch (mode) {
+		case Line:
+			fileName1 = ToraApp.ToraLineFile;
+			fileName2 = ToraApp.subTorahLineFile;
+			break;
+		case NoTevot:
+			fileName1 = ToraApp.ToraLetterFile;
+			fileName2 = ToraApp.subTorahLetterFile;
+			break;
+		case Different:
+			fileName2 = ToraApp.differentSearchFile;
+		}
+
 		try {
+			if (fileName1.equals("")) {
+				throw new Exception();
+			}
 			bReader = new BufferedReader(
 					new InputStreamReader(ToraApp.class.getClassLoader().getResourceAsStream(fileName1),"UTF8"));
 		} catch (Exception e) {
 			try {
 				File file = new File(fileName2);
 				bReader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF8"));
-			} catch (FileNotFoundException | UnsupportedEncodingException e1) {
+			} catch (NullPointerException | FileNotFoundException | UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
@@ -62,6 +82,26 @@ public class ManageIO {
 		return bReader;
 	}
 
+	public static int countLinesOfFile(fileMode mode) {
+		BufferedReader inputStream = ManageIO.getBufferedReader(mode);
+		int countLines=0; 
+		try {
+				while ((inputStream.readLine()) != null) {
+					countLines++;
+				}
+		} catch (IOException e) {
+			e.printStackTrace();
+	    } finally {
+	    	try {
+				inputStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+		return countLines;
+	}
+	
 	public static PushbackReader getPushbackReader(String fileName1, String fileName2) {
 		PushbackReader bReader = null;
 		try {

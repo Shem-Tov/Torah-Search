@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 
 import extras.extraFunctions;
+import frame.ColorClass;
 import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
@@ -66,7 +67,8 @@ public class ToraSearch {
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(
+				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -79,7 +81,8 @@ public class ToraSearch {
 			String line2 = "";
 			int searchSTRinLine2 = 0;
 			if ((!bool_wholeWords) && (searchConvert.contains(" "))) {
-				inputStream2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+				inputStream2 = ManageIO.getBufferedReader(
+						(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 				searchSTRinLine2 = searchConvert.length() - searchConvert.indexOf(' ');
 				// inputStream2.mark(640000);
 				line2 = inputStream2.readLine();
@@ -95,9 +98,9 @@ public class ToraSearch {
 				str += " | \"" + searchSTR2 + "\"";
 			}
 			str += "...";
-			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
-			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
@@ -106,7 +109,7 @@ public class ToraSearch {
 				if (bool_multiSearch) {
 					tempStr += " | " + searchSTR2;
 				}
-				Tree.getInstance().changeRootText(Output.markText(tempStr, Frame.headerStyleHTML));
+				Tree.getInstance().changeRootText(Output.markText(tempStr, ColorClass.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
@@ -161,18 +164,18 @@ public class ToraSearch {
 							if (bool_multiSearch) {
 								if ((found1) && (found2)) {
 									results.add(Output.printPasukInfo(countLines, searchSTR, line,
-											frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords, searchSTR2));
+											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords, searchSTR2));
 								} else if (found1) {
 									results.add(Output.printPasukInfo(countLines, searchSTR, line,
-											frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
 								} else { // then (found2)
 									results.add(Output.printPasukInfo(countLines, searchSTR2, line,
-											frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
 								}
 								break;
 							} else {
 								results.add(Output.printPasukInfo(countLines, searchSTR, line,
-										frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords));
+										frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
 							}
 						}
 					}
@@ -220,7 +223,7 @@ public class ToraSearch {
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
 							results.add(Output.printPasukInfo(countLines, (found1) ? searchSTR:searchSTR2,
-									((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
+									((foundInLine2) ? (line + " " + line2) : line), frame.ColorClass.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
 						} else if ((combineConvertedLines.contains(searchConvert2))) {
 							if ((searchConvert2.contains(searchConvert)) || (searchConvert.contains(searchConvert2))) {
@@ -243,7 +246,7 @@ public class ToraSearch {
 									// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 									// fill results array
 									results.add(Output.printPasukInfo(countLines, searchSTR,
-											((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
+											((foundInLine2) ? (line + " " + line2) : line), frame.ColorClass.markupStyleHTML,
 											bool_sofiot, bool_wholeWords, searchSTR2));
 
 								}
@@ -263,7 +266,7 @@ public class ToraSearch {
 								// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 								// fill results array
 								results.add(Output.printPasukInfo(countLines, searchSTR,
-										((foundInLine2) ? (line + " " + line2) : line), frame.Frame.markupStyleHTML,
+										((foundInLine2) ? (line + " " + line2) : line), frame.ColorClass.markupStyleHTML,
 										bool_sofiot, bool_wholeWords, searchSTR2));
 
 							}
@@ -288,7 +291,7 @@ public class ToraSearch {
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (bool_multiSearch) {
 				sheet += "_מולטי";
-				Title2+="חיפוש מכמה מילים";
+				Title2+="חיפוש כמה מילים";
 				if (bool_multiMustFindBoth) {
 					sheet += "_כל";
 					Title3+="פסוקים הכוללים את שני המילים";
@@ -300,8 +303,8 @@ public class ToraSearch {
 			}
 			
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results, true, searchSTR,
-						searchSTR2,Title2,Title3,
+				ExcelFunctions.writeXLS(fileName, sheet, (bool_sofiot) ? 0 : 1, Title, results,
+						Title2,Title3,searchSTR,searchSTR2,
 						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
@@ -316,9 +319,9 @@ public class ToraSearch {
 							"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים"
 									+ ((bool_wholeWords) ? "."
 											: (" ב" + "\u00A0" + String.valueOf(countPsukim) + " פסוקים.")),
-							frame.Frame.footerStyleHTML));
+							frame.ColorClass.footerStyleHTML));
 			Output.printText("");
-			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.ColorClass.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}

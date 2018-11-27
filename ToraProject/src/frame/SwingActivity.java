@@ -9,8 +9,10 @@ import javax.swing.SwingWorker;
 import org.apache.commons.lang3.StringUtils;
 
 import hebrewLetters.HebrewLetters;
+import ioManagement.ManageIO;
 import ioManagement.Methods;
 import ioManagement.Output;
+import torahApp.ToraApp;
 
 public class SwingActivity extends SwingWorker<Void, Integer> {
 
@@ -21,7 +23,11 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 
 	public static void setFinalProgress(int[] range) {
 		if (range[1] == 0) {
-			finalProgress = finalProgress_hardCoded;
+			if (Frame.getCheckBox_DifferentSearch()) {
+				finalProgress = ManageIO.countLinesOfFile(ManageIO.fileMode.Different);
+			} else {
+				finalProgress = finalProgress_hardCoded;
+			}
 		} else {
 			finalProgress = range[1] - range[0];
 		}
@@ -50,127 +56,141 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 	protected Void doInBackground() {
 		// TODO Auto-generated method stub
 		String tempStr = Frame.getTextField_Search();
-		if (Frame.getComboBox_main() != Frame.combo_strTorahPrint) {
+		String mainComboString = Frame.getComboBox_main();
+		Boolean differentSearch = Frame.getCheckBox_DifferentSearch();
+		if (mainComboString != Frame.combo_strTorahPrint) {
 			if ((tempStr == null) || (tempStr.length() == 0)) {
 				Output.printText("חסר מילת חיפוש", 1);
 				return null;
 			}
-			if ((Frame.getComboBox_main() != Frame.combo_strGimatriaSearch) && !HebrewLetters.checkHebrew(tempStr)) {
+			if ((!differentSearch) && (!mainComboString.equals(Frame.combo_strGimatriaSearch))
+					&& !HebrewLetters.checkHebrew(tempStr)) {
 				Output.printText("ניתן להקליד בתיבת החיפוש רק אותיות עבריות ורווחים", 1);
 				return null;
 			}
-			if ((Frame.getComboBox_main() == Frame.combo_strDilugim) && (tempStr.length() == 1)) {
+			if ((!differentSearch) && (mainComboString.equals(Frame.combo_strDilugim)) && (tempStr.length() == 1)) {
 				Output.printText("נא להקליד יותר מאות אחת בתיבת החיפוש עבור החיפוש בדילוגים", 1);
 				return null;
+			}
+			if ((!mainComboString.equals(Frame.combo_strGimatriaCalculate)) && (differentSearch)) {
+				Output.printText("החיפוש לא נעשה בספר תורה", 1);
+				Output.printText("חיפוש נעשה מקובץ - " + ToraApp.differentSearchFile, 1);
+				Output.printText("אם ברצונך לחפש בתורה -> הגדרות -> חיפוש בקובץ של המשתמש -> להוריד סימון ",1);
 			}
 		}
 		Object[] args = { null };
 		int selection = 0;
 		try {
-		switch (Frame.getComboBox_main()) {
-		case Frame.combo_strSearch:
-			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 7);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_wholeWord();
-			args[2] = Frame.getCheckBox_gimatriaSofiot();
-			args[3] = Frame.get_searchRange();
-			args[4] = Frame.getCheckbox_searchMultiple();
-			if ((Frame.getCheckbox_searchMultiple()) && (Frame.getTextField_padding().length() > 0)
-					&& (HebrewLetters.checkHebrew(Frame.getTextField_padding()))) {
-				args[5] = Frame.getTextField_padding();
-				args[6] = (Frame.getComboBox_sub_Index()==0)?true:false;
+			switch (mainComboString) {
+			case Frame.combo_strSearch:
+				Tree.getInstance().clearTree();
+				args = Arrays.copyOf(args, 7);
+				args[0] = Frame.getTextField_Search();
+				args[1] = Frame.getCheckBox_wholeWord();
+				args[2] = Frame.getCheckBox_gimatriaSofiot();
+				args[3] = Frame.get_searchRange();
+				args[4] = Frame.getCheckbox_searchMultiple();
+				if ((Frame.getCheckbox_searchMultiple()) && (Frame.getTextField_padding().length() > 0)
+						&& ((HebrewLetters.checkHebrew(Frame.getTextField_padding())) || (differentSearch))) {
+					args[5] = Frame.getTextField_padding();
+					args[6] = (Frame.getComboBox_sub_Index() == 0) ? true : false;
+				}
+				Frame.showProgressBar(true, 0b01);
+				selection = Methods.id_searchWords;
+				break;
+			case Frame.combo_strGimatriaSearch:
+				Tree.getInstance().clearTree();
+				args = Arrays.copyOf(args, 4);
+				args[0] = Frame.getTextField_Search();
+				args[1] = Frame.getCheckBox_wholeWord();
+				args[2] = Frame.getCheckBox_gimatriaSofiot();
+				args[3] = Frame.get_searchRange();
+				Frame.showProgressBar(true, 0b01);
+				selection = Methods.id_searchGimatria;
+				break;
+			case Frame.combo_strGimatriaCalculate:
+				args = Arrays.copyOf(args, 2);
+				args[0] = Frame.getTextField_Search();
+				args[1] = Frame.getCheckBox_gimatriaSofiot();
+				selection = Methods.id_calculateGimatria;
+				break;
+			case Frame.combo_strDilugim:
+				Tree.getInstance().clearTree();
+				args = Arrays.copyOf(args, 8);
+				args[0] = Frame.getTextField_Search();
+				args[1] = Frame.getCheckBox_gimatriaSofiot();
+				Boolean exitCode = false;
+				Output.printText("");
+				if (!StringUtils.isNumeric(Frame.getTextField_dilugMin().trim())) {
+					Output.printText("שדה 'דילוג מינימים' צריך להיות מספר", 1);
+					exitCode = true;
+				}
+				if (!StringUtils.isNumeric(Frame.getTextField_dilugMax().trim())) {
+					Output.printText("שדה 'דילוג מקסימים' צריך להיות מספר", 1);
+					exitCode = true;
+				}
+				if (!StringUtils.isNumeric(Frame.getTextField_padding().trim())) {
+					Output.printText("שדה 'מספר אותיות' צריך להיות מספר", 1);
+					exitCode = true;
+				}
+				if (exitCode)
+					return null;
+				args[2] = Frame.getTextField_dilugMin().trim();
+				args[3] = Frame.getTextField_dilugMax().trim();
+				args[4] = Frame.getTextField_padding().trim();
+				args[5] = Frame.get_searchRange();
+				args[6] = Frame.getCheckbox_searchMultiple();
+				Frame.showProgressBar(true, 0b11);
+				if (Frame.getComboBox_sub_Index() == 0) {
+					selection = Methods.id_searchDilugim;
+				} else {
+					args[7] = Frame.getComboBox_sub_Index();
+					selection = Methods.id_searchDilugWordPasuk;
+				}
+				break;
+			case Frame.combo_strLetterSearch:
+				Tree.getInstance().clearTree();
+				args = Arrays.copyOf(args, 6);
+				args[0] = Frame.getTextField_Search();
+				args[1] = Frame.getCheckBox_gimatriaSofiot();
+				args[2] = Frame.get_searchRange();
+				if (Frame.getComboBox_sub() == Frame.comboBox_sub_Strings_Letters[0]) {
+					args[3] = false;
+				} else {
+					args[3] = true;
+				}
+				args[4] = Frame.getCheckbox_letterOrder();
+				args[5] = Frame.getCheckBox_wholeWord();
+
+				Frame.showProgressBar(true, 0b01);
+				selection = Methods.id_searchLetters;
+				break;
+			case Frame.combo_strCountSearch:
+				Tree.getInstance().clearTree();
+				args = Arrays.copyOf(args, 5);
+				args[0] = Frame.getTextField_Search();
+				args[1] = Frame.getCheckBox_wholeWord();
+				args[2] = Frame.getCheckBox_gimatriaSofiot();
+				args[3] = Frame.get_searchRange();
+				args[4] = Frame.getTextField_padding().trim();
+				Frame.showProgressBar(true, 0b01);
+				selection = Methods.id_searchCount;
+				break;
+			case Frame.combo_strTorahPrint:
+				selection = Methods.id_printTorah;
+				break;
+			case Frame.combo_strTorahRangeReport:
+				DialogSearchRangeFrame dFrame = DialogSearchRangeFrame.getInstance(false);
+				dFrame.setVisible(true);
+				selection = -1;
+				break;
 			}
-			Frame.showProgressBar(true, 0b01);
-			selection = Methods.id_searchWords;
-			break;
-		case Frame.combo_strGimatriaSearch:
-			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 4);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_wholeWord();
-			args[2] = Frame.getCheckBox_gimatriaSofiot();
-			args[3] = Frame.get_searchRange();
-			Frame.showProgressBar(true, 0b01);
-			selection = Methods.id_searchGimatria;
-			break;
-		case Frame.combo_strGimatriaCalculate:
-			args = Arrays.copyOf(args, 2);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_gimatriaSofiot();
-			selection = Methods.id_calculateGimatria;
-			break;
-		case Frame.combo_strDilugim:
-			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 7);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_gimatriaSofiot();
-			Boolean exitCode = false;
-			Output.printText("");
-			if (!StringUtils.isNumeric(Frame.getTextField_dilugMin().trim())) {
-				Output.printText("שדה 'דילוג מינימים' צריך להיות מספר", 1);
-				exitCode = true;
-			}
-			if (!StringUtils.isNumeric(Frame.getTextField_dilugMax().trim())) {
-				Output.printText("שדה 'דילוג מקסימים' צריך להיות מספר", 1);
-				exitCode = true;
-			}
-			if (!StringUtils.isNumeric(Frame.getTextField_padding().trim())) {
-				Output.printText("שדה 'מספר אותיות' צריך להיות מספר", 1);
-				exitCode = true;
-			}
-			if (exitCode)
-				return null;
-			args[2] = Frame.getTextField_dilugMin().trim();
-			args[3] = Frame.getTextField_dilugMax().trim();
-			args[4] = Frame.getTextField_padding().trim();
-			args[5] = Frame.get_searchRange();
-			Frame.showProgressBar(true, 0b11);
-			if (Frame.getComboBox_sub_Index()==0) {
-				selection = Methods.id_searchDilugim;
-			} else {
-				args[6] = Frame.getComboBox_sub_Index();
-				selection = Methods.id_searchDilugWordPasuk;
-			}
-			break;
-		case Frame.combo_strLetterSearch:
-			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 6);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_gimatriaSofiot();
-			args[2] = Frame.get_searchRange();
-			if (Frame.getComboBox_sub() == Frame.comboBox_sub_Strings_Letters[0]) {
-				args[3] = false;
-			} else {
-				args[3] = true;
-			}
-			args[4] = Frame.getCheckbox_letterOrder();
-			args[5] = Frame.getCheckBox_wholeWord();
-			
-			Frame.showProgressBar(true, 0b01);
-			selection = Methods.id_searchLetters;
-			break;
-		case Frame.combo_strCountSearch:
-			Tree.getInstance().clearTree();
-			args = Arrays.copyOf(args, 5);
-			args[0] = Frame.getTextField_Search();
-			args[1] = Frame.getCheckBox_wholeWord();
-			args[2] = Frame.getCheckBox_gimatriaSofiot();
-			args[3] = Frame.get_searchRange();
-			args[4] = Frame.getTextField_padding().trim();
-			Frame.showProgressBar(true, 0b01);
-			selection = Methods.id_searchCount;
-			break;
-		case Frame.combo_strTorahPrint:
-			selection = Methods.id_printTorah;
-			break;
-		}
 		} catch (ArrayIndexOutOfBoundsException e) {
 			e.printStackTrace();
 		}
 		try {
-			if (selection > 0) {
-				Methods.arrayMethods.get(selection - 1).run(args);
+			if (selection >= 0) {
+				Methods.arrayMethods.get(selection).run(args);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

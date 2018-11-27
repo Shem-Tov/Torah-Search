@@ -1,5 +1,7 @@
 package stringFormatting;
 
+import frame.ColorClass;
+
 public class HtmlGenerator {
 	String[] htmlCode;
 	final int flag_RGB_Size = 0b100;
@@ -51,4 +53,32 @@ public class HtmlGenerator {
 		return new String[] {rAlign[0]+strRGBSize[0]+bold[0],bold[1]+strRGBSize[1]+rAlign[1]};
 	}
 	
+	public static final int mode_main=0;
+	public static final int mode_header=1;
+	public static final int mode_markup=2;
+	
+	//can be added after an html tag
+	//use mode_main, mode_header, mode_markup for color scheme
+	public static String createFontSizeColorStyle(int size,int mode) {
+		String styleHeader =" style = \"padding: 8px; padding-left: 8px; padding-right: 8px;"+ 
+				" text-align: right; font-family: Arial, Verdana, sans-serif;" + 
+				" font-weight: bold;"+
+				" font-size:	"+(size)+"px;"+
+				" color:		#";
+
+		switch (mode) {
+		case mode_main:
+			styleHeader+=ColorClass.getRGBmainStyleHTML()+";";
+			break;
+		case mode_header:
+			styleHeader+=ColorClass.getRGBheaderStyleHTML()+";";
+			break;
+		case mode_markup:
+			styleHeader+=ColorClass.getRGBmarkupStyleHTML()+";";
+			break;
+		}
+		styleHeader += "\"";
+		return styleHeader;
+	}
+
 }

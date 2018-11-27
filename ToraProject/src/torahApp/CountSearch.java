@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
+import frame.ColorClass;
 import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
@@ -54,7 +55,8 @@ public class CountSearch {
 		int countLines = 0;
 		int count = 0;
 
-		BufferedReader bReader = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader bReader = ManageIO.getBufferedReader(
+				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -67,7 +69,8 @@ public class CountSearch {
 			String line2 = "";
 			int searchSTRinLine2 = 0;
 			if ((!bool_wholeWords) && (searchConvert.contains(" "))) {
-				inputStream2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+				inputStream2 = ManageIO.getBufferedReader(
+						(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 				searchSTRinLine2 = searchConvert.length() - searchConvert.indexOf(' ');
 				// inputStream2.mark(640000);
 				line2 = inputStream2.readLine();
@@ -79,14 +82,14 @@ public class CountSearch {
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
 			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
-			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
-			Output.printText(Output.markText(str, frame.Frame.headerStyleHTML));
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				Tree.getInstance().changeRootText(Output.markText(searchSTR, Frame.headerStyleHTML));
+				Tree.getInstance().changeRootText(Output.markText(searchSTR, ColorClass.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
@@ -128,7 +131,7 @@ public class CountSearch {
 								// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 								// fill results array
 								Output.printText("נמצא בפעם ה: "+searchIndex);
-								Output.printPasukInfo(countLines, searchSTR, line, frame.Frame.markupStyleHTML,
+								Output.printPasukInfo(countLines, searchSTR, line, frame.ColorClass.markupStyleHTML,
 										bool_sofiot, bool_wholeWords, countIndex);
 								break outerloop;
 							}
@@ -164,7 +167,7 @@ public class CountSearch {
 							// fill results array
 							Output.printText("נמצא בפעם ה: "+searchIndex);
 							Output.printPasukInfo(countLines, searchSTR, ((foundInLine2) ? (line + " " + line2) : line),
-									frame.Frame.markupStyleHTML, bool_sofiot, bool_wholeWords,((countMatch-(count-searchIndex))-1));
+									frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords,((countMatch-(count-searchIndex))-1));
 							break outerloop;
 						}
 					}
@@ -182,7 +185,7 @@ public class CountSearch {
 			e.printStackTrace();
 		} finally {
 			Output.printText("");
-			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.Frame.footerStyleHTML));
+			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.ColorClass.footerStyleHTML));
 			if (inputStream != null) {
 				inputStream.close();
 			}

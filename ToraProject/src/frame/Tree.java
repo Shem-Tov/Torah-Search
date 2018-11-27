@@ -120,7 +120,7 @@ public class Tree extends JTree {
 	public void addNodeParasha(int lineChild, String child, Boolean isDilug) {
 		if (lineChild > nextParashaIndex) {
 			if (dataBuffer != null) {
-				addNode((isDilug) ? thisDilugNode:null ,thisParasha, dataBuffer);
+				addNode((isDilug) ? thisDilugNode : null, thisParasha, dataBuffer);
 				dataBuffer = new ArrayList<String>();
 			}
 			int childIndex = ToraApp.lookupParashaIndexFromLine(lineChild);
@@ -134,7 +134,32 @@ public class Tree extends JTree {
 			} else {
 				str = rootString;
 			}
-			addNode(null,str, new ArrayList<String>(Arrays.asList(parent)));
+			addNode(null, str, new ArrayList<String>(Arrays.asList(parent)));
+		}
+		dataBuffer.add(child);
+	}
+
+	public void addNodeCustom(String child) {
+		addNodeCustom(child, false);
+	}
+
+	public void addNodeCustom(String child, Boolean isDilug) {
+		String parent = "קובץ משתמש";
+		if (!parent.equals(thisParasha)) {
+			if (dataBuffer != null) {
+				addNode((isDilug) ? thisDilugNode : null, thisParasha, dataBuffer);
+				dataBuffer = new ArrayList<String>();
+			}
+
+			thisParasha = parent;
+			String str = "";
+			if (isDilug) {
+				str = thisDilugNode;
+				// System.out.println(thisDilugNode);
+			} else {
+				str = rootString;
+			}
+			addNode(null, str, new ArrayList<String>(Arrays.asList(parent)));
 		}
 		dataBuffer.add(child);
 	}
@@ -145,25 +170,26 @@ public class Tree extends JTree {
 
 	public void addNodeDilug(String dilug) {
 		if (dataBuffer != null) {
-			addNode(null,thisParasha, dataBuffer);
+			addNode(null, thisParasha, dataBuffer);
 			dataBuffer = new ArrayList<String>();
 		}
 		nextParashaIndex = 0;
 		thisParasha = "";
 		thisDilugNode = packHTML(dilug);
-		addNode(null,rootString, new ArrayList<String>(Arrays.asList(thisDilugNode)));
-	}
-	public void flushBuffer() {
-		flushBuffer(true,false);
-	}
-	
-	public void flushBuffer(Boolean expandtree) {
-		flushBuffer(expandtree,false);
+		addNode(null, rootString, new ArrayList<String>(Arrays.asList(thisDilugNode)));
 	}
 
-	public void flushBuffer(Boolean expandtree,Boolean isDilug) {
+	public void flushBuffer() {
+		flushBuffer(true, false);
+	}
+
+	public void flushBuffer(Boolean expandtree) {
+		flushBuffer(expandtree, false);
+	}
+
+	public void flushBuffer(Boolean expandtree, Boolean isDilug) {
 		if (dataBuffer != null) {
-			addNode((isDilug) ? thisDilugNode:null,thisParasha, dataBuffer);
+			addNode((isDilug) ? thisDilugNode : null, thisParasha, dataBuffer);
 			dataBuffer = new ArrayList<String>();
 		}
 		// expands the tree

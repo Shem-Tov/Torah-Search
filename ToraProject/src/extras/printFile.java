@@ -2,7 +2,6 @@ package extras;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
 import ioManagement.ManageIO;
 import ioManagement.Output;
 import torahApp.ToraApp;
@@ -10,7 +9,7 @@ import torahApp.ToraApp;
 public class printFile {
 
 	public static void printTorah() {
-		BufferedReader br = ManageIO.getBufferedReader(ToraApp.ToraLineFile, ToraApp.subTorahLineFile);
+		BufferedReader br = ManageIO.getBufferedReader(ManageIO.fileMode.Line);
 		if (br == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;

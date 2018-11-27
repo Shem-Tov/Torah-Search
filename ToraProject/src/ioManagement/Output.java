@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import frame.ColorClass;
 import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
@@ -14,89 +15,55 @@ import stringFormatting.StringAlignUtils.Alignment;
 import torahApp.ToraApp;
 
 public class Output {
-	public static String markMatchPOS(String line, int indexOfArray, int[][] charPOSArray,
+
+	public static TorahLine markMatchesFromArrayList(ArrayList<Integer[]> indexes,
 			stringFormatting.HtmlGenerator htmlFormat) {
 		// Does not mark, if in console mode
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return line;
-		}
-		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		String lineHtml = "";
-		//checks for same lines to merge mark
-		for (int[] i : charPOSArray) {
-			if (charPOSArray[indexOfArray][0] == i[0]) {
-				indexes.add(i[1] - 1);
-			}
-		}
-		int lastIndex = 0;
-		for (Integer thisIndex : indexes) {
-			// Boolean wasSpace = false;
-			String tempStr = "";
-			if (thisIndex > 0) {
-				tempStr = line.substring(lastIndex, thisIndex);
-				/*
-				 * if (tempStr.charAt(tempStr.length() - 1) == ' ') { wasSpace = true; //
-				 * removes whitespace from the end tempStr = tempStr.replaceFirst("\\s++$", "");
-				 * }
-				 */
-			}
-			// lineHtml += tempStr + ((wasSpace) ? ToraApp.cSpace() : "") +
-			// htmlFormat.getHtml(0)
-			// + line.substring(thisIndex, 1 + thisIndex) + htmlFormat.getHtml(1);
-			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex, 1 + thisIndex)
-					+ htmlFormat.getHtml(1);
-
-			lastIndex = thisIndex + 1;
-		}
-		lineHtml += line.substring(lastIndex);
-		return lineHtml;
-	}
-
-	public static String markMatchesFromArrayList(ArrayList<Integer> indexes,
-			stringFormatting.HtmlGenerator htmlFormat) {
-		// Does not mark, if in console mode
-		String line="";
-		try (BufferedReader bReader2 = ManageIO.getBufferedReader(ToraApp.ToraLineFile,
-				ToraApp.subTorahLineFile); Stream<String> lines = bReader2.lines()) {
+		String line = "";
+		try (BufferedReader bReader2 = ManageIO.getBufferedReader(
+				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				Stream<String> lines = bReader2.lines()) {
 			// Recieves words of Pasuk
-			line = lines.skip(indexes.get(0) - 1).findFirst().get();
+			line = lines.skip(indexes.get(0)[0] - 1).findFirst().get();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return line;
+			return new TorahLine(line, null);
 		}
 		String lineHtml = "";
-		//checks for same lines to merge mark
+		// checks for same lines to merge mark
 		int lastIndex = 0;
-		int countIndex=0;
-		for (Integer thisIndex : indexes) {
-			//skip first 1 line(s)
-			if (countIndex<1) {
+		int countIndex = 0;
+		for (Integer[] thisIndex : indexes) {
+			// skip first 1 line(s)
+			if (countIndex < 1) {
 				countIndex++;
 				continue;
 			}
 			String tempStr = "";
-			if (thisIndex > 0) {
-				tempStr = line.substring(lastIndex, thisIndex);
-		}
-			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex, 1 + thisIndex)
+			if (thisIndex[0] > 0) {
+				tempStr = line.substring(lastIndex, thisIndex[0]);
+			}
+			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex[0], thisIndex[1])
 					+ htmlFormat.getHtml(1);
 
-			lastIndex = thisIndex + 1;
+			lastIndex = thisIndex[1];
 		}
 		lineHtml += line.substring(lastIndex);
-		return lineHtml;
+		return new TorahLine(line, lineHtml);
 	}
-	
-	public static LineHtmlReport markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
-			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) {
+
+	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
+			stringFormatting.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords,
+			String... searchSTR2) {
 		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot, bool_wholeWords, -1);
 	}
 
-	public static LineHtmlReport markMatchesInLine(String line, String searchSTR, stringFormatting.HtmlGenerator htmlFormat,
-			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) {
+	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
+			stringFormatting.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords, int index,
+			String... searchSTR2) {
 
 		// Does not mark, if in console mode
 		String lineHtml = "";
@@ -122,7 +89,7 @@ public class Output {
 
 		int myIndex;
 		int tempIndex = lineConvert.indexOf(searchConvert, 0);
-		indexes.add(new Integer[] {tempIndex,tempIndex+searchConvert.length()} );
+		indexes.add(new Integer[] { tempIndex, tempIndex + searchConvert.length() });
 		try {
 			if (indexes.get(0)[0] == -1) {
 				throw new IllegalArgumentException();
@@ -138,8 +105,7 @@ public class Output {
 			if ((indexes.get(0)[0] > 0) && (lineConvert.charAt(indexes.get(0)[0] - 1) != ' ')) {
 				cancel = true;
 			}
-			if (((indexes.get(0)[1] < lineConvert.length())
-					&& (lineConvert.charAt(indexes.get(0)[1]) != ' '))) {
+			if (((indexes.get(0)[1] < lineConvert.length()) && (lineConvert.charAt(indexes.get(0)[1]) != ' '))) {
 				cancel = true;
 			}
 			if (cancel) {
@@ -161,24 +127,24 @@ public class Output {
 				}
 				if (!cancel) {
 					startPOS = newIndex;
-					indexes.add(new Integer[] {newIndex,newIndex+searchConvert.length()});
+					indexes.add(new Integer[] { newIndex, newIndex + searchConvert.length() });
 				} else {
 					startPOS += 1;
 				}
 			} else {
 				startPOS = newIndex;
-				indexes.add(new Integer[] {newIndex,newIndex+searchConvert.length()});
+				indexes.add(new Integer[] { newIndex, newIndex + searchConvert.length() });
 			}
 		}
 		if (index != -1) {
 			myIndex = indexes.get(index)[0];
 			indexes = new ArrayList<Integer[]>();
-			indexes.add(new Integer[] {myIndex,myIndex+searchConvert.length()});
+			indexes.add(new Integer[] { myIndex, myIndex + searchConvert.length() });
 		}
 		int myIndex2;
 		if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
 			tempIndex = lineConvert.indexOf(searchConvert2, 0);
-			indexes2.add(new Integer[] {tempIndex,tempIndex+searchConvert2.length()});
+			indexes2.add(new Integer[] { tempIndex, tempIndex + searchConvert2.length() });
 			try {
 				if (indexes2.get(0)[0] == -1) {
 					throw new IllegalArgumentException();
@@ -194,8 +160,7 @@ public class Output {
 				if ((indexes2.get(0)[0] > 0) && (lineConvert.charAt(indexes2.get(0)[0] - 1) != ' ')) {
 					cancel = true;
 				}
-				if (((indexes2.get(0)[1] < lineConvert.length())
-						&& (lineConvert.charAt(indexes2.get(0)[1]) != ' '))) {
+				if (((indexes2.get(0)[1] < lineConvert.length()) && (lineConvert.charAt(indexes2.get(0)[1]) != ' '))) {
 					cancel = true;
 				}
 				if (cancel) {
@@ -217,19 +182,19 @@ public class Output {
 					}
 					if (!cancel) {
 						startPOS2 = newIndex2;
-						indexes2.add(new Integer[] {newIndex2,newIndex2+searchConvert2.length()});
+						indexes2.add(new Integer[] { newIndex2, newIndex2 + searchConvert2.length() });
 					} else {
 						startPOS2 += 1;
 					}
 				} else {
 					startPOS2 = newIndex2;
-					indexes2.add(new Integer[] {newIndex2,newIndex2+searchConvert2.length()});
+					indexes2.add(new Integer[] { newIndex2, newIndex2 + searchConvert2.length() });
 				}
 			}
 			if (index != -1) {
 				myIndex2 = indexes2.get(index)[0];
 				indexes2 = new ArrayList<Integer[]>();
-				indexes2.add(new Integer[] {myIndex2,myIndex2+searchConvert2.length()});
+				indexes2.add(new Integer[] { myIndex2, myIndex2 + searchConvert2.length() });
 			}
 
 			int countIndex = 0;
@@ -239,7 +204,8 @@ public class Output {
 					if (indexes.get(countIndex)[0] <= indexes2.get(countIndex2)[0]) {
 						if (indexes.get(countIndex)[1] >= indexes2.get(countIndex2)[0]) {
 							if (indexes.get(countIndex)[1] < indexes2.get(countIndex2)[1]) {
-								indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes2.get(countIndex2)[1] });
+								indexes3.add(
+										new Integer[] { indexes.get(countIndex)[0], indexes2.get(countIndex2)[1] });
 								countIndex++;
 								countIndex2++;
 							} else {
@@ -254,11 +220,13 @@ public class Output {
 					} else {
 						if (indexes2.get(countIndex2)[1] >= indexes.get(countIndex)[0]) {
 							if (indexes2.get(countIndex2)[1] < indexes.get(countIndex)[1]) {
-								indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex)[1] });
+								indexes3.add(
+										new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex)[1] });
 								countIndex++;
 								countIndex2++;
 							} else {
-								indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
+								indexes3.add(
+										new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
 								countIndex++;
 								countIndex2++;
 							}
@@ -268,12 +236,12 @@ public class Output {
 						}
 					}
 				} else {
-					if (countIndex<indexes.size()) {
+					if (countIndex < indexes.size()) {
 						indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
-						countIndex++;	
-					} else if (countIndex2<indexes2.size()) {
+						countIndex++;
+					} else if (countIndex2 < indexes2.size()) {
 						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
-						countIndex2++;	
+						countIndex2++;
 					} else {
 						break;
 					}
@@ -307,21 +275,30 @@ public class Output {
 		}
 		lineHtml += line.substring(lastIndex);
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return new LineHtmlReport(line,indexes);
+			return new LineHtmlReport(line, indexes);
 		} else {
-			return new LineHtmlReport(lineHtml,indexes);
+			return new LineHtmlReport(lineHtml, indexes);
 		}
 	}
 
 	public static String markText(String str, HtmlGenerator markupStyle) {
+		return markText(str, markupStyle, false);
+	}
+
+	public static String markText(String str, HtmlGenerator markupStyle, Boolean htmlTag) {
 		// Does not mark, if in console mode
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
 			return str;
 		}
-		return (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
+		String html = (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
+		if (htmlTag) {
+			html = "<html>" + html + "</html>";
+		}
+		return html;
 	}
 
-	public static LineHtmlReport markTextOrderedLetters(String searchSTR, String line,Boolean bool_sofiot,Boolean firstLast,stringFormatting.HtmlGenerator htmlFormat) {
+	public static LineHtmlReport markTextOrderedLetters(String searchSTR, String line, Boolean bool_sofiot,
+			Boolean firstLast, stringFormatting.HtmlGenerator htmlFormat) {
 		String lineConvert;
 		String searchConvert;
 		if (!bool_sofiot) {
@@ -331,22 +308,21 @@ public class Output {
 			searchConvert = searchSTR;
 			lineConvert = line;
 		}
-		int oldIndex=0;
+		int oldIndex = 0;
 		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
-		int indexCounter=0;
-		for (char ch:searchConvert.toCharArray()) {
-			if ((firstLast)
-				&&(indexCounter==(searchConvert.length()-1))) {
+		int indexCounter = 0;
+		for (char ch : searchConvert.toCharArray()) {
+			if ((firstLast) && (indexCounter == (searchConvert.length() - 1))) {
 				int tempIndex = lineConvert.lastIndexOf(ch);
-				indexes.add(new Integer[] {tempIndex,tempIndex+1});
+				indexes.add(new Integer[] { tempIndex, tempIndex + 1 });
 			} else {
-				int tempIndex = lineConvert.indexOf(ch,oldIndex);
-				indexes.add(new Integer[] {tempIndex,tempIndex+1});
+				int tempIndex = lineConvert.indexOf(ch, oldIndex);
+				indexes.add(new Integer[] { tempIndex, tempIndex + 1 });
 			}
-			if (indexes.get(indexCounter)[0]==-1) {
-				return  new LineHtmlReport(line,null);
+			if (indexes.get(indexCounter)[0] == -1) {
+				return new LineHtmlReport(line, null);
 			} else {
-				oldIndex=indexes.get(indexCounter++)[0];
+				oldIndex = indexes.get(indexCounter++)[0];
 			}
 		}
 		String lineHtml = "";
@@ -363,12 +339,12 @@ public class Output {
 		}
 		lineHtml += line.substring(lastIndex);
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return new LineHtmlReport(line,indexes);
+			return new LineHtmlReport(line, indexes);
 		} else {
-			return new LineHtmlReport(lineHtml,indexes);
+			return new LineHtmlReport(lineHtml, indexes);
 		}
 	}
-	
+
 	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
 		// Does not mark, if in console mode
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -387,7 +363,7 @@ public class Output {
 	}
 
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-		Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
+			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		LineHtmlReport lineHtmlReport = null;
 		try {
@@ -395,8 +371,11 @@ public class Output {
 			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
 				tempStr1 += " | \"" + markText(searchSTR2[0], markupStyle) + "\" ";
 			}
-			tempStr1 += "נמצא ב" + StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-					+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters();
+			tempStr1 += "נמצא ב" + markText(
+					StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
+							+ ":" + pBookInstance.getPasukLetters(),
+					ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
+							% ColorClass.highlightStyleHTML.length]);
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
 				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index,
@@ -412,10 +391,10 @@ public class Output {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
 		}
-		String[][] results = new String[][] { { searchSTR, pBookInstance.getBookName(), pBookInstance.getPerekLetters(),
-			pBookInstance.getPasukLetters(), line } };
+		String[] results = new String[] { searchSTR, pBookInstance.getBookName(), pBookInstance.getPerekLetters(),
+				pBookInstance.getPasukLetters(), line };
 
-		return new LineReport(results,lineHtmlReport.getIndexes());
+		return new LineReport(results, lineHtmlReport.getIndexes());
 	}
 
 	public static void printLine(int size) {
@@ -447,10 +426,13 @@ public class Output {
 		}
 		// System.out.println(width);
 		try {
-		Tree.getInstance().addNodeParasha(lineNum,
-				"<html><body style='width: " + width + "px'>" + frame.Frame.mainStyleHTML.getHtml(0) + text
-						+ frame.Frame.mainStyleHTML.getHtml(1) + getLine(1) + "</body></html>",
-				isDilug);
+			String html = "<html><body style='width: " + width + "px'>" + frame.ColorClass.mainStyleHTML.getHtml(0)
+					+ text + frame.ColorClass.mainStyleHTML.getHtml(1) + getLine(1) + "</body></html>";
+			if (Frame.getCheckBox_DifferentSearch()) {
+				Tree.getInstance().addNodeCustom(html, isDilug);
+			} else {
+				Tree.getInstance().addNodeParasha(lineNum, html, isDilug);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

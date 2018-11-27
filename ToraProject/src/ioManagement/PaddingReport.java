@@ -1,5 +1,7 @@
 package ioManagement;
 
+import java.util.ArrayList;
+
 public class PaddingReport {
 	String paddingLine;
 	int startMark;
@@ -17,6 +19,12 @@ public class PaddingReport {
 	}
 	public int getEndMark() {
 		return endMark;
+	}
+	
+	public ArrayList<Integer[]> getArrayListPadding(){
+		ArrayList<Integer[]> aList = new ArrayList<Integer[]>();
+		aList.add(new Integer[] {startMark,endMark});
+		return aList;
 	}
 }
 
