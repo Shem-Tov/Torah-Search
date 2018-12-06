@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import frame.ColorClass;
 import frame.Frame;
+import frame.Table;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import stringFormatting.HtmlGenerator;
@@ -15,6 +16,7 @@ import stringFormatting.StringAlignUtils.Alignment;
 import torahApp.ToraApp;
 
 public class Output {
+	public final static int padLines =2;
 
 	public static TorahLine markMatchesFromArrayList(ArrayList<Integer[]> indexes,
 			stringFormatting.HtmlGenerator htmlFormat) {
@@ -345,6 +347,49 @@ public class Output {
 		}
 	}
 
+	public static String printSomePsukimHtml(int lineNum, int padLines) {
+		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console || !Frame.getCheckBox_Tooltip()) {
+			return "";
+		}
+		String line = "";
+		try (BufferedReader bReader = ManageIO.getBufferedReader(
+				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);) {
+			int firstLine = Math.max(0, lineNum - padLines - 1);
+			for (int i = 0; i < firstLine; i++) {
+				bReader.readLine();
+			}
+			for (int i = 0; i < (padLines * 2 + 1); i++) {
+				if (i > 0) {
+					line += "<br>";
+				}
+				String str="";
+				if (i==padLines) {
+					str += "-> ";
+				}
+				str += "* " + bReader.readLine();
+				int length = str.length();
+				int loopTimes = ((length / 42));
+				if (loopTimes == 0) {
+					line += str;
+				} else {
+					for (int j = 0; j < loopTimes; j++) {
+						int pos = str.indexOf(' ', (length) / (loopTimes+1));
+						line += str.substring(0, pos) + "<br>";
+						str = str.substring(pos);
+					}
+					line += str;
+				}
+			}
+
+			// Recieves words of Pasuk
+		} catch (
+
+		IOException e) {
+			e.printStackTrace();
+		}
+		return line;
+	}
+
 	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
 		// Does not mark, if in console mode
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -365,7 +410,7 @@ public class Output {
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-		LineHtmlReport lineHtmlReport = null;
+		LineHtmlReport lineHtmlReport = new LineHtmlReport("", new ArrayList<Integer[]>());
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" ";
 			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
@@ -384,7 +429,10 @@ public class Output {
 				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
 			}
 			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml();
-			printText(outputText);
+			printText(outputText, 0);
+			String tooltip = printSomePsukimHtml(countLines, padLines);
+			printText("טקסט נוסף",3,tooltip);
+			// printText(String.valueOf(countLines),3);
 			printLine(1);
 			printTree(countLines, outputText, false);
 		} catch (Exception e) {
@@ -438,24 +486,53 @@ public class Output {
 		}
 	}
 
-	public static void printText(String text) {
-		printText(text, (byte) 0);
+	public static void printTableRow(String word, String place, String line, String expandedLine) {
+		printTableRow(word, place, line, expandedLine, false, 0, 0);
 	}
 
-	public static void printText(String text, int mode) {
-		printText(text, (byte) mode);
+	public static void printTableRow(String word, String place, String line, String expandedLine, int dilug) {
+		printTableRow(word, place, line, expandedLine, true, dilug, 0);
 	}
 
-	public static void printText(String text, byte mode) {
+	public static void printTableRow(String word, String place, String line, String expandedLine, Boolean isDilug,
+			int dilug, int mode) {
+		switch (mode) {
+		case 0:
+			line = ColorClass.mainStyleHTML.getHtml(0) + line + ColorClass.mainStyleHTML.getHtml(1);
+			break;
+		case 1:
+			line = ColorClass.attentionHTML.getHtml(0) + line + ColorClass.attentionHTML.getHtml(1);
+		}
+
+		if (isDilug) {
+			Table.getInstance(isDilug).addToTable(word, place, line, expandedLine, String.valueOf(dilug));
+		} else {
+			Table.getInstance(isDilug).addToTable(word, place, line, expandedLine);
+		}
+	}
+
+	public static void printText(String text, String... tooltipText) {
+		printText(text, (byte) 0, tooltipText);
+	}
+
+	public static void printText(String text, int mode, String... tooltipText) {
+		printText(text, (byte) mode, tooltipText);
+	}
+
+	public static void printText(String text, byte mode, String... tooltipText) {
 		// mode 0 = regular
 		// mode 1 = attention
 		// mode 2 = silence on GUI
+		// mode 3 = label
 		switch (ToraApp.getGuiMode()) {
 		case ToraApp.id_guiMode_Frame: // GUI Mode
 			switch (mode) {
 			case 0:
 			case 1:
 				Frame.appendText(text, mode);
+				break;
+			case 3:
+				Frame.appendText(text, mode, tooltipText);
 				// util.format is not needed because document is html and auto wraps text
 				// Frame.appendText(util.format(text), mode);
 				break;

@@ -109,7 +109,7 @@ public class Methods {
 		arrayMethods.add(new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				extras.printFile.printTorah();
+				extras.printFile.printTorah(args);
 			}
 		});
 		getArrayMethodID().add(id_ReportTorahCount);

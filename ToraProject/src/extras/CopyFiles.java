@@ -42,8 +42,16 @@ public class CopyFiles {
 			}
 		} finally {
 			System.out.println("Number of Letters: "+counter);
-			inputStream.close();
-			outputStream.close();
+			try {
+				inputStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				outputStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

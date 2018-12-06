@@ -10,7 +10,9 @@ import javax.swing.JTextField;
 import java.awt.ComponentOrientation;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-import javax.swing.JInternalFrame;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -30,10 +32,16 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.tree.TreePath;
+
 import org.apache.commons.lang3.StringUtils;
+
+import ioManagement.ClipboardClass;
 import ioManagement.ExcelFunctions;
 import ioManagement.Output;
 import ioManagement.PropStore;
+import stringFormatting.HtmlGenerator;
+import stringFormatting.OtherHtml;
 import torahApp.ToraApp;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -45,8 +53,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 import java.awt.Font;
 import java.awt.Dimension;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPopupMenu;
@@ -107,6 +114,10 @@ public class Frame {
 	private static final String checkBox_searchMultiple_String = "<html><p align='right'>" + "חיפוש יותר ממילה אחת"
 			+ "</p></html>";
 	private static final String checkBox_searchMultiple_ReverseDilug = "חיפוש דילוג הפוך";
+	private static final String checkBox_searchMultiple_placeInfo = "להוסיף סימונים";
+	private static Boolean bool_placeInfo = true;
+	private static Boolean bool_dilugReversed = false;
+	private static Boolean bool_searchMultiple = false;
 	static final String checkBox_letterOrder_String = "שמור סדר האותיות";
 	static final String checkBox_letterOrder_Tooltip = "שמור על סדר האותיות";
 	static final String checkBox_wholeWord_Letters = "שמור על ראשי וסופי תיבות";
@@ -121,7 +132,7 @@ public class Frame {
 	private static int fontSizeSmall = getFontSize() - 2;
 	private static int fontSizeSmaller = getFontSize() - 3;
 
-	private static int textHtmlSize = 5;
+	static int textHtmlSize = 5;
 	public static final int lineHeaderSize = 5;
 	// searchRange, has two line numbers to search through in the Torah
 	// if {0,0} then search through ALL
@@ -129,17 +140,16 @@ public class Frame {
 	private static final String searchRangeAll = "הכול";
 	private static String searchRangeString = searchRangeAll;
 	private static String searchRangeStringHTML = searchRangeAll;
-
 	private static String paddingSearchMulti = "";
 	private static int paddingSearchIndex = 1;
 	private static int paddingDilug = 1;
-	// JTextPane Formatting
-	private static stringFormatting.HtmlGenerator attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
-			ColorClass.color_attentionHTML[0], ColorClass.color_attentionHTML[1], ColorClass.color_attentionHTML[2], 0b111);
 	private static Color ColorBG_comboBox_main = new Color(255, 240, 240);
 	private static Color ColorBG_textPane = new Color(251, 255, 253);
 	private static Color ColorBG_Panel = new Color(240, 240, 255);
 	private static Color customBGColor = ColorBG_Panel;
+	private static Color ColorBG_menu2 = new Color(238, 242, 250);
+	private static Color ColorBG_menu = new Color(240, 248, 255);
+	private static Color ColorBG_menu3 = new Color(251, 255, 255);
 
 	private static final String buttonRunTorahRangeReport = "צור דוח";
 	private static final String buttonRunText = "חפש";
@@ -153,7 +163,7 @@ public class Frame {
 
 	private JFrame frame;
 	private static ArrayList<JPanel> subPanels = new ArrayList<JPanel>();
-	private static JPanel panel, subPanelProgressLabels, panelGroup, menuPanel;
+	private static JPanel panel, subPanelProgressLabels, panelGroup;
 	private static JButton button_search;
 	private static JButton button_defaultSettings;
 	private static JButton button_searchRange;
@@ -175,6 +185,7 @@ public class Frame {
 	private static JCheckBox checkBox_searchMultiple;
 	private static JCheckBox checkBox_letterOrder;
 	static JTextPane textPane;
+	// static JTable table;
 	private static Tree tree;
 	private static JScrollPane scrollPane;
 	private static JTabbedPane tabbedPane;
@@ -186,6 +197,7 @@ public class Frame {
 	private static JProgressBar progressBar;
 	private static JComboBox<?> comboBox_sub;
 	private static JCheckBoxMenuItem checkBox_DifferentSearch;
+	private static JCheckBoxMenuItem checkBox_TooltipOption;
 	private static JMenuItem menuItem_bgColor;
 	private static JMenu menuItem_textColor;
 	private static JMenu menuFiles;
@@ -212,6 +224,22 @@ public class Frame {
 		JMenuItem anItem;
 
 		public PopUpTextPane() {
+			anItem = new JMenuItem("נקה מסך");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					clearText();
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("העתק");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					ClipboardClass.setSysClipboardText(textPane.getSelectedText());
+				}
+			});
+			add(anItem);
 			anItem = new JMenuItem("חפש...");
 			anItem.addActionListener(new ActionListener() {
 				@Override
@@ -245,7 +273,57 @@ public class Frame {
 		}
 	}
 
-	class PopClickListener extends MouseAdapter {
+	class PopUpTree extends JPopupMenu {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		JMenuItem anItem;
+
+		public PopUpTree() {
+			anItem = new JMenuItem("נקה מסך");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					Tree.getInstance().clearTree();
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("העתק");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					//ClipboardClass.setSysClipboardText(OtherHtml.html2text(tree.getLastSelectedPathComponent().toString()));
+					TreePath[] treePaths = tree.getSelectionPaths();
+					String str = "";
+					for (TreePath t:treePaths) {
+						str += OtherHtml.html2text(t.toString());
+					}
+					ClipboardClass.setSysClipboardText(str);
+				}
+			});
+			add(anItem);
+		}
+	}
+
+	class PopClickTreeListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		private void doPop(MouseEvent e) {
+			PopUpTree menu = new PopUpTree();
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
+	class PopClickTextPaneListener extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			if (e.isPopupTrigger())
 				doPop(e);
@@ -355,13 +433,13 @@ public class Frame {
 	}
 
 	public static void setButtonText() {
-		if (getComboBox_main()==combo_strTorahRangeReport) {
+		if (getComboBox_main() == combo_strTorahRangeReport) {
 			button_search.setText(buttonRunTorahRangeReport);
 		} else {
 			button_search.setText(buttonRunText);
 		}
 	}
-	
+
 	public static void showProgressBar(Boolean bool, int flag) {
 		// 0b01 - progressBar and countLabel
 		// 0b10 - label
@@ -405,11 +483,12 @@ public class Frame {
 		ToraApp.subTorahLineFile = PropStore.map.get(PropStore.subTorahLineFile);
 		ToraApp.subTorahLetterFile = PropStore.map.get(PropStore.subTorahLettersFile);
 		ToraApp.differentSearchFile = PropStore.map.get(PropStore.differentSearchFile);
-		if ((ToraApp.differentSearchFile!=null) && (ToraApp.differentSearchFile.length()>0)) {
-			checkBox_DifferentSearch.setToolTipText(Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML,true));
+		if ((ToraApp.differentSearchFile != null) && (ToraApp.differentSearchFile.length() > 0)) {
+			checkBox_DifferentSearch
+					.setToolTipText(Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML, true));
 		} else {
-			checkBox_DifferentSearch.setToolTipText(Output.markText
-					("להגדרת קובץ לחיפוש -> הגדרות<br> -> קבצים -> קובץ אחר לחיפוש", ColorClass.headerStyleHTML,true));
+			checkBox_DifferentSearch.setToolTipText(Output.markText(
+					"להגדרת קובץ לחיפוש -> הגדרות<br> -> קבצים -> קובץ אחר לחיפוש", ColorClass.headerStyleHTML, true));
 		}
 		String excelFolder = PropStore.map.get(PropStore.excelFolder);
 		if ((excelFolder != null) && (excelFolder.length() > 0)) {
@@ -431,8 +510,9 @@ public class Frame {
 			ColorClass.color_mainStyleHTML[0] = temp.getRed();
 			ColorClass.color_mainStyleHTML[1] = temp.getGreen();
 			ColorClass.color_mainStyleHTML[2] = temp.getBlue();
-			ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0],
-					ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2], 0b111);
+			ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
+					ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1],
+					ColorClass.color_mainStyleHTML[2], 0b1101);
 			// public static StringFormatting.HtmlGenerator markupStyleHTML = new
 			// StringFormatting.HtmlGenerator(textHtmlSize+1, 93, 192, 179,0b100);
 		} catch (Exception e) {
@@ -444,8 +524,9 @@ public class Frame {
 			ColorClass.color_markupStyleHTML[0] = temp.getRed();
 			ColorClass.color_markupStyleHTML[1] = temp.getGreen();
 			ColorClass.color_markupStyleHTML[2] = temp.getBlue();
-			ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_markupStyleHTML[0],
-					ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2], 0b100);
+			ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+					ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1],
+					ColorClass.color_markupStyleHTML[2], 0b100);
 		} catch (Exception e) {
 			ColorClass.color_markupStyleHTML = ColorClass.color_markupStyleHTML_hardCoded.clone();
 		}
@@ -466,6 +547,7 @@ public class Frame {
 			checkbox_createTree.setSelected(true);
 		}
 		checkbox_createExcel.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_createExcel)));
+		checkBox_TooltipOption.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_TorahTooltip)));
 		textPane.setVisible(checkbox_createDocument.isSelected());
 		tree.setVisible(checkbox_createTree.isSelected());
 	}
@@ -490,10 +572,10 @@ public class Frame {
 		PropStore.addNotNull(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
 		PropStore.addNotNull(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
 		PropStore.addNotNull(PropStore.bgColor, String.valueOf(customBGColor.getRGB()));
-		PropStore.addNotNull(PropStore.mainHtmlColor, String
-				.valueOf(new Color(ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2]).getRGB()));
-		PropStore.addNotNull(PropStore.markupHtmlColor, String.valueOf(
-				new Color(ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2]).getRGB()));
+		PropStore.addNotNull(PropStore.mainHtmlColor, String.valueOf(new Color(ColorClass.color_mainStyleHTML[0],
+				ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2]).getRGB()));
+		PropStore.addNotNull(PropStore.markupHtmlColor, String.valueOf(new Color(ColorClass.color_markupStyleHTML[0],
+				ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2]).getRGB()));
 		PropStore.addNotNull(PropStore.fontSize, String.valueOf(getFontSize()));
 		PropStore.addNotNull(PropStore.bool_gimatriaSofiot, String.valueOf(checkBox_gimatriaSofiot.isSelected()));
 		PropStore.addNotNull(PropStore.bool_wholeWord, String.valueOf(checkBox_wholeWord.isSelected()));
@@ -502,35 +584,58 @@ public class Frame {
 		PropStore.addNotNull(PropStore.bool_createExcel, String.valueOf(checkbox_createExcel.isSelected()));
 		PropStore.addNotNull(PropStore.bool_createTree, String.valueOf(checkbox_createTree.isSelected()));
 		PropStore.addNotNull(PropStore.bool_letterOrder, String.valueOf(checkBox_letterOrder.isSelected()));
-
+		PropStore.addNotNull(PropStore.bool_TorahTooltip, String.valueOf(checkBox_TooltipOption.isSelected()));
 		PropStore.store();
 	}
 
-	public static void appendText(String str) throws BadLocationException {
+	private static String packHtml(String str) {
+		return "<html>" + str + "</html>";
+	}
+
+	private static String packHtmlAlign(String str) {
+		return "<html><p align=\"right\"><b>" + str + "</b></p></html>";
+	}
+
+	public static void Text(String str) throws BadLocationException {
 		appendText(str, (byte) 0);
 	}
 
-	public static void appendText(String str, byte mode) {
+	public static void appendText(String str, byte mode, String... tooltipText) {
 		try {
 			// doc.insertString(0, "\n"+str, null );
 			// mode 0 = regular style with Carriage Return
 			// mode 1 = error style with Carriage Return
-			// mode 2 = regular style without Carriage Return
+			// mode 2 = silent mode
+			// mode 3 = label
 			if (!checkbox_createDocument.isSelected()) {
 				return;
 			}
 			switch (mode) {
 			case 0:
 				// kit.insertHTML(doc, doc.getLength(), "<b>hello", 0, 0, HTML.Tag.B);
-				kit.insertHTML(doc, doc.getLength(), (ColorClass.mainStyleHTML.getHtml(0) + str + ColorClass.mainStyleHTML.getHtml(1)), 0, 0,
-						null);
+				kit.insertHTML(doc, doc.getLength(),
+						(ColorClass.mainStyleHTML.getHtml(0) + str + ColorClass.mainStyleHTML.getHtml(1)), 0, 0, null);
 				break;
 			case 1:
-				kit.insertHTML(doc, doc.getLength(), (attentionHTML.getHtml(0) + str + attentionHTML.getHtml(1)), 0, 0,
-						null);
+				kit.insertHTML(doc, doc.getLength(),
+						(ColorClass.attentionHTML.getHtml(0) + str + ColorClass.attentionHTML.getHtml(1)), 0, 0, null);
+				break;
+			case 3:
+				// Tooltips need to be disabled here
+				// and also in Output.printSomePsukimHtml
+				if (!checkBox_TooltipOption.isSelected())
+					break;
+				JLabel l = new JLabel(packHtml(str));
+				l.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+				textPane.setSelectionStart(textPane.getText().length());
+				textPane.setSelectionEnd(textPane.getText().length());
+				if (tooltipText.length > 0) {
+					l.setToolTipText(packHtmlAlign(ColorClass.tooltipStyleHTML.getHtml(0) + tooltipText[0]
+							+ ColorClass.tooltipStyleHTML.getHtml(1)));
+				}
+				textPane.insertComponent(l);
 				break;
 			}
-
 			// scrollPane.getHorizontalScrollBar().setValue(0);
 			// scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
 		} catch (IOException e) {
@@ -585,6 +690,7 @@ public class Frame {
 		menuFiles.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuResetExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkBox_TooltipOption.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkBox_DifferentSearch.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createDocument.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createExcel.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
@@ -601,17 +707,25 @@ public class Frame {
 		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) getFontSize() / 16)), 10));
 		// textHtmlSize = 5;
 		textHtmlSize = (int) (5 * ((float) getFontSize() / 16));
-		attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_attentionHTML[0], ColorClass.color_attentionHTML[1],
-				ColorClass.color_attentionHTML[2], 0b111);
-		ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1],
-				ColorClass.color_mainStyleHTML[2], 0b111);
-		ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_markupStyleHTML[0],
-				ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2], 0b100);
-
-		ColorClass.headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_headerStyleHTML[0],
-				ColorClass.color_headerStyleHTML[1], ColorClass.color_headerStyleHTML[2], 0b100);
-		ColorClass.footerStyleHTML = new stringFormatting.HtmlGenerator(0, ColorClass.color_footerStyleHTML[0], ColorClass.color_footerStyleHTML[1],
-				ColorClass.color_footerStyleHTML[2], 0b100);
+		ColorClass.attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_attentionHTML[0],
+				ColorClass.color_attentionHTML[1], ColorClass.color_attentionHTML[2], 0b1101);
+		ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0],
+				ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2], 0b1101);
+		ColorClass.tooltipStyleHTML = new HtmlGenerator(textHtmlSize, ColorClass.color_tooltipStyleHTML_hardCoded[0],
+				ColorClass.color_tooltipStyleHTML_hardCoded[1], ColorClass.color_tooltipStyleHTML_hardCoded[2], 0b100);
+		ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+				ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1],
+				ColorClass.color_markupStyleHTML[2], 0b100);
+		for (int i = 0; i < ColorClass.highlightStyleHTML.length; i++) {
+			ColorClass.highlightStyleHTML[i] = new stringFormatting.HtmlGenerator(textHtmlSize,
+					ColorClass.color_highlightStyleHTML[i][0], ColorClass.color_highlightStyleHTML[i][1],
+					ColorClass.color_highlightStyleHTML[i][2], 0b100);
+		}
+		ColorClass.headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+				ColorClass.color_headerStyleHTML[0], ColorClass.color_headerStyleHTML[1],
+				ColorClass.color_headerStyleHTML[2], 0b100);
+		ColorClass.footerStyleHTML = new stringFormatting.HtmlGenerator(0, ColorClass.color_footerStyleHTML[0],
+				ColorClass.color_footerStyleHTML[1], ColorClass.color_footerStyleHTML[2], 0b100);
 
 //		thisFrame.frame.setMinimumSize(new Dimension(550, 520));
 		if (frame_instance != null) {
@@ -624,7 +738,7 @@ public class Frame {
 		}
 	}
 
-	private static void setBGColor(Color c) {
+	private static void setBGColorPanel(Color c) {
 		customBGColor = c;
 		panel.setBackground(c);
 		panelGroup.setBackground(c);
@@ -644,14 +758,37 @@ public class Frame {
 		// frame_instance.frame.revalidate();
 	}
 
+	private static void setBGColorMenu(Color c, Color c2, Color c3) {
+		// menu
+		UIManager.put("ToolTip.background", c);
+		checkBox_TooltipOption.setBackground(c3);
+		checkBox_DifferentSearch.setBackground(c);
+		menuItem_bgColor.setBackground(c3);
+		menuItem_textColor.setBackground(c);
+		menuItem_textSize.setBackground(c3);
+		checkbox_createDocument.setBackground(c);
+		checkbox_createExcel.setBackground(c3);
+		checkbox_createTree.setBackground(c);
+		menuFiles.setBackground(c3);
+		// submenu
+		menuDifferentFile.setBackground(c2);
+		menuExcelFolder.setBackground(c);
+		menuResetExcelFolder.setBackground(c2);
+		menuTorahTable.setBackground(c);
+		menuLinesFile.setBackground(c2);
+		menuNoTevotFile.setBackground(c);
+		menuItem_textColorMain.setBackground(c2);
+		menuItem_textColorMarkup.setBackground(c);
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void changeLayout(String str) {
 		DefaultComboBoxModel model;
-		if (str!=combo_strTorahRangeReport) {
+		if (str != combo_strTorahRangeReport) {
 			if (!checkbox_createDocument.isSelected()) {
 				noDocumentMessage();
 			}
-		} 
+		}
 		setButtonText();
 		switch (str) {
 		case combo_strSearch:
@@ -681,6 +818,7 @@ public class Frame {
 					label_padding.setText(strLabel_padding_Search);
 					textField_padding.setText(paddingSearchMulti);
 				}
+				checkBox_searchMultiple.setSelected(bool_searchMultiple);
 				break;
 			case combo_strCountSearch:
 				subPanels.get(id_panel_padding).setVisible(true);
@@ -733,12 +871,13 @@ public class Frame {
 			subPanels.get(id_panel_countPsukim).setVisible(false);
 			subPanels.get(id_panel_wholeWord).setVisible(false);
 			subPanels.get(id_panel_searchMulti).setVisible(true);
-			subPanels.get(id_panel_searchRange).setVisible(true);			
+			subPanels.get(id_panel_searchRange).setVisible(true);
 			label_padding.setText(strLabel_padding_Dilug);
 			checkBox_searchMultiple.setText(checkBox_searchMultiple_ReverseDilug);
 			textField_padding.setText(String.valueOf(paddingDilug));
 			model = new DefaultComboBoxModel(comboBox_sub_Strings_Dilugim);
 			comboBox_sub.setModel(model);
+			checkBox_searchMultiple.setSelected(bool_dilugReversed);
 			break;
 		case combo_strTorahRangeReport:
 			subPanels.get(id_panel_search).setVisible(false);
@@ -751,6 +890,21 @@ public class Frame {
 			subPanels.get(id_panel_wholeWord).setVisible(false);
 			subPanels.get(id_panel_searchMulti).setVisible(false);
 			subPanels.get(id_panel_searchRange).setVisible(false);
+			break;
+		case combo_strTorahPrint:
+			subPanels.get(id_panel_search).setVisible(false);
+			subPanels.get(id_panel_dilug).setVisible(false);
+			subPanels.get(id_panel_gimatriaSofiot).setVisible(false);
+			subPanels.get(id_panel_padding).setVisible(false);
+			subPanels.get(id_panel_combosub).setVisible(false);
+			subPanels.get(id_panel_letterOrder).setVisible(false);
+			subPanels.get(id_panel_countPsukim).setVisible(false);
+			subPanels.get(id_panel_wholeWord).setVisible(false);
+			subPanels.get(id_panel_searchMulti).setVisible(true);
+			subPanels.get(id_panel_searchRange).setVisible(true);
+			checkBox_searchMultiple.setText(checkBox_searchMultiple_placeInfo);
+			checkBox_searchMultiple.setSelected(bool_placeInfo);
+			break;
 		}
 	}
 
@@ -796,6 +950,7 @@ public class Frame {
 	private void initialize() throws IOException, BadLocationException {
 		ToraApp.setGuiMode(ToraApp.id_guiMode_Frame);
 		frame = new JFrame();
+		ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 		frame.setTitle("חיפוש בתורה");
 		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
 		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
@@ -804,14 +959,9 @@ public class Frame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		JInternalFrame internalFrame = new JInternalFrame("חיפוש בתורה");
-		frame.getContentPane().add(internalFrame, BorderLayout.NORTH);
-		menuPanel = new JPanel();
-		frame.getContentPane().add(menuPanel, BorderLayout.NORTH);
-		menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.X_AXIS));
 
 		comboBox_main = new JComboBox();
-		//menuPanel.add(comboBox_main);
+		// menuPanel.add(comboBox_main);
 		comboBox_main.setMaximumSize(new Dimension(200, 32767));
 		comboBox_main.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		comboBox_main.setModel(new DefaultComboBoxModel(
@@ -906,14 +1056,9 @@ public class Frame {
 		scrollPane.getVerticalScrollBar().setUnitIncrement(7);
 		panelWidth = scrollPane.getWidth();
 		textPane.setBackground(ColorBG_textPane);
-		textPane.addMouseListener(new PopClickListener());
+		textPane.addMouseListener(new PopClickTextPaneListener());
 		// Better support for right to left languages
 		textPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		GroupLayout groupLayout = new GroupLayout(internalFrame.getContentPane());
-		groupLayout.setHorizontalGroup(
-				groupLayout.createParallelGroup(Alignment.LEADING).addGap(0, 1598, Short.MAX_VALUE));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGap(0, 38, Short.MAX_VALUE));
-		internalFrame.getContentPane().setLayout(groupLayout);
 
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
@@ -924,11 +1069,17 @@ public class Frame {
 		// add JTree here
 		tree = Tree.getInstance();
 		tree.setBackground(ColorBG_textPane);
-		JScrollPane treeScrollPane = new JScrollPane(tree);
-		treeScrollPane.getVerticalScrollBar().setUnitIncrement(7);
-		tabbedPane.addTab("עץ", treeScrollPane);
+		JScrollPane scrollTree = new JScrollPane(tree);
+		scrollTree.getVerticalScrollBar().setUnitIncrement(7);
+		tree.addMouseListener(new PopClickTreeListener());
+		tabbedPane.addTab("עץ", scrollTree);
+
+		// table = Table.getInstance(false);
+		// table.setBackground(ColorBG_textPane);
+		// JScrollPane scrollTable = new JScrollPane(table);
+		// tabbedPane.addTab("טבלה", scrollTable);
+
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		internalFrame.setVisible(true);
 
 		button_search = new JButton("חפש");
 		comboBox_sub = new JComboBox();
@@ -1057,10 +1208,20 @@ public class Frame {
 		menuSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuSettings.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		menuSettings.setBackground(ColorBG_textPane);
+		menuSettings.setOpaque(true);
 		menuBar.add(menuSettings);
 		menuBar.add(Box.createHorizontalGlue());
 		menuBar.add(comboBox_main);
-		checkBox_DifferentSearch = new JCheckBoxMenuItem("<html> <p align=\"right\">"+"חיפוש בקובץ<br> של המשתמש"+"</p></html>");
+		checkBox_TooltipOption = new JCheckBoxMenuItem(
+				"<html> <p align=\"right\">" + "הוספת טקסט נוסף" + "</p></html>");
+		checkBox_TooltipOption.setSelected(true);
+		checkBox_TooltipOption.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		checkBox_TooltipOption.setHorizontalTextPosition(SwingConstants.RIGHT);
+		checkBox_TooltipOption.setHorizontalAlignment(SwingConstants.RIGHT);
+		checkBox_TooltipOption.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
+		checkBox_DifferentSearch = new JCheckBoxMenuItem(
+				"<html> <p align=\"right\">" + "חיפוש בקובץ<br> של המשתמש" + "</p></html>");
 		checkBox_DifferentSearch.setSelected(false);
 		checkBox_DifferentSearch.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		checkBox_DifferentSearch.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -1086,7 +1247,6 @@ public class Frame {
 		menuItem_textColorMarkup.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuItem_textColorMarkup.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuItem_textColorMarkup.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
-
 		menuItem_textSize = new JMenuItem("גודל טקסט");
 		menuItem_textSize.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_textSize.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -1112,6 +1272,7 @@ public class Frame {
 		checkbox_createTree.setHorizontalAlignment(SwingConstants.RIGHT);
 		checkbox_createTree.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		checkbox_createTree.setSelected(true);
+		menuSettings.add(checkBox_TooltipOption);
 		menuSettings.add(checkBox_DifferentSearch);
 		menuSettings.add(menuItem_bgColor);
 		menuSettings.add(menuItem_textColor);
@@ -1119,8 +1280,8 @@ public class Frame {
 		menuSettings.add(checkbox_createDocument);
 		menuSettings.add(checkbox_createExcel);
 		menuSettings.add(checkbox_createTree);
+
 		menuFiles = new JMenu("קבצים");
-		menuSettings.add(menuFiles);
 		menuFiles.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuFiles.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuFiles.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -1141,19 +1302,24 @@ public class Frame {
 		menuResetExcelFolder.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuResetExcelFolder.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuTorahTable = new JMenuItem("טבלת אינדקס - TorahTables.xls");
-		menuTorahTable.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה לא מוצאת את הקובץ בעצמה"+" <br> https://github.com/Shem-Tov/Torah-Search/blob/master/TorahTables.xls",ColorClass.headerStyleHTML,true));
+		menuTorahTable.setToolTipText(Output.markText(
+				"קובץ גיבוי במקרה והתוכנה לא מוצאת את הקובץ בעצמה"
+						+ " <br> https://github.com/Shem-Tov/Torah-Search/blob/master/TorahTables.xls",
+				ColorClass.headerStyleHTML, true));
 		menuTorahTable.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuTorahTable.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuTorahTable.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuTorahTable.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuLinesFile = new JMenuItem("קובץ תורה מחולק בשורות - Lines.txt");
-		menuLinesFile.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה <br> לא מוצאת את הקובץ בעצמה",ColorClass.headerStyleHTML,true));
+		menuLinesFile.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה <br> לא מוצאת את הקובץ בעצמה",
+				ColorClass.headerStyleHTML, true));
 		menuLinesFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuLinesFile.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuLinesFile.setHorizontalAlignment(SwingConstants.RIGHT);
 		menuLinesFile.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
 		menuNoTevotFile = new JMenuItem("קובץ תורה אותיות - NoTevot.txt");
-		menuNoTevotFile.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה <br> לא מוצאת את הקובץ בעצמה",ColorClass.headerStyleHTML,true));
+		menuNoTevotFile.setToolTipText(Output.markText("קובץ גיבוי במקרה והתוכנה <br> לא מוצאת את הקובץ בעצמה",
+				ColorClass.headerStyleHTML, true));
 		menuNoTevotFile.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuNoTevotFile.setHorizontalTextPosition(SwingConstants.RIGHT);
 		menuNoTevotFile.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -1166,12 +1332,17 @@ public class Frame {
 		menuFiles.add(menuNoTevotFile);
 		button_defaultSettings = new JButton("קבע ברירת מחדל");
 		button_defaultSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		//bad - choice = button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		// bad - choice =
+		// button_defaultSettings.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		button_defaultSettings.setMargin(new Insets(2, 2, 2, 2));
 		button_defaultSettings.setFont(new Font("Miriam Mono CLM", Font.BOLD, fontSizeSmall));
 		button_defaultSettings.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuSettings.add(menuFiles);
 		menuSettings.add(button_defaultSettings);
-		button_defaultSettings.setToolTipText(Output.markText("שמירת ערכי חיפוש לברירת מחדל",ColorClass.headerStyleHTML,true));
+		menuItem_textColor.setOpaque(true);
+		menuFiles.setOpaque(true);
+		button_defaultSettings
+				.setToolTipText(Output.markText("שמירת ערכי חיפוש לברירת מחדל", ColorClass.headerStyleHTML, true));
 		// Change countPsukim checkbox text when changing selected state
 		checkBox_countPsukim.addActionListener(new ActionListener() {
 			@Override
@@ -1251,7 +1422,7 @@ public class Frame {
 				 * AbstractColorChooserPanel[] { panels[1] }); Color c = chooser.getColor();
 				 */
 				Color c = JColorChooser.showDialog(null, "בחר צבע", ColorBG_Panel);
-				setBGColor(c);
+				setBGColorPanel(c);
 			}
 		});
 		menuResetExcelFolder.addActionListener(new ActionListener() {
@@ -1369,7 +1540,8 @@ public class Frame {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
 					ToraApp.differentSearchFile = chooser.getSelectedFile().getAbsolutePath();
-					checkBox_DifferentSearch.setToolTipText(Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML,true));
+					checkBox_DifferentSearch.setToolTipText(
+							Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML, true));
 					// There are identical calls like this, one here the another in
 					// ToraApp.starter()
 					PropStore.map.put(PropStore.differentSearchFile, ToraApp.differentSearchFile);
@@ -1379,27 +1551,33 @@ public class Frame {
 		});
 		menuItem_textColorMain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color c = JColorChooser.showDialog(null, "בחר צבע", new Color(ColorClass.color_mainStyleHTML_hardCoded[0],
-						ColorClass.color_mainStyleHTML_hardCoded[1], ColorClass.color_mainStyleHTML_hardCoded[2]));
+				Color c = JColorChooser.showDialog(null, "בחר צבע",
+						new Color(ColorClass.color_mainStyleHTML_hardCoded[0],
+								ColorClass.color_mainStyleHTML_hardCoded[1],
+								ColorClass.color_mainStyleHTML_hardCoded[2]));
 				if (c != null) {
 					ColorClass.color_mainStyleHTML[0] = c.getRed();
 					ColorClass.color_mainStyleHTML[1] = c.getGreen();
 					ColorClass.color_mainStyleHTML[2] = c.getBlue();
-					ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_mainStyleHTML[0],
-							ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2], 0b100);
+					ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+							ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1],
+							ColorClass.color_mainStyleHTML[2], 0b100);
 				}
 			}
 		});
 		menuItem_textColorMarkup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Color c = JColorChooser.showDialog(null, "בחר צבע", new Color(ColorClass.color_markupStyleHTML_hardCoded[0],
-						ColorClass.color_markupStyleHTML_hardCoded[1], ColorClass.color_markupStyleHTML_hardCoded[2]));
+				Color c = JColorChooser.showDialog(null, "בחר צבע",
+						new Color(ColorClass.color_markupStyleHTML_hardCoded[0],
+								ColorClass.color_markupStyleHTML_hardCoded[1],
+								ColorClass.color_markupStyleHTML_hardCoded[2]));
 				if (c != null) {
 					ColorClass.color_markupStyleHTML[0] = c.getRed();
 					ColorClass.color_markupStyleHTML[1] = c.getGreen();
 					ColorClass.color_markupStyleHTML[2] = c.getBlue();
-					ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1, ColorClass.color_markupStyleHTML[0],
-							ColorClass.color_markupStyleHTML[1], ColorClass.color_markupStyleHTML[2], 0b100);
+					ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+							ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1],
+							ColorClass.color_markupStyleHTML[2], 0b100);
 				}
 			}
 		});
@@ -1425,8 +1603,8 @@ public class Frame {
 				Object obj = cDialog.show();
 				if (obj != null) {
 					setFontSize(Integer.valueOf((String) obj));
+					setFonts();
 				}
-				setFonts();
 				/*
 				 * Point p = frame.getLocation(); dFrame.setLocation((int) (p.getX() +
 				 * frame.getWidth() - dFrame.getWidth()), (int) (p.getY() + frame.getHeight() -
@@ -1461,7 +1639,8 @@ public class Frame {
 		// Retrieve saved values for frame components
 		initValues();
 		setFonts();
-		setBGColor(customBGColor);
+		setBGColorPanel(customBGColor);
+		setBGColorMenu(ColorBG_menu, ColorBG_menu2, ColorBG_menu3);
 		changeLayout(comboBox_main.getSelectedItem().toString());
 	}
 
@@ -1512,15 +1691,29 @@ public class Frame {
 			return false;
 		}
 	}
-	
+
 	static void noDocumentMessage() {
 		clearTextPane();
 		Output.printText("התוכנה כרגע אינה מכינה דוחות", 1);
 		Output.printText("בכדי להפעיל אפשרות זו צריך לשנות את ההגדרה", 1);
 		Output.printText("בהגדרות -> להכין דוח", 1);
 	}
-	
+
+	public static Boolean getCheckBox_Tooltip() {
+		return checkBox_TooltipOption.isSelected();
+	}
+
 	static int getTextHtmlSize() {
 		return textHtmlSize;
+	}
+	
+	public static void setBool_placeInfo(Boolean bool) {
+		bool_placeInfo = bool;
+	}
+	public static void setBool_searchMultiple(Boolean bool) {
+		bool_searchMultiple = bool;
+	}
+	public static void setBool_reverseDilug(Boolean bool) {
+		bool_dilugReversed = bool;
 	}
 }

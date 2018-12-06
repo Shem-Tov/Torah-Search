@@ -57,15 +57,24 @@ public class Dilugim {
 		}
 	}
 
-	public paddingResults readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding) {
+	public paddingResults readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding, boolean differentSearch, boolean foundPaddingFile) {
 		BufferedReader inputStream = null;
 		StringBuilder str = null;
 		int countJumps = 0, newpadding = 0;
-		Boolean differentSearch = Frame.getCheckBox_DifferentSearch();
-		if (differentSearch) {
+		Boolean checkJumps = (differentSearch || (!foundPaddingFile));
+		/*	if (differentSearch) {
 			return new paddingResults(new StringBuilder(), 0, 0);
 		}
-		BufferedReader bReader = ManageIO.getBufferedReader(ManageIO.fileMode.NoTevot);
+	*/	
+		BufferedReader bReader;
+		if (differentSearch) {
+			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Different);
+		} else if (!foundPaddingFile) {
+			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Line);
+		} else {
+			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.NoTevot);
+		}
+		
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return new paddingResults(new StringBuilder(), 0, 0);
@@ -86,15 +95,38 @@ public class Dilugim {
 			int maxJumps = padding + newpadding + searchSTR.length();
 			str = new StringBuilder(maxJumps);
 			if (startChar > 1) {
-				inputStream.skip(startChar - 1);
+				if (!checkJumps) {
+					inputStream.skip(startChar - 1);
+				} else {
+					int jumpCount=1;
+					while (jumpCount<startChar) {
+						c = inputStream.read();
+						if ((c != 10) && (c != 32)){
+							jumpCount++;
+						}
+					}
+				}
 			}
 			while ((c = inputStream.read()) != -1) {
+				if ((checkJumps) && ((c == 10) || (c == 32))) {
+					continue;
+				}
 				countJumps++;
 				str.append((char) c);
 				if (countJumps < maxJumps) {
 					try {
 						if (dilug > 0) {
-							inputStream.skip((dilug - 1));
+							if (!checkJumps) {
+								inputStream.skip(dilug - 1);
+							} else {
+								int jumpCount=1;
+								while (jumpCount<dilug) {
+									c = inputStream.read();
+									if ((c != 10) && (c != 32)){
+										jumpCount++;
+									}
+								}
+							}
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -131,15 +163,17 @@ public class Dilugim {
 		int maxDilug;
 		int padding;
 		int countAll = 0;
+		//Table.getInstance(true).newTable(true);
 		Boolean foundPaddingFile = true;
+		Boolean differentMode = Frame.getCheckBox_DifferentSearch();
 		// FileWriter outputStream2 = null;
 		BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				(differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
 			return;
 		}
 		BufferedReader tempReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.NoTevot);
+				(differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.NoTevot);
 		if (tempReader != null) {
 			tempReader.close();
 		} else {
@@ -213,7 +247,7 @@ public class Dilugim {
 						frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
 					}
 					inputStream = ManageIO
-							.getBufferedReader((Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different
+							.getBufferedReader((differentMode) ? ManageIO.fileMode.Different
 									: ManageIO.fileMode.Line);
 					inputStream.mark(markInt);
 					ArrayList<ArrayList<Integer[]>> resArray = new ArrayList<ArrayList<Integer[]>>();
@@ -310,12 +344,8 @@ public class Dilugim {
 									String treeString = "";
 									int reportLineIndex = 0;
 									paddingResults pReport;
-									if (foundPaddingFile) {
-										pReport = readDilugExpandedResult(searchSTR, countCharOfFirst, thisDilug,
-												padding);
-									} else {
-										pReport = new paddingResults(new StringBuilder(), 0, 0);
-									}
+									pReport = readDilugExpandedResult(searchSTR, countCharOfFirst, thisDilug,
+											padding,differentMode,foundPaddingFile);
 									LineReport lineReport = new LineReport(new String[] { String.valueOf(thisDilug),
 											searchSTR, "", "", "", pReport.myString.toString() },
 											pReport.getArrayListPadding());
@@ -331,18 +361,19 @@ public class Dilugim {
 										TorahLine tLine = Output.markMatchesFromArrayList(j,
 												ColorClass.markupStyleHTML);
 										ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(j.get(0)[0]);
-										String tempStr1 = Output.markText(reportLine, ColorClass.markupStyleHTML)
-												+ ":  "
-												+ Output.markText(
+										String tempStr1 = Output.markText(reportLine, ColorClass.markupStyleHTML);
+										String bookInfo = Output.markText(
 														StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
 																+ pBookInstance.getPerekLetters() + ":"
 																+ pBookInstance.getPasukLetters(),
 														ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
 																% ColorClass.highlightStyleHTML.length]);
-										String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    "
+										String tempStr2 = StringAlignUtils.padRight(tempStr1+ ":  "+bookInfo, 32) + " =    "
 												+ tLine.getLineHtml();
 										treeString += tempStr2 + "<br>";
 										Output.printText(tempStr2);
+										Output.printText("טקסט נוסף",3,Output.printSomePsukimHtml(j.get(0)[0], Output.padLines));
+										//Output.printTableRow(tempStr1, bookInfo, tLine.getLineHtml(), "", thisDilug);
 										lineReport.add(
 												new String[] { "", reportLine, pBookInstance.getBookName(),
 														pBookInstance.getPerekLetters(),
@@ -419,6 +450,7 @@ public class Dilugim {
 			}
 			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
 				Tree.getInstance().flushBuffer((countAll < 50), true);
+				//Table.getInstance(true).updateTableDimensions(true,Frame.getTabbedPaneWidth());
 			}
 			Output.printText("");
 			Output.printText(Output.markText(

@@ -4,9 +4,14 @@ import frame.ColorClass;
 
 public class HtmlGenerator {
 	String[] htmlCode;
-	final int flag_RGB_Size = 0b100;
-	final int flag_bold = 0b010;
-	final int flag_rAlign = 0b001;
+	final int flag_RGB_Size = 0b0100;
+	final int flag_bold = 0b1000;
+	//These four work in group
+	//final int flag_noAlign = 0b0000; //is being implemented without need of separate definition
+	final int flag_AlignGroup = 0b0011;
+	final int flag_rAlign = 0b0001; 
+	final int flag_cAlign = 0b0010;
+	final int flag_lAlign = 0b0011;
 	
 	public HtmlGenerator(int flag) {
 		this(0, 0, 0, 0, flag);
@@ -22,16 +27,29 @@ public class HtmlGenerator {
 		//flag 0b100 - setRGBandSize
 		//flag 0b010 - bold
 		//flag 0b001 - rAlign
+		//flag 0b1000 - cAlign
 		String[] strRGBSize = setRGBandSizeHTMLString(size,r,g,b);
 		htmlCode = 	new String[] 
-				{(((flag & flag_rAlign)==flag_rAlign)? rAlign[0]:"")
-				  + (((flag & flag_RGB_Size)==flag_RGB_Size)? strRGBSize[0]:"")
-				  + (((flag & flag_bold)==flag_bold)? bold[0]:""),
-				    (((flag & flag_bold)==flag_bold)? bold[1]:"")
-				  + (((flag & flag_RGB_Size)==flag_RGB_Size)? strRGBSize[1]:"")
-				  + (((flag & flag_rAlign)==flag_rAlign)?rAlign[1]:"")};
-
+				{((checkFlag(flag,flag_rAlign,flag_AlignGroup))? rAlign[0]:"")
+				  + ((checkFlag(flag,flag_cAlign,flag_AlignGroup))? cAlign[0]:"")
+				  + ((checkFlag(flag,flag_lAlign,flag_AlignGroup))? lAlign[0]:"")
+				  + ((checkFlag(flag,flag_RGB_Size))? strRGBSize[0]:"")
+				  + ((checkFlag(flag,flag_bold))? bold[0]:""),
+				  ((checkFlag(flag,flag_bold))? bold[1]:"")
+				  + ((checkFlag(flag,flag_RGB_Size))? strRGBSize[1]:"")
+				  + ((checkFlag(flag,flag_lAlign,flag_AlignGroup))? lAlign[1]:"")
+				  + ((checkFlag(flag,flag_cAlign,flag_AlignGroup))? cAlign[1]:"")
+				  + ((checkFlag(flag,flag_rAlign,flag_AlignGroup))?rAlign[1]:"")};
 	}
+	
+	private Boolean checkFlag(int flags, int flag) {
+		return checkFlag(flags,flag,flag);
+	}
+	
+	private Boolean checkFlag(int flags, int flag, int flagGroup) {
+		return ((flags & flagGroup)==flag);
+	}
+	
 	public String getHtml(int mode) {
 		//mode 0 - Html Header
 		//mode 1 - Html Tail
@@ -39,6 +57,9 @@ public class HtmlGenerator {
 	}
 	
 	final static String[] rAlign = new String[] {"<p align=\"right\">","</p>"};
+	final static String[] cAlign = new String[] {"<p align=\"center\">","</p>"};
+	final static String[] lAlign = new String[] {"<p align=\"left\">","</p>"};
+
 	public static String[] setRGBHtmlString(int r, int g, int b) {
 		return setRGBandSizeHTMLString(0,r,g,b);
 	}
@@ -57,9 +78,13 @@ public class HtmlGenerator {
 	public static final int mode_header=1;
 	public static final int mode_markup=2;
 	
+	public static String createFontSizeColorStyle(int size,int mode) {
+		return createFontSizeColorStyle(size,mode,100);
+	}
+	
 	//can be added after an html tag
 	//use mode_main, mode_header, mode_markup for color scheme
-	public static String createFontSizeColorStyle(int size,int mode) {
+	public static String createFontSizeColorStyle(int size,int mode, int shadePercent) {
 		String styleHeader =" style = \"padding: 8px; padding-left: 8px; padding-right: 8px;"+ 
 				" text-align: right; font-family: Arial, Verdana, sans-serif;" + 
 				" font-weight: bold;"+
@@ -68,13 +93,13 @@ public class HtmlGenerator {
 
 		switch (mode) {
 		case mode_main:
-			styleHeader+=ColorClass.getRGBmainStyleHTML()+";";
+			styleHeader+=ColorClass.getRGBmainStyleHTML(shadePercent)+";";
 			break;
 		case mode_header:
-			styleHeader+=ColorClass.getRGBheaderStyleHTML()+";";
+			styleHeader+=ColorClass.getRGBheaderStyleHTML(shadePercent)+";";
 			break;
 		case mode_markup:
-			styleHeader+=ColorClass.getRGBmarkupStyleHTML()+";";
+			styleHeader+=ColorClass.getRGBmarkupStyleHTML(shadePercent)+";";
 			break;
 		}
 		styleHeader += "\"";

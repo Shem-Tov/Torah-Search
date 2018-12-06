@@ -203,6 +203,8 @@ public class LetterSearch {
 							Output.printText(tempStr2);
 							results.add(new LineReport ( new String[]  { searchSTR, pBookInstance.getBookName(),
 									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } ,lineHtmlReport.getIndexes()));
+							String tooltip = Output.printSomePsukimHtml(countLines, Output.padLines);
+							Output.printText("טקסט נוסף",3,tooltip);
 							Output.printTree(countLines,tempStr2,false);
 						} 
 						else {

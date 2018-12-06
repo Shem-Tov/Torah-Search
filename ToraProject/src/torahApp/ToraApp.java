@@ -50,6 +50,7 @@ public class ToraApp {
 	public static String[][] tablePerekBooks;
 	public static int[] pereksPerBook;
 	public static String[][] tablePerekParashot;
+	public static String[] bookNames = { "בראשית", "שמות", "ויקרא", "במדבר", "דברים" };
 
 	
 	public static void starter() throws IOException {
@@ -79,10 +80,10 @@ public class ToraApp {
 
 	// This should be used to find a Book Name in Static Context
 	public static String[] getBookNames() {
-		String[] bookNames = { "בראשית", "שמות", "ויקרא", "במדבר", "דברים" };
 		return bookNames;
 	}
 	
+	//Return all the Parashot Names in Order of Appearance
 	public static String[] getParashaNames() {
 		return tablePerekParashot[0];
 	}
@@ -92,9 +93,11 @@ public class ToraApp {
 		return lookupLineNumberFromPerek(6,0);
 	}
 	
+	//Find Line Number of Start of Perek
 	public static int lookupLineNumberFromPerek(int bookNum, int perekNum) {
 		return lookupLineNumberFromPerek(bookNum,perekNum,0);
 	}
+	
 	//Find Line Number
 	public static int lookupLineNumberFromPerek(int bookNum, int perekNum, int pasukNum) {
 		if (bookNum==5) {
@@ -103,6 +106,68 @@ public class ToraApp {
 			return (Integer.parseInt(tablePerekBooks[bookNum+1][perekNum])+pasukNum);
 		}
 	}
+	
+
+	public static TorahPlaceClass checkStartBookParashaFromLineNum(int lineNum) {
+	  //return null if not start of book or parasha
+		//last book not checked, so last book is default (5)
+		int bookNum=5;
+		lineNum--;
+		for (int i=1; i<6; i++) {
+			if (Integer.parseInt(tablePerekBooks[i][0])==lineNum) {
+				return new TorahPlaceClass(bookNames[i-1],true,true,true);
+			}
+			if (Integer.parseInt(tablePerekBooks[i][0])>lineNum) {
+				bookNum = i-1;
+				break;
+			}
+		}
+		for (int i=0; i<tablePerekParashot[0].length; i++) {
+			if (Integer.parseInt(tablePerekParashot[1][i])==lineNum) {
+				return new TorahPlaceClass(tablePerekParashot[0][i],false,true,true);
+			}
+			if (Integer.parseInt(tablePerekParashot[1][i])>lineNum) {
+				break;
+			}
+		}
+		// Name of Perek is not returned
+		for (int i=1; i<tablePerekBooks[bookNum].length; i++) {
+			if (Integer.parseInt(tablePerekBooks[bookNum][i])==lineNum) {
+				return new TorahPlaceClass(null,false,true,false);
+			}
+			if (Integer.parseInt(tablePerekBooks[bookNum][i])>lineNum) {
+				break;
+			}
+		}
+		return new TorahPlaceClass(null,false,false,false);
+	}
+	
+	//Find Book Perek Pasuk from Line Number
+	public static String lookupTorahPositionFromLineNumber(int lineNum) {
+		//last book not checked, so last book is default (5)
+		lineNum--;
+		int bookNum=5;
+		//all pereks are checked, this has been initialized arbitrarily
+		int perekNum=0;
+		int pasukNum=0;
+		for (int i=2; i<6; i++) {
+			if (Integer.parseInt(tablePerekBooks[i][0])>lineNum) {
+				bookNum = i-1;
+				break;
+			}
+		}
+		for (int i=1; i<tablePerekBooks[bookNum].length; i++) {
+			if (Integer.parseInt(tablePerekBooks[bookNum][i])>lineNum) {
+				perekNum = i-1;
+				break;
+			}
+		}
+		pasukNum = lineNum-Integer.parseInt(tablePerekBooks[bookNum][perekNum])+1;
+		perekNum++;
+		return perekBookInfo.findLetters(perekNum) + ":" +
+			perekBookInfo.findLetters(pasukNum);
+	}
+
 	
 	//Find Parasha Name from Line Number
 	public static int lookupParashaIndexFromLine(int line) {

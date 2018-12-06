@@ -383,6 +383,7 @@ public class DilugWordPasuk {
 													+ tLine.getLineHtml();
 											treeString += tempStr2 + "<br>";
 											Output.printText(tempStr2);
+											Output.printText("טקסט נוסף",3,Output.printSomePsukimHtml(j.get(0)[0], Output.padLines));
 											lineReport.add(
 													new String[] { "", reportLine, pBookInstance.getBookName(),
 															pBookInstance.getPerekLetters(),
@@ -505,7 +506,7 @@ public class DilugWordPasuk {
 		} catch (
 
 		Exception e) {
-			Output.printText("Error with Dilug", 1);
+			Output.printText("Error with DilugWordPasuk", 1);
 		} finally {
 			if (inputStream != null) {
 				inputStream.close();

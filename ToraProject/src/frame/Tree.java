@@ -24,7 +24,7 @@ public class Tree extends JTree {
 
 	private static Tree instance;
 
-	public void setMaxSize(Dimension dimension) {
+ 	public void setMaxSize(Dimension dimension) {
 		this.setMaximumSize(dimension);
 	}
 
@@ -107,7 +107,7 @@ public class Tree extends JTree {
 		model.reload(root);
 	}
 
-	private static String rootString = "תורה";
+	private String rootString = "תורה";
 	private int nextParashaIndex = 0;
 	private String thisParasha = "";
 	private ArrayList<String> dataBuffer = new ArrayList<String>();

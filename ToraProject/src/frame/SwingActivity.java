@@ -17,7 +17,7 @@ import torahApp.ToraApp;
 public class SwingActivity extends SwingWorker<Void, Integer> {
 
 	private static SwingActivity instance;
-	private static int currentProgress;
+	private int currentProgress;
 	private static final int finalProgress_hardCoded = 5846;
 	private static int finalProgress = finalProgress_hardCoded;
 
@@ -78,6 +78,10 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 				Output.printText("אם ברצונך לחפש בתורה -> הגדרות -> חיפוש בקובץ של המשתמש -> להוריד סימון ",1);
 			}
 		}
+		// args are used  at the end
+		// approximately line 197
+		// in Method
+		// Methods.arrayMethods.get
 		Object[] args = { null };
 		int selection = 0;
 		try {
@@ -95,6 +99,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 					args[5] = Frame.getTextField_padding();
 					args[6] = (Frame.getComboBox_sub_Index() == 0) ? true : false;
 				}
+				Frame.setBool_searchMultiple(Frame.getCheckbox_searchMultiple());
 				Frame.showProgressBar(true, 0b01);
 				selection = Methods.id_searchWords;
 				break;
@@ -120,6 +125,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 				args[0] = Frame.getTextField_Search();
 				args[1] = Frame.getCheckBox_gimatriaSofiot();
 				Boolean exitCode = false;
+				Frame.setBool_reverseDilug(Frame.getCheckbox_searchMultiple());
 				Output.printText("");
 				if (!StringUtils.isNumeric(Frame.getTextField_dilugMin().trim())) {
 					Output.printText("שדה 'דילוג מינימים' צריך להיות מספר", 1);
@@ -154,7 +160,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 				args[0] = Frame.getTextField_Search();
 				args[1] = Frame.getCheckBox_gimatriaSofiot();
 				args[2] = Frame.get_searchRange();
-				if (Frame.getComboBox_sub() == Frame.comboBox_sub_Strings_Letters[0]) {
+				if (Frame.getComboBox_sub().equals(Frame.comboBox_sub_Strings_Letters[0])) {
 					args[3] = false;
 				} else {
 					args[3] = true;
@@ -177,6 +183,10 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 				selection = Methods.id_searchCount;
 				break;
 			case Frame.combo_strTorahPrint:
+				args = Arrays.copyOf(args, 2);
+				args[0] = Frame.get_searchRange();
+				args[1] = Frame.getCheckbox_searchMultiple();
+				Frame.setBool_placeInfo(Frame.getCheckbox_searchMultiple());
 				selection = Methods.id_printTorah;
 				break;
 			case Frame.combo_strTorahRangeReport:
