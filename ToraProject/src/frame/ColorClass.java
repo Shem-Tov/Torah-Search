@@ -1,6 +1,6 @@
 package frame;
 
-import stringFormatting.HtmlGenerator;
+import stringFormat.HtmlGenerator;
 
 public class ColorClass {
 

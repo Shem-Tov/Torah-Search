@@ -13,7 +13,7 @@ import ioManagement.ExcelFunctions;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
-import stringFormatting.StringAlignUtils;
+import stringFormat.StringAlignUtils;
 
 public class Gimatria {
 	private static Gimatria instance;
@@ -82,14 +82,14 @@ public class Gimatria {
 		Output.printText(String.valueOf(Gimatria.calculateGimatria((String) args[0], (Boolean) args[1])));
 	}
 
-	public void searchGimatria(Object[] args) throws IOException {
+	public void searchGimatria(Object[] args) {
 		ArrayList<LineReport> results = new ArrayList<LineReport>();
 		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
 		String searchSTR;
 		int[] searchRange;
 		boolean bool_wholeWords;
-		boolean bool_sofiot;
+		boolean bool_sofiot, bool_multi;
 		BufferedReader bReader = ManageIO.getBufferedReader(
 				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
@@ -104,12 +104,20 @@ public class Gimatria {
 			searchSTR = (String) args[0];
 			bool_wholeWords = (Boolean) args[1];
 			bool_sofiot = (Boolean) args[2];
-			searchRange = (args[3] != null) ?(int[])(args[3]) : (new int[] {0,0});
+			try {
+				searchRange = (args[3] != null) ?(int[])(args[3]) : (new int[] {0,0});
+			} catch (ArrayIndexOutOfBoundsException e) {
+				searchRange = new int[] {0,0};
+			}
+			// checks multiple whole words
+			// only used if bool_wholeWords is true
+			bool_multi = (Boolean) args[4];
+
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
 			e.printStackTrace();
 			return;
-		} catch (IllegalArgumentException e) {
+		} catch (NullPointerException | IllegalArgumentException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -137,7 +145,9 @@ public class Gimatria {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
+			String str = "\u202B" + "חיפוש גימטריה"; 
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			if (bool_wholeWords) {
 				Output.printText("\u202B" + Output.markText("חיפוש מילים שלמות", frame.ColorClass.headerStyleHTML));
@@ -165,15 +175,32 @@ public class Gimatria {
 				}
 				if (bool_wholeWords) {
 					String[] splitStr = line.trim().split("\\s+");
+					int startWordIndex = -1;
 					for (String s : splitStr) {
 						// Do your stuff here
-						if (searchGmt == calculateGimatria(s, bool_sofiot)) {
+						String foundWords=s;
+						startWordIndex++;
+						int counter=-1;
+						int countGimatria=0;
+						do {
+							// finds multiple words in same pasuk, only if bool_multi is true
+							counter++;
+							String strtemp = splitStr[startWordIndex+counter];
+							countGimatria += calculateGimatria(strtemp, bool_sofiot);
+							if (counter>0) {
+								foundWords += " "+strtemp;
+							}
+						} while 
+							((countGimatria<searchGmt)
+									&& (bool_multi)
+									&& (counter+startWordIndex<splitStr.length-1));
+						if (searchGmt == countGimatria ) {
 							count++;
 							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
-							wCounter.addWord(s);
-							results.add(Output.printPasukInfo(countLines, s, line, frame.ColorClass.markupStyleHTML,
+							wCounter.addWord(foundWords);
+							results.add(Output.printPasukInfo(countLines, foundWords, line, frame.ColorClass.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
 						}
 					}
@@ -245,7 +272,12 @@ public class Gimatria {
 			e.printStackTrace();
 		} finally {
 			if (inputStream != null) {
-				inputStream.close();
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

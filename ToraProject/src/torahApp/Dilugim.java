@@ -16,7 +16,7 @@ import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
 import ioManagement.TorahLine;
-import stringFormatting.StringAlignUtils;
+import stringFormat.StringAlignUtils;
 
 public class Dilugim {
 	private static Dilugim instance;
@@ -57,15 +57,16 @@ public class Dilugim {
 		}
 	}
 
-	public paddingResults readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding, boolean differentSearch, boolean foundPaddingFile) {
+	public paddingResults readDilugExpandedResult(String searchSTR, int countChar, int dilug, int padding,
+			boolean differentSearch, boolean foundPaddingFile) {
 		BufferedReader inputStream = null;
 		StringBuilder str = null;
 		int countJumps = 0, newpadding = 0;
 		Boolean checkJumps = (differentSearch || (!foundPaddingFile));
-		/*	if (differentSearch) {
-			return new paddingResults(new StringBuilder(), 0, 0);
-		}
-	*/	
+		/*
+		 * if (differentSearch) { return new paddingResults(new StringBuilder(), 0, 0);
+		 * }
+		 */
 		BufferedReader bReader;
 		if (differentSearch) {
 			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Different);
@@ -74,7 +75,7 @@ public class Dilugim {
 		} else {
 			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.NoTevot);
 		}
-		
+
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return new paddingResults(new StringBuilder(), 0, 0);
@@ -98,10 +99,10 @@ public class Dilugim {
 				if (!checkJumps) {
 					inputStream.skip(startChar - 1);
 				} else {
-					int jumpCount=1;
-					while (jumpCount<startChar) {
+					int jumpCount = 1;
+					while (jumpCount < startChar) {
 						c = inputStream.read();
-						if ((c != 10) && (c != 32)){
+						if ((c != 10) && (c != 32)) {
 							jumpCount++;
 						}
 					}
@@ -119,10 +120,10 @@ public class Dilugim {
 							if (!checkJumps) {
 								inputStream.skip(dilug - 1);
 							} else {
-								int jumpCount=1;
-								while (jumpCount<dilug) {
+								int jumpCount = 1;
+								while (jumpCount < dilug) {
 									c = inputStream.read();
-									if ((c != 10) && (c != 32)){
+									if ((c != 10) && (c != 32)) {
 										jumpCount++;
 									}
 								}
@@ -152,7 +153,7 @@ public class Dilugim {
 		return new paddingResults(str, newpadding, newpadding + searchSTR.length());
 	}
 
-	public void searchWordsDilugim(Object[] args) throws IOException {
+	public void searchWordsDilugim(Object[] args) {
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		String searchConvert, sRegular = "", sReverse = "";
@@ -163,19 +164,24 @@ public class Dilugim {
 		int maxDilug;
 		int padding;
 		int countAll = 0;
-		//Table.getInstance(true).newTable(true);
+		// Table.getInstance(true).newTable(true);
 		Boolean foundPaddingFile = true;
 		Boolean differentMode = Frame.getCheckBox_DifferentSearch();
 		// FileWriter outputStream2 = null;
-		BufferedReader bReader = ManageIO.getBufferedReader(
-				(differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+		BufferedReader bReader = ManageIO
+				.getBufferedReader((differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
 			return;
 		}
-		BufferedReader tempReader = ManageIO.getBufferedReader(
-				(differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.NoTevot);
+		BufferedReader tempReader = ManageIO
+				.getBufferedReader((differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.NoTevot);
 		if (tempReader != null) {
-			tempReader.close();
+			try {
+				tempReader.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			foundPaddingFile = false;
 		}
@@ -217,7 +223,9 @@ public class Dilugim {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש" + " \"" + searchConvert + "\"...";
+			String str = "\u202B" + "חיפוש דילוגים"; 
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "מחפש" + " \"" + searchConvert + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
@@ -233,10 +241,9 @@ public class Dilugim {
 			// System.out.println(formatter.locale());
 
 			for (int thisDilug = minDilug; thisDilug <= maxDilug; thisDilug++) {
-				outer: 
-				for (int z = 0; z <= ((bool_reverseDilug) ? 1 : 0); z++) {
+				outer: for (int z = 0; z <= ((bool_reverseDilug) ? 1 : 0); z++) {
 					if (bool_reverseDilug) {
-						if (z==0) {
+						if (z == 0) {
 							searchConvert = sRegular;
 						} else {
 							searchConvert = sReverse;
@@ -247,8 +254,7 @@ public class Dilugim {
 						frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
 					}
 					inputStream = ManageIO
-							.getBufferedReader((differentMode) ? ManageIO.fileMode.Different
-									: ManageIO.fileMode.Line);
+							.getBufferedReader((differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 					inputStream.mark(markInt);
 					ArrayList<ArrayList<Integer[]>> resArray = new ArrayList<ArrayList<Integer[]>>();
 					int indexResArray = -1;
@@ -325,8 +331,9 @@ public class Dilugim {
 									}
 									if (count == 1) {
 										Output.printText("");
-										Output.printText(str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug
-												+((z==1)? "(הפוך)":"")),frame.ColorClass.headerStyleHTML));
+										Output.printText(str = Output.markText(
+												("דילוג" + ToraApp.cSpace() + thisDilug + ((z == 1) ? "(הפוך)" : "")),
+												frame.ColorClass.headerStyleHTML));
 
 										// Output.printText("");
 										if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -334,7 +341,7 @@ public class Dilugim {
 													StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 										} else {
 											Tree.getInstance().addNodeDilug(str);
-											Output.printLine(2, "orange");
+											Output.printLine(2, "orange", 0);
 										}
 									}
 									Output.printText("\u202B" + "\""
@@ -344,8 +351,8 @@ public class Dilugim {
 									String treeString = "";
 									int reportLineIndex = 0;
 									paddingResults pReport;
-									pReport = readDilugExpandedResult(searchSTR, countCharOfFirst, thisDilug,
-											padding,differentMode,foundPaddingFile);
+									pReport = readDilugExpandedResult(searchSTR, countCharOfFirst, thisDilug, padding,
+											differentMode, foundPaddingFile);
 									LineReport lineReport = new LineReport(new String[] { String.valueOf(thisDilug),
 											searchSTR, "", "", "", pReport.myString.toString() },
 											pReport.getArrayListPadding());
@@ -363,17 +370,23 @@ public class Dilugim {
 										ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(j.get(0)[0]);
 										String tempStr1 = Output.markText(reportLine, ColorClass.markupStyleHTML);
 										String bookInfo = Output.markText(
-														StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-																+ pBookInstance.getPerekLetters() + ":"
-																+ pBookInstance.getPasukLetters(),
-														ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
-																% ColorClass.highlightStyleHTML.length]);
-										String tempStr2 = StringAlignUtils.padRight(tempStr1+ ":  "+bookInfo, 32) + " =    "
-												+ tLine.getLineHtml();
+												StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+														+ pBookInstance.getPerekLetters() + ":"
+														+ pBookInstance.getPasukLetters(),
+												ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
+														% ColorClass.highlightStyleHTML.length]);
+										String tempStr2 = StringAlignUtils.padRight(tempStr1 + ":  " + bookInfo, 32)
+												+ " =    ";
+										if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
+											tempStr2 += tLine.getLineHtml();
+										} else {
+											tempStr2 += tLine.getLine();
+										}
 										treeString += tempStr2 + "<br>";
 										Output.printText(tempStr2);
-										Output.printText("טקסט נוסף",3,Output.printSomePsukimHtml(j.get(0)[0], Output.padLines));
-										//Output.printTableRow(tempStr1, bookInfo, tLine.getLineHtml(), "", thisDilug);
+										Output.printText("טקסט נוסף", 3,
+												Output.printSomePsukimHtml(j.get(0)[0], Output.padLines));
+										// Output.printTableRow(tempStr1, bookInfo, tLine.getLineHtml(), "", thisDilug);
 										lineReport.add(
 												new String[] { "", reportLine, pBookInstance.getBookName(),
 														pBookInstance.getPerekLetters(),
@@ -388,7 +401,9 @@ public class Dilugim {
 											: "";
 									Output.printText(treeString2);
 									treeString += treeString2;
-									Output.printTree(resArray.get(0).get(0)[0], treeString, true);
+									if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+										Output.printTree(resArray.get(0).get(0)[0], treeString, true);
+									}
 									Output.printLine(1);
 									Output.printText("");
 									results.add(lineReport);
@@ -426,7 +441,7 @@ public class Dilugim {
 							"\u202B" + "נמצא " + "\"" + searchConvert + "\"" + "\u00A0" + String.valueOf(count)
 									+ " פעמים" + " לדילוג" + ToraApp.cSpace() + thisDilug + ".",
 							frame.ColorClass.footerStyleHTML));
-					Output.printLine(2, "orange");
+					Output.printLine(2, "orange", 0);
 					Output.printText("");
 					String Title = "חיפוש מילים בדילוגים בתורה" + ".";
 					String Title2 = "דילוג רגיל";
@@ -437,7 +452,7 @@ public class Dilugim {
 						sheet += "_" + "ף";
 						Title2 += "התחשבות בסופיות";
 					}
-					if ((bool_reverseDilug) && (z==1)) {
+					if ((bool_reverseDilug) && (z == 1)) {
 						sheet += "_" + "הפ";
 						Title3 += "דילוג הפוך";
 					}
@@ -450,7 +465,7 @@ public class Dilugim {
 			}
 			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
 				Tree.getInstance().flushBuffer((countAll < 50), true);
-				//Table.getInstance(true).updateTableDimensions(true,Frame.getTabbedPaneWidth());
+				// Table.getInstance(true).updateTableDimensions(true,Frame.getTabbedPaneWidth());
 			}
 			Output.printText("");
 			Output.printText(Output.markText(
@@ -462,7 +477,12 @@ public class Dilugim {
 			Output.printText("Error with Dilug", 1);
 		} finally {
 			if (inputStream != null) {
-				inputStream.close();
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

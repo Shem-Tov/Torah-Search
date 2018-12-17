@@ -14,7 +14,7 @@ import ioManagement.ExcelFunctions;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
-import stringFormatting.StringAlignUtils;
+import stringFormat.StringAlignUtils;
 
 public class ToraSearch {
 	private static ToraSearch instance;
@@ -26,7 +26,7 @@ public class ToraSearch {
 		return instance;
 	}
 
-	public void searchWords(Object[] args) throws IOException {
+	public void searchWords(Object[] args) {
 		ArrayList<LineReport> results = new ArrayList<LineReport>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
@@ -45,14 +45,20 @@ public class ToraSearch {
 			if (args.length < 3) {
 				throw new IllegalArgumentException("Missing Arguments in ToraSearch.searchWords");
 			}
-			searchSTR = ((String) args[0]).trim();
+			searchSTR = ((String) args[0]);
 			bool_wholeWords = (args[1] != null) ? (Boolean) args[1] : true;
+			if (bool_wholeWords) {
+				searchSTR = searchSTR.trim();
+			}
 			bool_sofiot = (args[2] != null) ? (Boolean) args[2] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
 			searchRange = (args[3] != null) ? (int[]) (args[3]) : (new int[] { 0, 0 });
 			bool_multiSearch = (args[4] != null) ? (Boolean) args[4] : false;
 			if (bool_multiSearch) {
-				searchSTR2 = ((String) args[5]).trim();
+				searchSTR2 = ((String) args[5]);
+				if (bool_wholeWords) {
+					searchSTR2 = searchSTR2.trim();
+				}
 				searchConvert2 = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR2) : searchSTR2;
 				bool_multiMustFindBoth = (args[6] != null) ? (Boolean) args[6] : true;
 			}
@@ -93,7 +99,9 @@ public class ToraSearch {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"";
+			String str = "\u202B" + "חיפוש בתורה"; 
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"";
 			if (bool_multiSearch) {
 				str += " | \"" + searchSTR2 + "\"";
 			}
@@ -128,7 +136,7 @@ public class ToraSearch {
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
 						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-							frame.Frame.clearText();
+							frame.Frame.clearTextPane();
 						}
 						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
 						if (inputStream != null) {
@@ -323,7 +331,12 @@ public class ToraSearch {
 			Output.printText("");
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.ColorClass.footerStyleHTML));
 			if (inputStream != null) {
-				inputStream.close();
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

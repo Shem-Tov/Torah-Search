@@ -36,12 +36,13 @@ import javax.swing.tree.TreePath;
 
 import org.apache.commons.lang3.StringUtils;
 
+import console.Console;
 import ioManagement.ClipboardClass;
 import ioManagement.ExcelFunctions;
 import ioManagement.Output;
 import ioManagement.PropStore;
-import stringFormatting.HtmlGenerator;
-import stringFormatting.OtherHtml;
+import stringFormat.HtmlGenerator;
+import stringFormat.OtherHtml;
 import torahApp.ToraApp;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -113,11 +114,13 @@ public class Frame {
 	private static final String strLabel_padding_Search = "מילה שניה";
 	private static final String checkBox_searchMultiple_String = "<html><p align='right'>" + "חיפוש יותר ממילה אחת"
 			+ "</p></html>";
+	private static final String checkBox_searchMultiple_Gimatria = "חיפוש במספר מילים";
 	private static final String checkBox_searchMultiple_ReverseDilug = "חיפוש דילוג הפוך";
 	private static final String checkBox_searchMultiple_placeInfo = "להוסיף סימונים";
 	private static Boolean bool_placeInfo = true;
 	private static Boolean bool_dilugReversed = false;
 	private static Boolean bool_searchMultiple = false;
+	private static Boolean bool_gimatriaMultiple = false;
 	static final String checkBox_letterOrder_String = "שמור סדר האותיות";
 	static final String checkBox_letterOrder_Tooltip = "שמור על סדר האותיות";
 	static final String checkBox_wholeWord_Letters = "שמור על ראשי וסופי תיבות";
@@ -191,6 +194,12 @@ public class Frame {
 	private static JTabbedPane tabbedPane;
 	private static HTMLDocument doc = new HTMLDocument();
 	private static HTMLEditorKit kit = new HTMLEditorKit();
+	// used for Torah Print
+	private static HTMLDocument doc2 = new HTMLDocument();
+	private static HTMLEditorKit kit2 = new HTMLEditorKit();
+	private static JScrollPane scrollPane2;
+	static JTextPane textPane2;
+
 	private SwingActivity activity;
 	static public int panelWidth;
 	private JPopupMenu popupMenu;
@@ -228,7 +237,7 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					clearText();
+					clearTextPane();
 				}
 			});
 			add(anItem);
@@ -244,7 +253,7 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					DialogFindWordFrame dFrame = DialogFindWordFrame.getInstance();
+					DialogFindWordFrame dFrame = DialogFindWordFrame.getInstance(textPane, true);
 					Point p = frame.getLocation();
 					dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
 							(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
@@ -256,8 +265,8 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					DialogFindWordFrame.clearLastSearch();
-					HighLighter.removeHighlights(textPane);
+					DialogFindWordFrame.getInstance(textPane, true).clearLastSearch();
+					HighLighter.getInstance(textPane, true).removeHighlights();
 				}
 			});
 			add(anItem);
@@ -265,7 +274,64 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					HighLighter.scrollWords(textPane);
+					HighLighter.getInstance(textPane, true).scrollWords();
+					frame.repaint();
+				}
+			});
+			add(anItem);
+		}
+	}
+
+	class PopUpTorahPane extends JPopupMenu {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		JMenuItem anItem;
+
+		public PopUpTorahPane() {
+			anItem = new JMenuItem("נקה מסך");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					clearTorahPane();
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("העתק");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					ClipboardClass.setSysClipboardText(textPane2.getSelectedText());
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("חפש...");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					DialogFindWordFrame dFrame = DialogFindWordFrame.getInstance(textPane2, false);
+					Point p = frame.getLocation();
+					dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
+							(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
+					dFrame.setVisible(true);
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("הסר הארות");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					DialogFindWordFrame.getInstance(textPane2, false).clearLastSearch();
+					HighLighter.getInstance(textPane2, false).removeHighlights();
+				}
+			});
+			add(anItem);
+			anItem = new JMenuItem("לעבור על המציאות");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					HighLighter.getInstance(textPane2, false).scrollWords();
 					frame.repaint();
 				}
 			});
@@ -293,10 +359,10 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					//ClipboardClass.setSysClipboardText(OtherHtml.html2text(tree.getLastSelectedPathComponent().toString()));
+					// ClipboardClass.setSysClipboardText(OtherHtml.html2text(tree.getLastSelectedPathComponent().toString()));
 					TreePath[] treePaths = tree.getSelectionPaths();
 					String str = "";
-					for (TreePath t:treePaths) {
+					for (TreePath t : treePaths) {
 						str += OtherHtml.html2text(t.toString());
 					}
 					ClipboardClass.setSysClipboardText(str);
@@ -340,8 +406,29 @@ public class Frame {
 		}
 	}
 
+	class PopClickTorahPaneListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		private void doPop(MouseEvent e) {
+			PopUpTorahPane menu = new PopUpTorahPane();
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
 	public static void clearTextPane() {
 		textPane.setText("");
+	}
+
+	public static void clearTorahPane() {
+		textPane2.setText("");
 	}
 
 	public static String getTextField_padding() {
@@ -510,7 +597,7 @@ public class Frame {
 			ColorClass.color_mainStyleHTML[0] = temp.getRed();
 			ColorClass.color_mainStyleHTML[1] = temp.getGreen();
 			ColorClass.color_mainStyleHTML[2] = temp.getBlue();
-			ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize,
+			ColorClass.mainStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize,
 					ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1],
 					ColorClass.color_mainStyleHTML[2], 0b1101);
 			// public static StringFormatting.HtmlGenerator markupStyleHTML = new
@@ -524,7 +611,7 @@ public class Frame {
 			ColorClass.color_markupStyleHTML[0] = temp.getRed();
 			ColorClass.color_markupStyleHTML[1] = temp.getGreen();
 			ColorClass.color_markupStyleHTML[2] = temp.getBlue();
-			ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+			ColorClass.markupStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize + 1,
 					ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1],
 					ColorClass.color_markupStyleHTML[2], 0b100);
 		} catch (Exception e) {
@@ -607,6 +694,7 @@ public class Frame {
 			// mode 1 = error style with Carriage Return
 			// mode 2 = silent mode
 			// mode 3 = label
+			// mode 4 = TorahPrint
 			if (!checkbox_createDocument.isSelected()) {
 				return;
 			}
@@ -635,6 +723,11 @@ public class Frame {
 				}
 				textPane.insertComponent(l);
 				break;
+			case 4:
+				// kit.insertHTML(doc, doc.getLength(), "<b>hello", 0, 0, HTML.Tag.B);
+				kit2.insertHTML(doc2, doc2.getLength(),
+						(ColorClass.mainStyleHTML.getHtml(0) + str + ColorClass.mainStyleHTML.getHtml(1)), 0, 0, null);
+				break;
 			}
 			// scrollPane.getHorizontalScrollBar().setValue(0);
 			// scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getMaximum());
@@ -646,10 +739,6 @@ public class Frame {
 			System.out.println(e + " in Code of frame.appendText()");
 		}
 
-	}
-
-	public static void clearText() {
-		textPane.setText("");
 	}
 
 	private static void setFonts() {
@@ -707,24 +796,24 @@ public class Frame {
 		panel.setPreferredSize(new Dimension((int) (120 + 200 * ((float) getFontSize() / 16)), 10));
 		// textHtmlSize = 5;
 		textHtmlSize = (int) (5 * ((float) getFontSize() / 16));
-		ColorClass.attentionHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_attentionHTML[0],
+		ColorClass.attentionHTML = new stringFormat.HtmlGenerator(textHtmlSize, ColorClass.color_attentionHTML[0],
 				ColorClass.color_attentionHTML[1], ColorClass.color_attentionHTML[2], 0b1101);
-		ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0],
+		ColorClass.mainStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize, ColorClass.color_mainStyleHTML[0],
 				ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2], 0b1101);
 		ColorClass.tooltipStyleHTML = new HtmlGenerator(textHtmlSize, ColorClass.color_tooltipStyleHTML_hardCoded[0],
 				ColorClass.color_tooltipStyleHTML_hardCoded[1], ColorClass.color_tooltipStyleHTML_hardCoded[2], 0b100);
-		ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+		ColorClass.markupStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize + 1,
 				ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1],
 				ColorClass.color_markupStyleHTML[2], 0b100);
 		for (int i = 0; i < ColorClass.highlightStyleHTML.length; i++) {
-			ColorClass.highlightStyleHTML[i] = new stringFormatting.HtmlGenerator(textHtmlSize,
+			ColorClass.highlightStyleHTML[i] = new stringFormat.HtmlGenerator(textHtmlSize,
 					ColorClass.color_highlightStyleHTML[i][0], ColorClass.color_highlightStyleHTML[i][1],
 					ColorClass.color_highlightStyleHTML[i][2], 0b100);
 		}
-		ColorClass.headerStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+		ColorClass.headerStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize + 1,
 				ColorClass.color_headerStyleHTML[0], ColorClass.color_headerStyleHTML[1],
 				ColorClass.color_headerStyleHTML[2], 0b100);
-		ColorClass.footerStyleHTML = new stringFormatting.HtmlGenerator(0, ColorClass.color_footerStyleHTML[0],
+		ColorClass.footerStyleHTML = new stringFormat.HtmlGenerator(0, ColorClass.color_footerStyleHTML[0],
 				ColorClass.color_footerStyleHTML[1], ColorClass.color_footerStyleHTML[2], 0b100);
 
 //		thisFrame.frame.setMinimumSize(new Dimension(550, 520));
@@ -837,7 +926,9 @@ public class Frame {
 				subPanels.get(id_panel_countPsukim).setVisible(false);
 				subPanels.get(id_panel_wholeWord).setVisible(true);
 				subPanels.get(id_panel_letterOrder).setVisible(false);
-				subPanels.get(id_panel_searchMulti).setVisible(false);
+				subPanels.get(id_panel_searchMulti).setVisible(true);
+				checkBox_searchMultiple.setText(checkBox_searchMultiple_Gimatria);
+				checkBox_searchMultiple.setSelected(bool_gimatriaMultiple);
 				checkBox_wholeWord.setText(checkBox_wholeWord_Regular);
 				break;
 			case combo_strLetterSearch:
@@ -915,8 +1006,16 @@ public class Frame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Frame window = Frame.getInstance();
-					window.frame.setVisible(true);
+					// Setup Method Array
+					// and Create Table for Torah Lookup
+					ToraApp.starter();
+					// Checks and runs console commands,
+					// and returns Boolean to determine 
+					// if should start GUI.
+					if (Console.checkCommands(args)) {
+						Frame window = Frame.getInstance();
+						window.frame.setVisible(true);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1059,9 +1158,20 @@ public class Frame {
 		textPane.addMouseListener(new PopClickTextPaneListener());
 		// Better support for right to left languages
 		textPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-
 		textPane.setEditorKit(kit);
 		textPane.setDocument(doc);
+
+		textPane2 = new JTextPane();
+		textPane2.setEditable(false);
+		scrollPane2 = new JScrollPane(textPane2);
+		scrollPane2.getVerticalScrollBar().setUnitIncrement(7);
+		textPane2.setBackground(ColorBG_textPane);
+		textPane2.addMouseListener(new PopClickTorahPaneListener());
+		// Better support for right to left languages
+		textPane2.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		textPane2.setEditorKit(kit2);
+		textPane2.setDocument(doc2);
+
 		tabbedPane = new JTabbedPane();
 		tabbedPane.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		tabbedPane.setTabPlacement(JTabbedPane.RIGHT);
@@ -1073,6 +1183,7 @@ public class Frame {
 		scrollTree.getVerticalScrollBar().setUnitIncrement(7);
 		tree.addMouseListener(new PopClickTreeListener());
 		tabbedPane.addTab("עץ", scrollTree);
+		tabbedPane.addTab("תורה", scrollPane2);
 
 		// table = Table.getInstance(false);
 		// table.setBackground(ColorBG_textPane);
@@ -1396,7 +1507,12 @@ public class Frame {
 					}
 					methodRunning = true;
 					button_search.setText(buttonCancelText);
-					textPane.setText("");
+					if (comboBox_main.getSelectedItem().toString().equals(combo_strTorahPrint)) {
+						clearTorahPane();
+						tabbedPane.setSelectedIndex(2);
+					} else {
+						clearTextPane();
+					}
 					activity = SwingActivity.getInstance();
 					activity.execute();
 				} else {
@@ -1559,7 +1675,7 @@ public class Frame {
 					ColorClass.color_mainStyleHTML[0] = c.getRed();
 					ColorClass.color_mainStyleHTML[1] = c.getGreen();
 					ColorClass.color_mainStyleHTML[2] = c.getBlue();
-					ColorClass.mainStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+					ColorClass.mainStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize + 1,
 							ColorClass.color_mainStyleHTML[0], ColorClass.color_mainStyleHTML[1],
 							ColorClass.color_mainStyleHTML[2], 0b100);
 				}
@@ -1575,7 +1691,7 @@ public class Frame {
 					ColorClass.color_markupStyleHTML[0] = c.getRed();
 					ColorClass.color_markupStyleHTML[1] = c.getGreen();
 					ColorClass.color_markupStyleHTML[2] = c.getBlue();
-					ColorClass.markupStyleHTML = new stringFormatting.HtmlGenerator(textHtmlSize + 1,
+					ColorClass.markupStyleHTML = new stringFormat.HtmlGenerator(textHtmlSize + 1,
 							ColorClass.color_markupStyleHTML[0], ColorClass.color_markupStyleHTML[1],
 							ColorClass.color_markupStyleHTML[2], 0b100);
 				}
@@ -1633,9 +1749,6 @@ public class Frame {
 				}
 			}
 		});
-		// Setup Method Array
-		// and Create Table for Torah Lookup
-		ToraApp.starter();
 		// Retrieve saved values for frame components
 		initValues();
 		setFonts();
@@ -1706,13 +1819,19 @@ public class Frame {
 	static int getTextHtmlSize() {
 		return textHtmlSize;
 	}
-	
+
 	public static void setBool_placeInfo(Boolean bool) {
 		bool_placeInfo = bool;
 	}
+
 	public static void setBool_searchMultiple(Boolean bool) {
 		bool_searchMultiple = bool;
 	}
+	
+	public static void setBool_gimatriaMultiple(Boolean bool) {
+		bool_gimatriaMultiple = bool;
+	}
+
 	public static void setBool_reverseDilug(Boolean bool) {
 		bool_dilugReversed = bool;
 	}

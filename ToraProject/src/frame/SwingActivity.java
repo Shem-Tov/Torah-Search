@@ -8,9 +8,9 @@ import javax.swing.SwingWorker;
 
 import org.apache.commons.lang3.StringUtils;
 
+import console.Methods;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ManageIO;
-import ioManagement.Methods;
 import ioManagement.Output;
 import torahApp.ToraApp;
 
@@ -105,11 +105,13 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 				break;
 			case Frame.combo_strGimatriaSearch:
 				Tree.getInstance().clearTree();
-				args = Arrays.copyOf(args, 4);
+				args = Arrays.copyOf(args, 5);
 				args[0] = Frame.getTextField_Search();
 				args[1] = Frame.getCheckBox_wholeWord();
 				args[2] = Frame.getCheckBox_gimatriaSofiot();
 				args[3] = Frame.get_searchRange();
+				args[4] = Frame.getCheckbox_searchMultiple();
+				Frame.setBool_gimatriaMultiple(Frame.getCheckbox_searchMultiple());
 				Frame.showProgressBar(true, 0b01);
 				selection = Methods.id_searchGimatria;
 				break;

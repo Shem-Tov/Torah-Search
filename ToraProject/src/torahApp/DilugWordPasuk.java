@@ -19,7 +19,7 @@ import ioManagement.ManageIO;
 import ioManagement.Output;
 import ioManagement.PaddingReport;
 import ioManagement.TorahLine;
-import stringFormatting.StringAlignUtils;
+import stringFormat.StringAlignUtils;
 
 public class DilugWordPasuk {
 	private static DilugWordPasuk instance;
@@ -131,7 +131,7 @@ public class DilugWordPasuk {
 		return new PaddingReport(paddingLine, reportFrontPadding, reportFrontPadding + searchSTRcount);
 	}
 
-	public void searchDilugWordPasuk(Object[] args) throws IOException {
+	public void searchDilugWordPasuk(Object[] args) {
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		String searchConvert, sRegular = "", sReverse = "";
@@ -191,7 +191,23 @@ public class DilugWordPasuk {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש" + " \"" + searchConvert + "\"...";
+			String str = "\u202B";
+			switch (mode) {
+			case 1:
+				str += "דילוג ראש פסוק";
+				break;
+			case 2:
+				str += "דילוג סוף פסוק";
+				break;
+			case 3:
+				str += "דילוג ראש מילה";
+				break;
+			case 4:
+				str += "דילוג סוף מילה";
+				break;
+			}
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "מחפש" + " \"" + searchConvert + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
@@ -334,9 +350,10 @@ public class DilugWordPasuk {
 										}
 										if (count == 1) {
 											Output.printText("");
-											Output.printText(
-													str = Output.markText(("דילוג" + ToraApp.cSpace() + thisDilug + 
-															((z==1)? "(הפוך)":"")),	frame.ColorClass.headerStyleHTML));
+											Output.printText(str = Output.markText(
+													("דילוג" + ToraApp.cSpace() + thisDilug
+															+ ((z == 1) ? "(הפוך)" : "")),
+													frame.ColorClass.headerStyleHTML));
 
 											// Output.printText("");
 											if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -344,12 +361,12 @@ public class DilugWordPasuk {
 														.replace(' ', '-'));
 											} else {
 												Tree.getInstance().addNodeDilug(str);
-												Output.printLine(2, "orange");
+												Output.printLine(2, "orange", 0);
 											}
 										}
 										Output.printText("\u202B" + "\""
-												+ Output.markText(searchSTR, frame.ColorClass.markupStyleHTML)
-												+ "\" " + "נמצא ב");
+												+ Output.markText(searchSTR, frame.ColorClass.markupStyleHTML) + "\" "
+												+ "נמצא ב");
 
 										int reportLineIndex = 0;
 										String treeString = "";
@@ -379,11 +396,16 @@ public class DilugWordPasuk {
 																	+ pBookInstance.getPasukLetters(),
 															ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
 																	% ColorClass.highlightStyleHTML.length]);
-											String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    "
-													+ tLine.getLineHtml();
+											String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    ";
+											if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
+												tempStr2 += tLine.getLineHtml();
+											} else {
+												tempStr2 += tLine.getLine();
+											}
 											treeString += tempStr2 + "<br>";
 											Output.printText(tempStr2);
-											Output.printText("טקסט נוסף",3,Output.printSomePsukimHtml(j.get(0)[0], Output.padLines));
+											Output.printText("טקסט נוסף", 3,
+													Output.printSomePsukimHtml(j.get(0)[0], Output.padLines));
 											lineReport.add(
 													new String[] { "", reportLine, pBookInstance.getBookName(),
 															pBookInstance.getPerekLetters(),
@@ -397,7 +419,9 @@ public class DilugWordPasuk {
 														frame.ColorClass.markupStyleHTML);
 										Output.printText(treeString2);
 										treeString += treeString2;
-										Output.printTree(resArray.get(0).get(0)[0], treeString, true);
+										if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+											Output.printTree(resArray.get(0).get(0)[0], treeString, true);
+										}
 										Output.printLine(1);
 										Output.printText("");
 										results.add(lineReport);
@@ -448,11 +472,11 @@ public class DilugWordPasuk {
 							"\u202B" + "נמצא " + "\"" + searchConvert + "\"" + "\u00A0" + String.valueOf(count)
 									+ " פעמים" + " לדילוג" + ToraApp.cSpace() + thisDilug + ".",
 							frame.ColorClass.footerStyleHTML));
-					Output.printLine(2, "orange");
+					Output.printLine(2, "orange", 0);
 					Output.printText("");
 					String Title = "חיפוש מילים בדילוגים בתורה" + ".";
 					String Title2 = "";
-					String Title3 =""; 
+					String Title3 = "";
 					String sheet = "דילוגים" + String.valueOf(thisDilug);
 					switch (mode) {
 					// mode 1 ראש פסוק
@@ -482,13 +506,13 @@ public class DilugWordPasuk {
 						sheet += "_" + "ף";
 						Title2 += "התחשבות בסופיות -";
 					}
-					if ((bool_reverseDilug) && (z==1)) {
+					if ((bool_reverseDilug) && (z == 1)) {
 						sheet += "_" + "הפ";
 						Title3 += "דילוג הפוך";
 					}
 
 					if (count > 0) {
-						ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, Title2,Title3, searchSTR,
+						ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, Title2, Title3, searchSTR,
 								((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText()
 										: ""));
 					}
@@ -509,7 +533,12 @@ public class DilugWordPasuk {
 			Output.printText("Error with DilugWordPasuk", 1);
 		} finally {
 			if (inputStream != null) {
-				inputStream.close();
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

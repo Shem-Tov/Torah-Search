@@ -10,7 +10,7 @@ import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ManageIO;
 import ioManagement.Output;
-import stringFormatting.StringAlignUtils;
+import stringFormat.StringAlignUtils;
 
 public class CountSearch {
 	private static CountSearch instance;
@@ -22,7 +22,7 @@ public class CountSearch {
 		return instance;
 	}
 
-	public void searchByCount(Object[] args) throws IOException {
+	public void searchByCount(Object[] args) {
 		// String[][] results=null;
 		BufferedReader inputStream = null;
 		BufferedReader inputStream2 = null;
@@ -38,8 +38,11 @@ public class CountSearch {
 			if (args.length < 3) {
 				throw new IllegalArgumentException("Missing Arguments in CountSearch.searchByCount");
 			}
-			searchSTR = ((String) args[0]).trim();
+			searchSTR = ((String) args[0]);
 			bool_wholeWords = (args[1] != null) ? (Boolean) args[1] : true;
+			if (bool_wholeWords) {
+				searchSTR = searchSTR.trim();
+			}
 			bool_sofiot = (args[2] != null) ? (Boolean) args[2] : true;
 			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
 			searchRange = (args[3] != null) ? (int[]) (args[3]) : (new int[] { 0, 0 });
@@ -81,7 +84,9 @@ public class CountSearch {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
+			String str = "\u202B" + "חיפוש בתורה לפי מספר הופעה"; 
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
@@ -108,7 +113,7 @@ public class CountSearch {
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
 						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-							frame.Frame.clearText();
+							frame.Frame.clearTextPane();
 						}
 						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
 						if (inputStream != null) {
@@ -187,7 +192,12 @@ public class CountSearch {
 			Output.printText("");
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.ColorClass.footerStyleHTML));
 			if (inputStream != null) {
-				inputStream.close();
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

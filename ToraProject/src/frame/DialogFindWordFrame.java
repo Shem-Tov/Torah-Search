@@ -5,68 +5,77 @@ import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.GridLayout;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 
-
-public class DialogFindWordFrame extends JDialog {
+public class DialogFindWordFrame extends JFrame {
 
 	/**
 	 * 
 	 */
-	private static DialogFindWordFrame instance;
-	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
+	private static final long serialVersionUID = 7646912867926463775L;
+	private static DialogFindWordFrame instanceTextPane;
+	private static DialogFindWordFrame instanceTorahPane;
+	private JPanel contentPanel = new JPanel();
 	private JTextField textField;
-	private static String lastSearch = null;
-	private static Boolean isOpen = false;
-
-	public static DialogFindWordFrame getInstance() {
-		if (instance == null) {
-			instance = new DialogFindWordFrame();
+	private String lastSearch = null;
+	private Boolean isOpen = false;
+	private Boolean isText;
+	//int posX=0,posY=0;
+	
+	public static DialogFindWordFrame getInstance(JTextPane tPane, Boolean isText) {
+		if (isText) {
+			if (instanceTextPane == null) {
+				instanceTextPane = new DialogFindWordFrame(tPane);
+				instanceTextPane.isText = isText;
+			}
+			return instanceTextPane;
+		} else {
+			if (instanceTorahPane == null) {
+				instanceTorahPane = new DialogFindWordFrame(tPane);
+				instanceTorahPane.isText = isText;
+			}
+			return instanceTorahPane;
 		}
-		return instance;
 	}
 
-	static Boolean getIsOpen() {
+	Boolean getIsOpen() {
 		return isOpen;
 	}
 
-	public static void clearLastSearch() {
+	public void clearLastSearch() {
 		lastSearch = null;
 	}
 
-	/**
-	 * Launch the application.
+	
+	/*
+	 * public static void main(String[] args) { try { DialogFindWordFrame dialog =
+	 * new DialogFindWordFrame();
+	 * dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	 * dialog.setVisible(true); } catch (Exception e) { e.printStackTrace(); } }
 	 */
-	public static void main(String[] args) {
-		try {
-			DialogFindWordFrame dialog = new DialogFindWordFrame();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * Create the dialog.
 	 */
-	public DialogFindWordFrame() {
+	public DialogFindWordFrame(JTextPane tPane) {
 		isOpen = true;
 		setResizable(false);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setAlwaysOnTop(true);
 		setType(Type.UTILITY);
+		//setUndecorated(true);
 		setFont(new Font("Miriam Mono CLM", Font.PLAIN, 18));
-		setTitle("חיפוש בדוח");
+		setTitle("חיפוש מילים");
 		setBounds(100, 100, 223, 134);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -95,7 +104,7 @@ public class DialogFindWordFrame extends JDialog {
 				JButton buttonCancel = new JButton("בטל");
 				buttonCancel.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						isOpen = false;
+						//isOpen = false;
 						dispose();
 					}
 				});
@@ -105,8 +114,9 @@ public class DialogFindWordFrame extends JDialog {
 			{
 				JButton buttonNext = new JButton("הבא");
 				buttonNext.addActionListener(new ActionListener() {
+
 					public void actionPerformed(ActionEvent arg0) {
-						HighLighter.scrollWords(Frame.textPane);
+						HighLighter.getInstance(tPane, isText).scrollWords();
 					}
 				});
 				buttonNext.setActionCommand("Next");
@@ -120,7 +130,7 @@ public class DialogFindWordFrame extends JDialog {
 						String searchTerm = textField.getText();
 						if ((searchTerm != null) && (searchTerm.length() > 0)) {
 							lastSearch = searchTerm;
-							HighLighter.highlight(Frame.textPane, searchTerm);
+							HighLighter.getInstance(tPane, isText).highlight(searchTerm);
 						}
 					}
 				});
@@ -128,5 +138,30 @@ public class DialogFindWordFrame extends JDialog {
 				buttonPane.add(buttonSearch);
 			}
 		}
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+		        isOpen = false;
+		    }
+		});
+		/*
+		this.addMouseListener(new MouseAdapter()
+		{
+		   public void mousePressed(MouseEvent e)
+		   {
+		      posX=e.getX();
+		      posY=e.getY();
+		   }
+		});
+		this.addMouseMotionListener(new MouseAdapter()
+		{
+		     public void mouseDragged(MouseEvent evt)
+		     {
+				//sets frame position when mouse dragged			
+				setLocation (evt.getXOnScreen()-posX,evt.getYOnScreen()-posY);
+							
+		     }
+		});
+		*/
 	}
 }

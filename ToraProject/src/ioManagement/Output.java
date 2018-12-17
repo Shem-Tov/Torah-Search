@@ -5,21 +5,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import console.Console;
 import frame.ColorClass;
 import frame.Frame;
 import frame.Table;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
-import stringFormatting.HtmlGenerator;
-import stringFormatting.StringAlignUtils;
-import stringFormatting.StringAlignUtils.Alignment;
+import stringFormat.HtmlGenerator;
+import stringFormat.StringAlignUtils;
+import stringFormat.StringAlignUtils.Alignment;
 import torahApp.ToraApp;
 
 public class Output {
 	public final static int padLines =2;
 
 	public static TorahLine markMatchesFromArrayList(ArrayList<Integer[]> indexes,
-			stringFormatting.HtmlGenerator htmlFormat) {
+			stringFormat.HtmlGenerator htmlFormat) {
 		// Does not mark, if in console mode
 		String line = "";
 		try (BufferedReader bReader2 = ManageIO.getBufferedReader(
@@ -58,13 +59,13 @@ public class Output {
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
-			stringFormatting.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords,
+			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords,
 			String... searchSTR2) {
 		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot, bool_wholeWords, -1);
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
-			stringFormatting.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords, int index,
+			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords, int index,
 			String... searchSTR2) {
 
 		// Does not mark, if in console mode
@@ -300,7 +301,7 @@ public class Output {
 	}
 
 	public static LineHtmlReport markTextOrderedLetters(String searchSTR, String line, Boolean bool_sofiot,
-			Boolean firstLast, stringFormatting.HtmlGenerator htmlFormat) {
+			Boolean firstLast, stringFormat.HtmlGenerator htmlFormat) {
 		String lineConvert;
 		String searchConvert;
 		if (!bool_sofiot) {
@@ -434,7 +435,9 @@ public class Output {
 			printText("טקסט נוסף",3,tooltip);
 			// printText(String.valueOf(countLines),3);
 			printLine(1);
-			printTree(countLines, outputText, false);
+			if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
+				printTree(countLines, outputText, false);
+			}
 		} catch (Exception e) {
 			System.out.println("Error at line: " + countLines);
 			e.printStackTrace();
@@ -447,13 +450,20 @@ public class Output {
 
 	public static void printLine(int size) {
 		// blue is default color
-		printLine(size, "blue");
+		printLine(size, "blue", 0);
 	}
 
-	public static void printLine(int size, String color) {
+	public static void printLine(int size, int mode) {
+		// blue is default color
+		printLine(size, "blue", mode);
+	}
+
+	public static void printLine(int size, String color, int mode) {
+		// mode 0 - TextPane
+		// mode 4 - TorahPane
 		String line = getLine(size, color);
 		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-			Frame.appendText(line, (byte) 0);
+			Frame.appendText(line, (byte) mode);
 		}
 	}
 
@@ -524,11 +534,13 @@ public class Output {
 		// mode 1 = attention
 		// mode 2 = silence on GUI
 		// mode 3 = label
+		// mode 4 = print Torah
 		switch (ToraApp.getGuiMode()) {
 		case ToraApp.id_guiMode_Frame: // GUI Mode
 			switch (mode) {
 			case 0:
 			case 1:
+			case 4:
 				Frame.appendText(text, mode);
 				break;
 			case 3:
@@ -541,14 +553,26 @@ public class Output {
 			}
 			break;
 		default: // Console Mode - Reserved guiMode=0
-			StringAlignUtils util = new StringAlignUtils(Frame.panelWidth, Alignment.RIGHT);
+			int num = Console.getFormatLine();
+			StringAlignUtils util = new StringAlignUtils(Math.max(num,1), Alignment.RIGHT);
 			switch (mode) {
 			case 0: // user text
-				System.out.println(util.format(text));
+			case 4:
+				if (num > -1) {
+					System.out.println(util.format(text));									
+				} else {
+					System.out.println(text);									
+				}
 				break;
 			case 1: // debug mode
 			case 2:
-				System.err.println(util.format(text));
+				if (num > -1) {
+					System.err.println(util.format(text));
+				} else {
+					System.err.println(text);									
+				}
+				break;
+			case 3: //do nothing
 				break;
 			}
 		}

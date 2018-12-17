@@ -15,7 +15,7 @@ import ioManagement.LineHtmlReport;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
-import stringFormatting.StringAlignUtils;
+import stringFormat.StringAlignUtils;
 
 public class LetterSearch {
 	private static LetterSearch instance;
@@ -53,23 +53,24 @@ public class LetterSearch {
 
 		return foundMatch;
 	}
-	private Boolean containsOrderOfLetters(String line,String searchSTR) {
-		Boolean found=true;
-		int oldIndex=0;
+
+	private Boolean containsOrderOfLetters(String line, String searchSTR) {
+		Boolean found = true;
+		int oldIndex = 0;
 		int index = -1;
-		for (char ch:searchSTR.toCharArray()) {
-			index=line.indexOf(ch,oldIndex);
-			if (index==-1) {
-				found=false;
+		for (char ch : searchSTR.toCharArray()) {
+			index = line.indexOf(ch, oldIndex);
+			if (index == -1) {
+				found = false;
 				break;
 			} else {
-				oldIndex=index;
+				oldIndex = index;
 			}
 		}
 		return found;
 	}
 
-	public void searchForLetters(Object[] args) throws IOException {
+	public void searchForLetters(Object[] args) {
 		ArrayList<LineReport> results = new ArrayList<LineReport>();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
@@ -107,7 +108,7 @@ public class LetterSearch {
 		int count = 0;
 
 		BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -124,7 +125,9 @@ public class LetterSearch {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
+			String str = "\u202B" + "חיפוש אותיות"; 
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
 			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
@@ -147,7 +150,7 @@ public class LetterSearch {
 
 				if (searchSTR.contains(" ")) {
 					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-						frame.Frame.clearText();
+						frame.Frame.clearTextPane();
 					}
 					Output.printText("לא ניתן לחפש עם רווחים", 1);
 					if (inputStream != null) {
@@ -170,14 +173,13 @@ public class LetterSearch {
 					} else {
 						sConvert = s;
 					}
-					if ((bool_firstLastLetters) && 
-						 ((searchConvert.charAt(0)!=sConvert.charAt(0)) ||
-						  (!searchConvert.substring(searchConvert.length() - 1).equals(sConvert.substring(sConvert.length()-1))
-								  ))){
+					if ((bool_firstLastLetters) && ((searchConvert.charAt(0) != sConvert.charAt(0))
+							|| (!searchConvert.substring(searchConvert.length() - 1)
+									.equals(sConvert.substring(sConvert.length() - 1))))) {
 						continue;
 					}
-					if (((!bool_keepOrder) &&(containsLetters(sConvert, searchMap)))
-						|| ((bool_keepOrder) && containsOrderOfLetters(sConvert,searchConvert) )) {
+					if (((!bool_keepOrder) && (containsLetters(sConvert, searchMap)))
+							|| ((bool_keepOrder) && containsOrderOfLetters(sConvert, searchConvert))) {
 						count++;
 						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
 							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
@@ -186,28 +188,34 @@ public class LetterSearch {
 						// fill results array
 						if (modePsukim) {
 							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\"" + Output.markText(searchSTR,frame.ColorClass.markupStyleHTML) + "\" " + "נמצא ב"
+							String tempStr1 = "\u202B" + "\""
+									+ Output.markText(searchSTR, frame.ColorClass.markupStyleHTML) + "\" " + "נמצא ב"
 									+ Output.markText(StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters(),
-									ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()%ColorClass.highlightStyleHTML.length]);
+											+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters(),
+											ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
+													% ColorClass.highlightStyleHTML.length]);
 							// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 							String lineHtml;
 							LineHtmlReport lineHtmlReport = new LineHtmlReport(null, null);
 							if (bool_keepOrder) {
-								lineHtmlReport = Output.markTextOrderedLetters(searchSTR, line, bool_sofiot,bool_firstLastLetters, frame.ColorClass.markupStyleHTML);
-								lineHtml=lineHtmlReport.getLineHtml();
+								lineHtmlReport = Output.markTextOrderedLetters(searchSTR, line, bool_sofiot,
+										bool_firstLastLetters, frame.ColorClass.markupStyleHTML);
+								lineHtml = lineHtmlReport.getLineHtml();
 							} else {
-								lineHtml=line;
+								lineHtml = line;
 							}
 							String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
 							Output.printText(tempStr2);
-							results.add(new LineReport ( new String[]  { searchSTR, pBookInstance.getBookName(),
-									pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line } ,lineHtmlReport.getIndexes()));
+							results.add(new LineReport(
+									new String[] { searchSTR, pBookInstance.getBookName(),
+											pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line },
+									lineHtmlReport.getIndexes()));
 							String tooltip = Output.printSomePsukimHtml(countLines, Output.padLines);
-							Output.printText("טקסט נוסף",3,tooltip);
-							Output.printTree(countLines,tempStr2,false);
-						} 
-						else {
+							Output.printText("טקסט נוסף", 3, tooltip);
+							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+								Output.printTree(countLines, tempStr2, false);
+							}
+						} else {
 							results.add(Output.printPasukInfo(countLines, s, line, frame.ColorClass.markupStyleHTML,
 									bool_sofiot, true));
 						}
@@ -220,35 +228,35 @@ public class LetterSearch {
 				}
 			}
 			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
-				Tree.getInstance().flushBuffer((count<50));
+				Tree.getInstance().flushBuffer((count < 50));
 			}
 			String Title = ("חיפוש אותיות במילים בתורה");
 			String Title2 = "";
 			String Title3 = "";
 			String Title4 = "";
-			String fileName = "LT_" + searchSTR.replace(' ','_');
-			String sheet="";
+			String fileName = "LT_" + searchSTR.replace(' ', '_');
+			String sheet = "";
 			if (modePsukim) {
 				sheet += "פסוק";
 			} else {
 				sheet += "מילה";
 			}
 			if (bool_sofiot) {
-				sheet += "_"+"ף";
+				sheet += "_" + "ף";
 				Title2 += "התחשבות בסופיות";
 			}
 			if (bool_firstLastLetters) {
-				sheet += "_"+"רת";
+				sheet += "_" + "רת";
 				Title3 += "התחשבות ראשי וסופי תיבות";
-				
+
 			}
 			if (bool_keepOrder) {
-				sheet += "_"+"סדר";
+				sheet += "_" + "סדר";
 				Title4 += "שמירת סדר אותיות";
 			}
-					
+
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, searchSTR,Title2,Title3,Title4,
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, searchSTR, Title2, Title3, Title4,
 						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
@@ -264,7 +272,12 @@ public class LetterSearch {
 			Output.printText("");
 			Output.printText(Output.markText("\u202B" + "סיים חיפוש", frame.ColorClass.footerStyleHTML));
 			if (inputStream != null) {
-				inputStream.close();
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

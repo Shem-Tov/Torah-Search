@@ -9,12 +9,13 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import console.Methods;
 import ioManagement.ExcelFunctions;
-import ioManagement.Methods;
 import torahApp.ToraApp;
 
 import java.awt.event.ActionListener;
@@ -27,7 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JCheckBox;
 import javax.swing.BoxLayout;
 
-public class DialogSearchRangeFrame extends JDialog {
+public class DialogSearchRangeFrame extends JFrame {
 
 	/**
 	 * 
@@ -98,7 +99,7 @@ public class DialogSearchRangeFrame extends JDialog {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public DialogSearchRangeFrame(Boolean setRange) {
 		setResizable(false);
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setAlwaysOnTop(true);
 		setType(Type.UTILITY);
 		setFont(new Font("Miriam Mono CLM", Font.PLAIN, 18));

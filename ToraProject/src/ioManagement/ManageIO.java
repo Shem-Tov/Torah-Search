@@ -30,7 +30,7 @@ public class ManageIO {
 			if ((file == null) || (!file.exists())) {
 				// throw new IOException("Could not find file for TorahLetters");
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-					frame.Frame.clearText();
+					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;
@@ -71,7 +71,7 @@ public class ManageIO {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-					frame.Frame.clearText();
+					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;
@@ -115,7 +115,7 @@ public class ManageIO {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-					frame.Frame.clearText();
+					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
 				return null;

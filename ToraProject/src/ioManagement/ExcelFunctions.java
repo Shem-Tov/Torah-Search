@@ -409,7 +409,7 @@ public class ExcelFunctions {
 				}
 				tableLoaded = true;
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-					frame.Frame.clearText();
+					frame.Frame.clearTextPane();
 					frame.Frame.setButtonEnabled(true);
 				}
 				Output.printText("Imported XLS", 2);
@@ -417,7 +417,7 @@ public class ExcelFunctions {
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
 					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-						frame.Frame.clearText();
+						frame.Frame.clearTextPane();
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
 					Output.printText("Program can not work without TorahTables Excel file", 1);
@@ -486,7 +486,7 @@ public class ExcelFunctions {
 				}
 				tableLoaded = true;
 				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-					frame.Frame.clearText();
+					frame.Frame.clearTextPane();
 					frame.Frame.setButtonEnabled(true);
 				}
 				Output.printText("Imported XLS", 2);
@@ -494,7 +494,7 @@ public class ExcelFunctions {
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
 					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-						frame.Frame.clearText();
+						frame.Frame.clearTextPane();
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
 					Output.printText("Program can not work without TorahTables Excel file", 1);

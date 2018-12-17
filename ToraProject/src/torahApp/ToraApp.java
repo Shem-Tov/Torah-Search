@@ -3,9 +3,9 @@ package torahApp;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import console.Methods;
 import frame.Frame;
 import ioManagement.ExcelFunctions;
-import ioManagement.Methods;
 import ioManagement.PropStore;
 
 //import java.util.Formatter;

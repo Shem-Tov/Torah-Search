@@ -3,22 +3,42 @@ package frame;
 import java.awt.Color;
 import java.awt.Rectangle;
 
+import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
 
 public class HighLighter {
 
-	private static String findWord = null;
-	private static int pos = 0;
+	private String findWord = null;
+	private int pos = 0;
+	private static HighLighter instanceTextPane;
+	private static HighLighter instanceTorahPane;
+	private JTextPane textComp;
+	
+	public static HighLighter getInstance(JTextPane tPane, Boolean isText) {
+		if (isText) {
+			if (instanceTextPane == null) {
+				instanceTextPane = new HighLighter(tPane);
+			}
+			return instanceTextPane;
+		} else {
+			if (instanceTorahPane == null) {
+				instanceTorahPane = new HighLighter(tPane);
+			}
+			return instanceTorahPane;
+		}
+	}
 
+	public HighLighter(JTextPane tPane) {
+		textComp = tPane;
+	}
+	
 	// Creates highlights around all occurrences of pattern in textComp
-	public static void highlight(JTextComponent textComp, String pattern) {
+	public void highlight(String pattern) {
 		// First remove all old highlights
-		removeHighlights(textComp);
-
+		removeHighlights();
 		try {
 			pos = 0;
 			findWord = pattern;
@@ -34,7 +54,7 @@ public class HighLighter {
 				hilite.addHighlight(pos, pos + pattern.length(), myHighlightPainter);
 				pos += pattern.length();
 			}
-			scrollWords(textComp);
+			scrollWords();
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
@@ -43,7 +63,7 @@ public class HighLighter {
 	}
 
 	// Removes only our private highlights
-	public static void removeHighlights(JTextComponent textComp) {
+	public void removeHighlights() {
 		findWord = null;
 		Highlighter hilite = textComp.getHighlighter();
 		Highlighter.Highlight[] hilites = hilite.getHighlights();
@@ -55,8 +75,8 @@ public class HighLighter {
 	}
 
 	// An instance of the private subclass of the default highlight painter
-	static HighLighter outer = new HighLighter();
-	static MyHighlightPainter myHighlightPainter = outer.new MyHighlightPainter(new java.awt.Color(245, 230, 210));
+	//HighLighter outer = new HighLighter(null);
+	MyHighlightPainter myHighlightPainter = this.new MyHighlightPainter(new java.awt.Color(245, 230, 210));
 
 	// A private subclass of the default highlight painter
 	class MyHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter {
@@ -65,7 +85,7 @@ public class HighLighter {
 		}
 	}
 
-	public static void scrollWords(JTextComponent textComp) {
+	public void scrollWords() {
 		// Focus the text area, otherwise the highlighting won't show up
 		textComp.requestFocusInWindow();
 		// Make sure we have a valid search term

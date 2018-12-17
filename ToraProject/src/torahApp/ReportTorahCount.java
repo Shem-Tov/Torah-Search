@@ -13,8 +13,8 @@ import ioManagement.FontStyle;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
-import stringFormatting.HtmlGenerator;
-import stringFormatting.StringAlignUtils;
+import stringFormat.HtmlGenerator;
+import stringFormat.StringAlignUtils;
 
 public class ReportTorahCount {
 	private static ReportTorahCount instance;
@@ -64,11 +64,13 @@ public class ReportTorahCount {
 		String[] stringRange;
 		// FileWriter outputStream2 = null;
 		try {
-			if (args.length < 1) {
-				throw new IllegalArgumentException("Missing Arguments in ToraSearch.searchWords");
+			try {
+				searchRange = (args[0] != null) ? (int[]) args[0] : new int[] { 0, 0 };
+				stringRange = (args[1] != null) ? (String[]) args[1] : new String[] { "התחלה", "סוף" };
+			} catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+				searchRange = new int[] {0,0};
+				stringRange = new String[] { "התחלה", "סוף" };
 			}
-			searchRange = (args[0] != null) ? (int[]) args[0] : new int[] { 0, 0 };
-			stringRange = (args[1] != null) ? (String[]) args[1] : new String[] { "התחלה", "סוף" };
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
@@ -101,7 +103,9 @@ public class ReportTorahCount {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "סופר";
+			String str = "\u202B" + "דוח ספירה"; 
+			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
+			str = "\u202B" + "סופר";
 			str += "...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
@@ -154,7 +158,7 @@ public class ReportTorahCount {
 						+ ";" + " font-size:	" + Frame.getFontSize() + "px;" + " font-weight:bold" + "\"";
 				// String tdstyle2 =" style = \"padding-top: 8px; padding-bottom: 8px;\"";
 				String tdstyle = " style = \"padding: 8px; padding-left: 8px; padding-right: 8px;\"";
-				Frame.clearText();
+				Frame.clearTextPane();
 				Output.printText("");
 				Output.printText(
 						Output.markText("טווח:", ColorClass.headerStyleHTML) +
@@ -162,7 +166,7 @@ public class ReportTorahCount {
 						Output.markText(" עד ", ColorClass.headerStyleHTML) +
 						Output.markText(stringRange[1], ColorClass.markupStyleHTML) +
 						Output.markText(stringRange[2], ColorClass.headerStyleHTML));
-				Output.printLine(4,"#FFD700");
+				Output.printLine(4,"#FFD700",0);
 				// FirstTable
 				int fontSizeBig = Frame.getFontSizeBig() + 1;
 				int fontSizeBigger = fontSizeBig + 1;
@@ -241,7 +245,6 @@ public class ReportTorahCount {
 			FontStyle titleStyle = new FontStyle(IndexedColors.PLUM,20);
 			FontStyle headerStyle = new FontStyle(IndexedColors.GREEN,18);
 			FontStyle goldStyle = new FontStyle(IndexedColors.GOLD,18);
-		
 			results.add(new LineReport(new String[] {"טווח:"+" "+stringRange[0]+" עד " + stringRange[1] + " " +stringRange[2]},null,titleStyle));
 			results.add(new LineReport(new String[] {},null));
 			results.add(new LineReport(new String[] {"דוח כללי"},null,titleStyle));
