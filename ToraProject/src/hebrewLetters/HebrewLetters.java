@@ -6,6 +6,10 @@ public class HebrewLetters {
 	
 	public static Boolean checkHebrew(String str) {
 		Boolean finalBool = true;
+		// OK to be empty
+		if ((str==null) || (str.length()==0)) {
+			return true;
+		}
 		for (char ch:str.toCharArray()) {
 			Boolean bool = false;
 			if (ch==' ') continue;

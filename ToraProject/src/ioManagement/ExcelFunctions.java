@@ -37,24 +37,25 @@ public class ExcelFunctions {
 	// End Excel Tables
 
 	// private static final String FILE_NAME = "/MyFirstExcel.xlsx";
-	private static final String EXCEL_FILE_LOCATION_HARDCODED = "./Reports/";
-	private static String EXCEL_FILE_LOCATION = EXCEL_FILE_LOCATION_HARDCODED;
+	private static final String DATA_FOLDER_LOCATION_HARDCODED = "./Data/";
+	private static final String EXCEL_FILE_LOCATION_HARDCODED = "Reports/";
+	private static String DATA_FOLDER_LOCATION = DATA_FOLDER_LOCATION_HARDCODED;
 	private static final String EXCEL_FILE_EXTENSION = ".xls";
 
-	public static String getExcel_File_Location_Hardcoded() {
-		return EXCEL_FILE_LOCATION_HARDCODED;
+	public static String getData_Folder_Location_Hardcoded() {
+		return DATA_FOLDER_LOCATION_HARDCODED;
 	}
 
-	public static String getExcel_File_Location() {
-		return EXCEL_FILE_LOCATION;
+	public static String getData_Folder_Location() {
+		return DATA_FOLDER_LOCATION;
 	}
 
-	public static void setExcel_File_Location(String directoryPath) {
-		EXCEL_FILE_LOCATION = directoryPath;
+	public static void setData_Folder_Location(String directoryPath) {
+		DATA_FOLDER_LOCATION = directoryPath;
 	}
 
-	public static void resetExcel_File_Location() {
-		EXCEL_FILE_LOCATION = EXCEL_FILE_LOCATION_HARDCODED;
+	public static void resetData_Folder_Location() {
+		DATA_FOLDER_LOCATION = DATA_FOLDER_LOCATION_HARDCODED;
 	}
 
 	public static void writeXLS(String fileName, String sheetName, int mode, String Title,
@@ -77,7 +78,7 @@ public class ExcelFunctions {
 			}
 		}
 
-		if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (!frame.Frame.getCheckbox_createExcel())) {
+		if ((ToraApp.isGui()) && (!frame.Frame.getCheckbox_createExcel())) {
 			return;
 		}
 		// mode=0 regular search sofiot considered
@@ -100,9 +101,9 @@ public class ExcelFunctions {
 		HSSFWorkbook workbook = null;
 		HSSFSheet sheet = null;
 		File file = null;
-		String fileNameExtended = EXCEL_FILE_LOCATION + fileName + EXCEL_FILE_EXTENSION;
+		String fileNameExtended = DATA_FOLDER_LOCATION + EXCEL_FILE_LOCATION_HARDCODED + fileName + EXCEL_FILE_EXTENSION;
 		try {
-			new File(EXCEL_FILE_LOCATION).mkdirs();
+			new File(DATA_FOLDER_LOCATION + EXCEL_FILE_LOCATION_HARDCODED).mkdirs();
 			file = new File(fileNameExtended);
 			if (file.exists()) {
 				FileInputStream excelFile = new FileInputStream(file);
@@ -408,7 +409,7 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
-				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				if (ToraApp.isGui()) {
 					frame.Frame.clearTextPane();
 					frame.Frame.setButtonEnabled(true);
 				}
@@ -416,7 +417,7 @@ public class ExcelFunctions {
 				break;
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
-					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					if (ToraApp.isGui()) {
 						frame.Frame.clearTextPane();
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
@@ -485,7 +486,7 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
-				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				if (ToraApp.isGui()) {
 					frame.Frame.clearTextPane();
 					frame.Frame.setButtonEnabled(true);
 				}
@@ -493,7 +494,7 @@ public class ExcelFunctions {
 				break;
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
-					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					if (ToraApp.isGui()) {
 						frame.Frame.clearTextPane();
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);

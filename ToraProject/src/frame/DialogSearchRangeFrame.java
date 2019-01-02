@@ -33,8 +33,16 @@ public class DialogSearchRangeFrame extends JFrame {
 	/**
 	 * 
 	 */
-	private static DialogSearchRangeFrame instance;
+	private static DialogSearchRangeFrame instanceReport;
+	private static DialogSearchRangeFrame instanceStandard;
+	
 	private static final long serialVersionUID = 1L;
+	private static final String label_Button_setRange="אשר";
+	private static final String label_Button_createReport="צור דוח";
+	private static final String label_Parasha = "לפי פרשה";
+	private static final String label_Perek = "לפי פרק";
+	private static final String CB_string_end = "סוף";
+
 	private final JPanel contentPanel = new JPanel();
 	private JPanel mainGridPanel = new JPanel();
 	private JPanel grid1Panel = new JPanel();
@@ -43,35 +51,39 @@ public class DialogSearchRangeFrame extends JFrame {
 	private JPanel grid4Panel = new JPanel();
 	private JPanel grid5Panel = new JPanel();
 
-	private static JComboBox<String> cBox_Book1, cBox_Perek1, cBox_Pasuk1;
-	private static JComboBox<String> cBox_Book2, cBox_Perek2, cBox_Pasuk2;
+	private JComboBox<String> cBox_Book1, cBox_Perek1, cBox_Pasuk1;
+	private JComboBox<String> cBox_Book2, cBox_Perek2, cBox_Pasuk2;
 	
-	private static final String label_Button_setRange="אשר";
-	private static final String label_Button_createReport="צור דוח";
 	private JLabel label;
 	private JLabel label_1;
 	JButton buttonSearch;
 	private JCheckBox checkBox_label1;
 	private JCheckBox checkBox_label2;
-	private static final String label_Parasha = "לפי פרשה";
-	private static final String label_Perek = "לפי פרק";
-	private static final String CB_string_end = "סוף";
 
 	public static DialogSearchRangeFrame getInstance(Boolean setRange) {
-		if (instance == null) {
-			instance = new DialogSearchRangeFrame(setRange);
+		if (setRange) {
+			//Standard
+			if (instanceStandard == null) {
+				instanceStandard = new DialogSearchRangeFrame(setRange);
+			}
+			return instanceStandard;
+		} else {
+			//Report
+			if (instanceReport == null) {
+				instanceReport = new DialogSearchRangeFrame(setRange);
+			}
+			return instanceReport;
 		}
-		return instance;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void relistComboPerek(JComboBox cb, int bookNum) {
+	private void relistComboPerek(JComboBox cb, int bookNum) {
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel((ToraApp.getPerekArray(bookNum).toArray()));
 		cb.setModel(model);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void relistComboPasuk(JComboBox cb, int bookNum, int perekNum) {
+	private void relistComboPasuk(JComboBox cb, int bookNum, int perekNum) {
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel(
 				(ToraApp.getPasukArray(bookNum, perekNum).toArray()));
 		cb.setModel(model);
@@ -359,7 +371,7 @@ public class DialogSearchRangeFrame extends JFrame {
 							}
 						}
 						strHTML += strRange2 + "</html>";
-						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+						if (ToraApp.isGui()) {
 							Frame.setSearchRange(start, end, str, strHTML);
 						}
 						dispose();

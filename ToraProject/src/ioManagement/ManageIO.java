@@ -29,7 +29,7 @@ public class ManageIO {
 			}
 			if ((file == null) || (!file.exists())) {
 				// throw new IOException("Could not find file for TorahLetters");
-				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				if (ToraApp.isGui()) {
 					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
@@ -39,12 +39,17 @@ public class ManageIO {
 		return file;
 	}
 
-	public enum fileMode {Line,NoTevot,Different};
+	public enum fileMode {Line,NoTevot,LastSearch,Different};
 	
-	public static BufferedReader getBufferedReader(fileMode mode) {
+	public static BufferedReader getBufferedReader(fileMode mode, Boolean allowLastSearch) {
 		BufferedReader bReader = null;
 		String fileName1="", fileName2="";
 		switch (mode) {
+		case LastSearch:
+			if (allowLastSearch) {
+				return LastSearchClass.getStoredBufferedReader();
+			}
+			//no break;
 		case Line:
 			fileName1 = ToraApp.ToraLineFile;
 			fileName2 = ToraApp.subTorahLineFile;
@@ -55,6 +60,7 @@ public class ManageIO {
 			break;
 		case Different:
 			fileName2 = ToraApp.differentSearchFile;
+			break;
 		}
 
 		try {
@@ -70,7 +76,7 @@ public class ManageIO {
 			} catch (NullPointerException | FileNotFoundException | UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
-				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				if (ToraApp.isGui()) {
 					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
@@ -83,7 +89,7 @@ public class ManageIO {
 	}
 
 	public static int countLinesOfFile(fileMode mode) {
-		BufferedReader inputStream = ManageIO.getBufferedReader(mode);
+		BufferedReader inputStream = ManageIO.getBufferedReader(mode,false);
 		int countLines=0; 
 		try {
 				while ((inputStream.readLine()) != null) {
@@ -114,7 +120,7 @@ public class ManageIO {
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
-				if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+				if (ToraApp.isGui()) {
 					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);

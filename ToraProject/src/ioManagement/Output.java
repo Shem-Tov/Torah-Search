@@ -10,21 +10,27 @@ import frame.ColorClass;
 import frame.Frame;
 import frame.Table;
 import frame.Tree;
-import hebrewLetters.HebrewLetters;
 import stringFormat.HtmlGenerator;
 import stringFormat.StringAlignUtils;
 import stringFormat.StringAlignUtils.Alignment;
+import torahApp.LetterCounter;
 import torahApp.ToraApp;
 
 public class Output {
 	public final static int padLines =2;
 
+	public static String r2l() {
+		// changes console to right to left
+		// add at start of every line
+		return "\u202B";
+	}
+	
 	public static TorahLine markMatchesFromArrayList(ArrayList<Integer[]> indexes,
 			stringFormat.HtmlGenerator htmlFormat) {
 		// Does not mark, if in console mode
 		String line = "";
 		try (BufferedReader bReader2 = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 				Stream<String> lines = bReader2.lines()) {
 			// Recieves words of Pasuk
 			line = lines.skip(indexes.get(0)[0] - 1).findFirst().get();
@@ -32,67 +38,51 @@ public class Output {
 			e.printStackTrace();
 		}
 
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+		if (!ToraApp.isGui()) {
 			return new TorahLine(line, null);
 		}
-		String lineHtml = "";
-		// checks for same lines to merge mark
-		int lastIndex = 0;
-		int countIndex = 0;
-		for (Integer[] thisIndex : indexes) {
-			// skip first 1 line(s)
-			if (countIndex < 1) {
-				countIndex++;
-				continue;
-			}
-			String tempStr = "";
-			if (thisIndex[0] > 0) {
-				tempStr = line.substring(lastIndex, thisIndex[0]);
-			}
-			lineHtml += tempStr + htmlFormat.getHtml(0) + line.substring(thisIndex[0], thisIndex[1])
-					+ htmlFormat.getHtml(1);
-
-			lastIndex = thisIndex[1];
-		}
-		lineHtml += line.substring(lastIndex);
-		return new TorahLine(line, lineHtml);
+		//remove first index
+		indexes = (ArrayList<Integer[]>) indexes.subList(1,indexes.size());
+		return new TorahLine(line, createLineHtml(line, indexes, htmlFormat));
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
-			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords,
-			String... searchSTR2) {
-		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot, bool_wholeWords, -1);
+			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords) {
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, -1, false, null);
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
-			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot, Boolean bool_wholeWords, int index,
-			String... searchSTR2) {
+			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords,
+			Boolean bool_sofiot2,String searchSTR2) {
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2);
+	}
+
+	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
+			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords,
+			int index) {
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, index, false, null);
+	}
+
+	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
+			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords, int index,
+			Boolean bool_sofiot2, String searchSTR2) {
 
 		// Does not mark, if in console mode
 		String lineHtml = "";
-		String lineConvert;
-		String searchConvert;
+		String lineConvert1=ToraApp.getHebrew(line, bool_sofiot1);
+		String searchConvert1=ToraApp.getHebrew(searchSTR, bool_sofiot1);
 		String searchConvert2 = "";
-		if (!bool_sofiot) {
-			searchConvert = HebrewLetters.switchSofiotStr(searchSTR);
-			lineConvert = HebrewLetters.switchSofiotStr(line);
-			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-				searchConvert2 = HebrewLetters.switchSofiotStr(searchSTR2[0]);
-			}
-		} else {
-			searchConvert = searchSTR;
-			lineConvert = line;
-			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-				searchConvert2 = searchSTR2[0];
-			}
+		String lineConvert2 = "";
+		if (searchSTR2 != null) {
+				searchConvert2 = ToraApp.getHebrew(searchSTR2, bool_sofiot2);
+				lineConvert2 = ToraApp.getHebrew(line, bool_sofiot2);
 		}
 		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
 		ArrayList<Integer[]> indexes2 = new ArrayList<Integer[]>();
-		ArrayList<Integer[]> indexes3 = new ArrayList<Integer[]>();
 
 		int myIndex;
-		int tempIndex = lineConvert.indexOf(searchConvert, 0);
-		indexes.add(new Integer[] { tempIndex, tempIndex + searchConvert.length() });
+		int tempIndex = lineConvert1.indexOf(searchConvert1, 0);
+		indexes.add(new Integer[] { tempIndex, tempIndex + searchConvert1.length() });
 		try {
 			if (indexes.get(0)[0] == -1) {
 				throw new IllegalArgumentException();
@@ -105,10 +95,10 @@ public class Output {
 		if (bool_wholeWords) {
 			// checks for spaces before and after word
 			boolean cancel = false;
-			if ((indexes.get(0)[0] > 0) && (lineConvert.charAt(indexes.get(0)[0] - 1) != ' ')) {
+			if ((indexes.get(0)[0] > 0) && (lineConvert1.charAt(indexes.get(0)[0] - 1) != ' ')) {
 				cancel = true;
 			}
-			if (((indexes.get(0)[1] < lineConvert.length()) && (lineConvert.charAt(indexes.get(0)[1]) != ' '))) {
+			if (((indexes.get(0)[1] < lineConvert1.length()) && (lineConvert1.charAt(indexes.get(0)[1]) != ' '))) {
 				cancel = true;
 			}
 			if (cancel) {
@@ -117,36 +107,37 @@ public class Output {
 			}
 		}
 		// find all occurences of searchSTR in Line and Color them
-		while ((newIndex = lineConvert.indexOf(searchConvert, startPOS + 1)) != -1) {
+		while ((newIndex = lineConvert1.indexOf(searchConvert1, startPOS + 1)) != -1) {
 			if (bool_wholeWords) {
 				// checks for spaces before and after word
 				Boolean cancel = false;
-				if ((newIndex > 0) && (lineConvert.charAt(newIndex - 1) != ' ')) {
+				if ((newIndex > 0) && (lineConvert1.charAt(newIndex - 1) != ' ')) {
 					cancel = true;
 				}
-				if (((newIndex + searchConvert.length() < lineConvert.length())
-						&& (lineConvert.charAt(newIndex + searchConvert.length()) != ' '))) {
+				if (((newIndex + searchConvert1.length() < lineConvert1.length())
+						&& (lineConvert1.charAt(newIndex + searchConvert1.length()) != ' '))) {
 					cancel = true;
 				}
 				if (!cancel) {
 					startPOS = newIndex;
-					indexes.add(new Integer[] { newIndex, newIndex + searchConvert.length() });
+					indexes.add(new Integer[] { newIndex, newIndex + searchConvert1.length() });
 				} else {
 					startPOS += 1;
 				}
 			} else {
 				startPOS = newIndex;
-				indexes.add(new Integer[] { newIndex, newIndex + searchConvert.length() });
+				indexes.add(new Integer[] { newIndex, newIndex + searchConvert1.length() });
 			}
 		}
 		if (index != -1) {
 			myIndex = indexes.get(index)[0];
 			indexes = new ArrayList<Integer[]>();
-			indexes.add(new Integer[] { myIndex, myIndex + searchConvert.length() });
+			indexes.add(new Integer[] { myIndex, myIndex + searchConvert1.length() });
 		}
+		// Search Word 2
 		int myIndex2;
-		if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-			tempIndex = lineConvert.indexOf(searchConvert2, 0);
+		if (searchSTR2 != null) {
+			tempIndex = lineConvert2.indexOf(searchConvert2, 0);
 			indexes2.add(new Integer[] { tempIndex, tempIndex + searchConvert2.length() });
 			try {
 				if (indexes2.get(0)[0] == -1) {
@@ -160,10 +151,10 @@ public class Output {
 			if (bool_wholeWords) {
 				// checks for spaces before and after word
 				boolean cancel = false;
-				if ((indexes2.get(0)[0] > 0) && (lineConvert.charAt(indexes2.get(0)[0] - 1) != ' ')) {
+				if ((indexes2.get(0)[0] > 0) && (lineConvert2.charAt(indexes2.get(0)[0] - 1) != ' ')) {
 					cancel = true;
 				}
-				if (((indexes2.get(0)[1] < lineConvert.length()) && (lineConvert.charAt(indexes2.get(0)[1]) != ' '))) {
+				if (((indexes2.get(0)[1] < lineConvert2.length()) && (lineConvert2.charAt(indexes2.get(0)[1]) != ' '))) {
 					cancel = true;
 				}
 				if (cancel) {
@@ -172,15 +163,15 @@ public class Output {
 				}
 			}
 			// find all occurences of searchSTR in Line and Color them
-			while ((newIndex2 = lineConvert.indexOf(searchConvert2, startPOS2 + 1)) != -1) {
+			while ((newIndex2 = lineConvert2.indexOf(searchConvert2, startPOS2 + 1)) != -1) {
 				if (bool_wholeWords) {
 					// checks for spaces before and after word
 					Boolean cancel = false;
-					if ((newIndex2 > 0) && (lineConvert.charAt(newIndex2 - 1) != ' ')) {
+					if ((newIndex2 > 0) && (lineConvert2.charAt(newIndex2 - 1) != ' ')) {
 						cancel = true;
 					}
-					if (((newIndex2 + searchConvert2.length() < lineConvert.length())
-							&& (lineConvert.charAt(newIndex2 + searchConvert2.length()) != ' '))) {
+					if (((newIndex2 + searchConvert2.length() < lineConvert2.length())
+							&& (lineConvert2.charAt(newIndex2 + searchConvert2.length()) != ' '))) {
 						cancel = true;
 					}
 					if (!cancel) {
@@ -200,57 +191,8 @@ public class Output {
 				indexes2.add(new Integer[] { myIndex2, myIndex2 + searchConvert2.length() });
 			}
 
-			int countIndex = 0;
-			int countIndex2 = 0;
-			while (true) {
-				if ((countIndex < indexes.size()) && (countIndex2 < indexes2.size())) {
-					if (indexes.get(countIndex)[0] <= indexes2.get(countIndex2)[0]) {
-						if (indexes.get(countIndex)[1] >= indexes2.get(countIndex2)[0]) {
-							if (indexes.get(countIndex)[1] < indexes2.get(countIndex2)[1]) {
-								indexes3.add(
-										new Integer[] { indexes.get(countIndex)[0], indexes2.get(countIndex2)[1] });
-								countIndex++;
-								countIndex2++;
-							} else {
-								indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
-								countIndex++;
-								countIndex2++;
-							}
-						} else {
-							indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
-							countIndex++;
-						}
-					} else {
-						if (indexes2.get(countIndex2)[1] >= indexes.get(countIndex)[0]) {
-							if (indexes2.get(countIndex2)[1] < indexes.get(countIndex)[1]) {
-								indexes3.add(
-										new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex)[1] });
-								countIndex++;
-								countIndex2++;
-							} else {
-								indexes3.add(
-										new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
-								countIndex++;
-								countIndex2++;
-							}
-						} else {
-							indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
-							countIndex2++;
-						}
-					}
-				} else {
-					if (countIndex < indexes.size()) {
-						indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
-						countIndex++;
-					} else if (countIndex2 < indexes2.size()) {
-						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
-						countIndex2++;
-					} else {
-						break;
-					}
-				}
-			}
-			indexes = indexes3;
+			//merge markIndexes
+			indexes = mergeMarkIndexes(indexes, indexes2);
 		}
 
 		int lastIndex = 0;
@@ -277,12 +219,102 @@ public class Output {
 			lastIndex = thisIndex[1];
 		}
 		lineHtml += line.substring(lastIndex);
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return new LineHtmlReport(line, indexes);
-		} else {
-			return new LineHtmlReport(lineHtml, indexes);
-		}
+		return new LineHtmlReport(lineHtml,line, indexes);
 	}
+
+	public static ArrayList<Integer[]> mergeMarkIndexes(ArrayList<Integer[]> indexes,ArrayList<Integer[]> indexes2){
+		ArrayList<Integer[]> indexes3 = new ArrayList<Integer[]>();
+		//merge markIndexes
+		int countIndex = 0;
+		int countIndex2 = 0;
+		while (true) {
+			if ((countIndex < indexes.size()) && (countIndex2 < indexes2.size())) {
+				if (indexes.get(countIndex)[0] <= indexes2.get(countIndex2)[0]) {
+					if (indexes.get(countIndex)[1] >= indexes2.get(countIndex2)[0]) {
+						if (indexes.get(countIndex)[1] < indexes2.get(countIndex2)[1]) {
+							indexes3.add(
+									new Integer[] { indexes.get(countIndex)[0], indexes2.get(countIndex2)[1] });
+							countIndex++;
+							countIndex2++;
+						} else {
+							indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
+							countIndex++;
+							countIndex2++;
+						}
+					} else {
+						indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
+						countIndex++;
+					}
+				} else {
+					if (indexes2.get(countIndex2)[1] >= indexes.get(countIndex)[0]) {
+						if (indexes2.get(countIndex2)[1] < indexes.get(countIndex)[1]) {
+							indexes3.add(
+									new Integer[] { indexes2.get(countIndex2)[0], indexes.get(countIndex)[1] });
+							countIndex++;
+							countIndex2++;
+						} else {
+							indexes3.add(
+									new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
+							countIndex++;
+							countIndex2++;
+						}
+					} else {
+						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
+						countIndex2++;
+					}
+				}
+			} else {
+				int lastIndex3 = indexes3.size()-1;
+				if (countIndex < indexes.size()) {
+					if (indexes.get(countIndex)[0]<=indexes3.get(lastIndex3)[1]) {
+						if (indexes.get(countIndex)[1]>indexes3.get(lastIndex3)[1]) {
+							indexes3.set(lastIndex3,new Integer[] {indexes3.get(lastIndex3)[0],indexes.get(countIndex)[1]});
+						}
+					} else {
+						indexes3.add(new Integer[] { indexes.get(countIndex)[0], indexes.get(countIndex)[1] });
+					}
+					countIndex++;
+				} else if (countIndex2 < indexes2.size()) {
+					if (indexes2.get(countIndex2)[0]<=indexes3.get(lastIndex3)[1]) {
+						if (indexes2.get(countIndex2)[1]>indexes3.get(lastIndex3)[1]) {
+							indexes3.set(lastIndex3,new Integer[] {indexes3.get(lastIndex3)[0],indexes2.get(countIndex2)[1]});
+						}
+					} else {
+						indexes3.add(new Integer[] { indexes2.get(countIndex2)[0], indexes2.get(countIndex2)[1] });
+					}
+					countIndex2++;
+				} else {
+					break;
+				}
+			}
+		}
+		return indexes3;
+	}
+	
+	private static ArrayList<Integer[]> markWordIndex(String line, int[] wordsIndex) {
+		ArrayList<Integer[]> indexes2 = new ArrayList<Integer[]>();
+		String[] splitStr = line.trim().split("\\s+");
+
+		int countLetters=0;
+		int countWords=0;
+		int countMatches=0;
+		outer:
+		for (String s:splitStr) {
+			for (int i:wordsIndex) {
+				if (i==countWords) {
+					indexes2.add(new Integer[] {countLetters,countLetters+s.length()});
+					countMatches++;
+					if (countMatches==wordsIndex.length) {
+						break outer;
+					}
+				}
+			}
+			countLetters += s.length()+1;
+			countWords++;
+		}
+		return indexes2;
+	}
+	
 
 	public static String markText(String str, HtmlGenerator markupStyle) {
 		return markText(str, markupStyle, false);
@@ -290,7 +322,7 @@ public class Output {
 
 	public static String markText(String str, HtmlGenerator markupStyle, Boolean htmlTag) {
 		// Does not mark, if in console mode
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+		if (!ToraApp.isGui()) {
 			return str;
 		}
 		String html = (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
@@ -300,34 +332,87 @@ public class Output {
 		return html;
 	}
 
-	public static LineHtmlReport markTextOrderedLetters(String searchSTR, String line, Boolean bool_sofiot,
-			Boolean firstLast, stringFormat.HtmlGenerator htmlFormat) {
-		String lineConvert;
-		String searchConvert;
-		if (!bool_sofiot) {
-			searchConvert = HebrewLetters.switchSofiotStr(searchSTR);
-			lineConvert = HebrewLetters.switchSofiotStr(line);
-		} else {
-			searchConvert = searchSTR;
-			lineConvert = line;
-		}
+	public static LineHtmlReport markTextOrderedLettersInPasuk(String searchSTR, String line, Boolean bool_sofiot,
+			Boolean first, Boolean last, stringFormat.HtmlGenerator htmlFormat, int... wordsIndex) {
+		//searchSTR - will find letters ordered but scattered, and will mark first appearance
+		//wordsIndex - other words that should be marked.
+		String lineConvert = ToraApp.getHebrew(line, bool_sofiot);
+		String searchConvert = ToraApp.getHebrew(searchSTR, bool_sofiot);
 		int oldIndex = 0;
 		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
 		int indexCounter = 0;
+		//find scattered ordered letters
 		for (char ch : searchConvert.toCharArray()) {
-			if ((firstLast) && (indexCounter == (searchConvert.length() - 1))) {
-				int tempIndex = lineConvert.lastIndexOf(ch);
+			if ((last) && (indexCounter == (searchConvert.length() - 1))) {
+				//if searchConvert has only one letter
+				if ((first) && (searchConvert.length()==1)) {
+					//mark first
+					indexes.add(new Integer[] { 0, 1 });
+				}
+				//mark last
+				int tempIndex = lineConvert.length()-1;
 				indexes.add(new Integer[] { tempIndex, tempIndex + 1 });
 			} else {
 				int tempIndex = lineConvert.indexOf(ch, oldIndex);
 				indexes.add(new Integer[] { tempIndex, tempIndex + 1 });
 			}
 			if (indexes.get(indexCounter)[0] == -1) {
-				return new LineHtmlReport(line, null);
+				return new LineHtmlReport(line, line, null);
 			} else {
-				oldIndex = indexes.get(indexCounter++)[0];
+				oldIndex = indexes.get(indexCounter++)[0]+1;
 			}
 		}
+		//find words to mark
+		if ((wordsIndex!=null) && (wordsIndex.length>0)) {
+			//merge markIndexes
+			indexes = mergeMarkIndexes(indexes, markWordIndex(line,wordsIndex));
+		}
+		
+		//start marking
+		return new LineHtmlReport(createLineHtml(line, indexes, htmlFormat), line, indexes);
+	}
+
+	public static LineHtmlReport markTextUnOrderedLettersInPasuk(String searchSTR, String line, Boolean bool_sofiot,
+			Boolean first, Boolean last, stringFormat.HtmlGenerator htmlFormat, int... wordsIndex) {
+		//searchSTR - will find letters unOrdered but scattered, and will mark first appearance
+		//wordsIndex - other words that should be marked.
+		String lineConvert = ToraApp.getHebrew(line, bool_sofiot);
+		String searchConvert = ToraApp.getHebrew(searchSTR, bool_sofiot);
+		//find scattered unOrdered letters
+		//create letterMap
+		LetterCounter lCounter = new LetterCounter();
+		int indexCounter = 0;
+		for (char ch : searchConvert.toCharArray()) {
+			if 	(((!first) || (indexCounter!=0)) && ((!last) || (indexCounter != searchConvert.length()-1))) {
+				lCounter.addChar(ch);					
+			}
+			indexCounter++;
+		}
+		
+		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
+		indexCounter = 0;
+		for (char ch : lineConvert.toCharArray()) {
+			if (((first) && (indexCounter==0)) || 
+			((last) && (indexCounter == lineConvert.length()-1))) {
+				indexes.add(new Integer[] {indexCounter,indexCounter+1});
+			} else {
+				if (lCounter.findAndRemoveChar(ch)) {
+					indexes.add(new Integer[] {indexCounter,indexCounter+1});
+				}
+			}
+			indexCounter++;
+		}
+		//find words to mark
+		if ((wordsIndex!=null) && (wordsIndex.length>0)) {
+			//merge markIndexes
+			indexes = mergeMarkIndexes(indexes, markWordIndex(line,wordsIndex));
+		}
+		
+		//start marking
+		return new LineHtmlReport(createLineHtml(line, indexes, htmlFormat), line, indexes);
+	}
+
+	private static String createLineHtml(String line, ArrayList<Integer[]> indexes, HtmlGenerator htmlFormat) {
 		String lineHtml = "";
 		int lastIndex = 0;
 		for (Integer[] thisIndex : indexes) {
@@ -341,20 +426,16 @@ public class Output {
 			lastIndex = thisIndex[1];
 		}
 		lineHtml += line.substring(lastIndex);
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
-			return new LineHtmlReport(line, indexes);
-		} else {
-			return new LineHtmlReport(lineHtml, indexes);
-		}
+		return lineHtml;
 	}
-
+	
 	public static String printSomePsukimHtml(int lineNum, int padLines) {
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console || !Frame.getCheckBox_Tooltip()) {
+		if (!ToraApp.isGui() || !Frame.getCheckBox_Tooltip()) {
 			return "";
 		}
 		String line = "";
 		try (BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);) {
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);){
 			int firstLine = Math.max(0, lineNum - padLines - 1);
 			for (int i = 0; i < firstLine; i++) {
 				bReader.readLine();
@@ -393,7 +474,7 @@ public class Output {
 
 	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
 		// Does not mark, if in console mode
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+		if (!ToraApp.isGui()) {
 			return str;
 		}
 		String[] strArray = new String[] { "", "", "" };
@@ -404,18 +485,28 @@ public class Output {
 	}
 
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-			Boolean bool_sofiot, Boolean bool_wholeWords, String... searchSTR2) throws NoSuchFieldException {
-		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot, bool_wholeWords, -1, searchSTR2);
+			Boolean bool_sofiot1, Boolean bool_wholeWords) throws NoSuchFieldException {
+		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false,null);
 	}
 
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
-			Boolean bool_sofiot, Boolean bool_wholeWords, int index, String... searchSTR2) throws NoSuchFieldException {
+			Boolean bool_sofiot1, Boolean bool_wholeWords, Boolean bool_sofiot2, String searchSTR2) throws NoSuchFieldException {
+		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2);
+	}
+
+	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot1, Boolean bool_wholeWords, int index) throws NoSuchFieldException {
+		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false, null);
+	}
+	
+	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot1, Boolean bool_wholeWords, int index, Boolean bool_sofiot2, String searchSTR2) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-		LineHtmlReport lineHtmlReport = new LineHtmlReport("", new ArrayList<Integer[]>());
+		LineHtmlReport lineHtmlReport = new LineHtmlReport("","", new ArrayList<Integer[]>());
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" ";
-			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-				tempStr1 += " | \"" + markText(searchSTR2[0], markupStyle) + "\" ";
+			if (searchSTR2 != null) {
+				tempStr1 += " | \"" + markText(searchSTR2, markupStyle) + "\" ";
 			}
 			tempStr1 += "נמצא ב" + markText(
 					StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " " + pBookInstance.getPerekLetters()
@@ -423,13 +514,13 @@ public class Output {
 					ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
 							% ColorClass.highlightStyleHTML.length]);
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
-			if ((searchSTR2 != null) && (searchSTR2.length > 0)) {
-				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index,
-						searchSTR2[0]);
+			if (searchSTR2 != null) {
+				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot1, bool_wholeWords, index,
+						bool_sofiot2, searchSTR2);
 			} else {
-				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot, bool_wholeWords, index);
+				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot1, bool_wholeWords, index);
 			}
-			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml();
+			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml(ToraApp.isGui());
 			printText(outputText, 0);
 			String tooltip = printSomePsukimHtml(countLines, padLines);
 			printText("טקסט נוסף",3,tooltip);
@@ -462,7 +553,7 @@ public class Output {
 		// mode 0 - TextPane
 		// mode 4 - TorahPane
 		String line = getLine(size, color);
-		if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+		if (ToraApp.isGui()) {
 			Frame.appendText(line, (byte) mode);
 		}
 	}
@@ -486,7 +577,7 @@ public class Output {
 		try {
 			String html = "<html><body style='width: " + width + "px'>" + frame.ColorClass.mainStyleHTML.getHtml(0)
 					+ text + frame.ColorClass.mainStyleHTML.getHtml(1) + getLine(1) + "</body></html>";
-			if (Frame.getCheckBox_DifferentSearch()) {
+			if (!Frame.isTorahSearch()) {
 				Tree.getInstance().addNodeCustom(html, isDilug);
 			} else {
 				Tree.getInstance().addNodeParasha(lineNum, html, isDilug);

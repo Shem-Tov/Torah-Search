@@ -34,7 +34,7 @@ public class Methods {
 	private static Map<Integer,String> arrayMethodTitle = new TreeMap<Integer,String>();
 	//private static List<Integer> arrayMethodID = new ArrayList<>();
 	public static void arrayMethodCreator() throws IOException {
-		getArrayMethodTitle().put(id_searchWords,"חיפוש מילים");
+		getArrayMethodTitles().put(id_searchWords,"חיפוש מילים");
 		arrayMethods.put(id_searchWords,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -42,7 +42,7 @@ public class Methods {
 				tora.searchWords(args);
 			}
 		});
-		getArrayMethodTitle().put(id_searchGimatria,"חיפוש גימטריה");
+		getArrayMethodTitles().put(id_searchGimatria,"חיפוש גימטריה");
 		arrayMethods.put(id_searchGimatria,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -50,14 +50,14 @@ public class Methods {
 				gim.searchGimatria(args);
 			}
 		});
-		getArrayMethodTitle().put(id_calculateGimatria,"חישוב גימטריה");
+		getArrayMethodTitles().put(id_calculateGimatria,"חישוב גימטריה");
 		arrayMethods.put(id_calculateGimatria,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
 				Gimatria.callCalculateGimatria(args);
 			}
 		});
-		getArrayMethodTitle().put(id_searchDilugim,"חיפוש דילוגים");
+		getArrayMethodTitles().put(id_searchDilugim,"חיפוש דילוגים");
 		arrayMethods.put(id_searchDilugim,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -73,7 +73,7 @@ public class Methods {
 				dilug.searchDilugWordPasuk(args);
 			}
 		});
-		getArrayMethodTitle().put(id_searchLetters,"חיפוש אותיות");
+		getArrayMethodTitles().put(id_searchLetters,"חיפוש אותיות");
 		arrayMethods.put(id_searchLetters,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -81,7 +81,7 @@ public class Methods {
 				letter.searchForLetters(args);
 			}
 		});
-		getArrayMethodTitle().put(id_searchCount,"חיפוש הופעה ספציפית בתורה");
+		getArrayMethodTitles().put(id_searchCount,"חיפוש הופעה ספציפית בתורה");
 		arrayMethods.put(id_searchCount,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -89,14 +89,14 @@ public class Methods {
 				cSearch.searchByCount(args);
 			}
 		});
-		getArrayMethodTitle().put(id_settings,"אפשרויות");
+		getArrayMethodTitles().put(id_settings,"אפשרויות");
 		arrayMethods.put(id_settings,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
 				Menu.menuSettings();
 			}
 		});
-		getArrayMethodTitle().put(id_printTorah,"הדפסת תורה");
+		getArrayMethodTitles().put(id_printTorah,"הדפסת תורה");
 		arrayMethods.put(id_printTorah,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
@@ -124,7 +124,14 @@ public class Methods {
 			}
 		});
 	}
-	public static Map<Integer,String> getArrayMethodTitle() {
+	public static Map<Integer,String> getArrayMethodTitles() {
 		return arrayMethodTitle;
+	}
+	public static String getArrayMethodTitleString(int num) {
+		if (arrayMethodTitle.get(num)!=null) {
+			return arrayMethodTitle.get(num);
+		} else {
+			return "";
+		}
 	}
 }

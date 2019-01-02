@@ -14,6 +14,7 @@ import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
+import ioManagement.ManageIO.fileMode;
 import ioManagement.Output;
 import ioManagement.TorahLine;
 import stringFormat.StringAlignUtils;
@@ -69,11 +70,11 @@ public class Dilugim {
 		 */
 		BufferedReader bReader;
 		if (differentSearch) {
-			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Different);
+			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Different,false);
 		} else if (!foundPaddingFile) {
-			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Line);
+			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.Line,false);
 		} else {
-			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.NoTevot);
+			bReader = ManageIO.getBufferedReader(ManageIO.fileMode.NoTevot,false);
 		}
 
 		if (bReader == null) {
@@ -166,15 +167,15 @@ public class Dilugim {
 		int countAll = 0;
 		// Table.getInstance(true).newTable(true);
 		Boolean foundPaddingFile = true;
-		Boolean differentMode = Frame.getCheckBox_DifferentSearch();
+		Boolean differentMode = (Frame.getComboBox_DifferentSearch(null)==fileMode.Different);
 		// FileWriter outputStream2 = null;
-		BufferedReader bReader = ManageIO
-				.getBufferedReader((differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+		BufferedReader bReader = ManageIO.getBufferedReader(
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 		if (bReader == null) {
 			return;
 		}
-		BufferedReader tempReader = ManageIO
-				.getBufferedReader((differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.NoTevot);
+		BufferedReader tempReader = ManageIO.getBufferedReader(
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.NoTevot),false);
 		if (tempReader != null) {
 			try {
 				tempReader.close();
@@ -230,7 +231,7 @@ public class Dilugim {
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			if (!ToraApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
 				Tree.getInstance().changeRootText(Output.markText(searchConvert, ColorClass.headerStyleHTML));
@@ -250,11 +251,11 @@ public class Dilugim {
 						}
 					}
 					ArrayList<LineReport> results = new ArrayList<LineReport>();
-					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					if (ToraApp.isGui()) {
 						frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
 					}
-					inputStream = ManageIO
-							.getBufferedReader((differentMode) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+					inputStream = ManageIO.getBufferedReader(
+							Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 					inputStream.mark(markInt);
 					ArrayList<ArrayList<Integer[]>> resArray = new ArrayList<ArrayList<Integer[]>>();
 					int indexResArray = -1;
@@ -295,7 +296,7 @@ public class Dilugim {
 						lastCharIndex = (searchIndex == 0) ? 0 : lastCharIndex + 1;
 						charPOS++;
 						countChar++;
-						if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
+						if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 							frame.SwingActivity.getInstance().callProcess(countLines, thisDilug, minDilug, maxDilug);
 						}
 						if ((searchIndex == 0) || (lastCharIndex % thisDilug == 0)) {
@@ -326,7 +327,7 @@ public class Dilugim {
 								if (searchIndex == searchConvert.length()) {
 									count++;
 									countAll++;
-									if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+									if (ToraApp.isGui()) {
 										frame.Frame.setLabel_countMatch("נמצא " + countAll + " פעמים");
 									}
 									if (count == 1) {
@@ -336,7 +337,7 @@ public class Dilugim {
 												frame.ColorClass.headerStyleHTML));
 
 										// Output.printText("");
-										if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+										if (!ToraApp.isGui()) {
 											Output.printText(
 													StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 										} else {
@@ -401,7 +402,7 @@ public class Dilugim {
 											: "";
 									Output.printText(treeString2);
 									treeString += treeString2;
-									if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+									if (ToraApp.isGui()) {
 										Output.printTree(resArray.get(0).get(0)[0], treeString, true);
 									}
 									Output.printLine(1);
@@ -427,7 +428,7 @@ public class Dilugim {
 								countChar = backup_countChar;
 							}
 						}
-						if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)
+						if ((ToraApp.isGui())
 								&& (frame.Frame.getMethodCancelRequest())) {
 							maxDilug = thisDilug;
 							Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
@@ -458,12 +459,12 @@ public class Dilugim {
 					}
 					if (count > 0) {
 						ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, Title2, Title3, searchSTR,
-								((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText()
+								((ToraApp.isGui()) ? Frame.get_searchRangeText()
 										: ""));
 					}
 				}
 			}
-			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+			if ((ToraApp.isGui())) {
 				Tree.getInstance().flushBuffer((countAll < 50), true);
 				// Table.getInstance(true).updateTableDimensions(true,Frame.getTabbedPaneWidth());
 			}

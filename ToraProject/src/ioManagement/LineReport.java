@@ -16,11 +16,11 @@ public class LineReport {
 			line=r;
 			indexes=i;
 		}
-		ArrayList<Integer[]> getIndexesOfLine(){
+		public ArrayList<Integer[]> getIndexesOfLine(){
 			return indexes;
 		}
 		
-		String[] getLine() {
+		public String[] getLine() {
 			return line;
 		}
 	}

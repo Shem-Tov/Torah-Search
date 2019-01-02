@@ -1,12 +1,21 @@
 package torahApp;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import console.Methods;
+import frame.ColorClass;
 import frame.Frame;
+import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.LineHtmlReport;
+import ioManagement.LineReport;
+import ioManagement.ManageIO;
+import ioManagement.Output;
 import ioManagement.PropStore;
+import stringFormat.StringAlignUtils;
 
 //import java.util.Formatter;
 //import java.util.Locale;
@@ -26,7 +35,7 @@ public class ToraApp {
 	public static final String ToraLineFile = resourceFolder + "Lines.txt";
 	public static final String ToraLetterFile = resourceFolder + "NoTevot.txt";
 	public static final String ToraTables = resourceFolder + "TorahTables.xls";
-	
+
 	public static String subTorahTableFile = "";
 	public static String subTorahLineFile = "";
 	public static String subTorahLetterFile = "";
@@ -38,7 +47,7 @@ public class ToraApp {
 
 	private static char[] hLetters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע',
 			'פ', 'צ', 'ק', 'ר', 'ש', 'ת' };
-	
+
 	// static char[] endLetters = { 'ך', 'ם', 'ן', 'ף', 'ץ' };
 	static char[] otherLetters = { '-' };
 	// tablePerekBooks
@@ -52,17 +61,20 @@ public class ToraApp {
 	public static String[][] tablePerekParashot;
 	public static String[] bookNames = { "בראשית", "שמות", "ויקרא", "במדבר", "דברים" };
 
-	
 	public static void starter() throws IOException {
 		PropStore.load();
 		Methods.arrayMethodCreator();
 		// There are identical calls like this, one here the another in
 		// frame.PopupTextMenu())
-		tablePerekBooks = ExcelFunctions
-				.readBookTableXLS(new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 0, 0, 1, 6, 53);
+		tablePerekBooks = ExcelFunctions.readBookTableXLS(
+				new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 0, 0, 1, 6, 53);
 		pereksPerBook = getPereksPerBook(tablePerekBooks);
-		tablePerekParashot = ExcelFunctions
-				.readBookTableXLS(new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 1, 0, 1, 2, 56);
+		tablePerekParashot = ExcelFunctions.readBookTableXLS(
+				new String[] { ToraTables, PropStore.map.get(PropStore.subTorahTablesFile) }, 1, 0, 1, 2, 56);
+	}
+
+	public static Boolean isGui() {
+		return (ToraApp.guiMode == id_guiMode_Frame);
 	}
 
 	public static String cSpace() {
@@ -78,143 +90,295 @@ public class ToraApp {
 		return str;
 	}
 
+	public static String getTorahLine(int lineNum) {
+		String line = "";
+		try (BufferedReader bReader2 = ManageIO.getBufferedReader(
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
+				Stream<String> lines = bReader2.lines()) {
+			// Recieves words of Pasuk
+			line = lines.skip(lineNum - 1).findFirst().get();
+			return line;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static String getTorahWord(int lineNum, int wordIndex) {
+		String line = "";
+		String[] splitStr;
+		try (BufferedReader bReader2 = ManageIO.getBufferedReader(
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
+				Stream<String> lines = bReader2.lines()) {
+			// Recieves words of Pasuk
+			line = lines.skip(lineNum - 1).findFirst().get();
+			splitStr = line.split("\\s+");
+			return splitStr[wordIndex];
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static String getHebrew(String string, Boolean bool_sofiot) {
+		if (!bool_sofiot) {
+			return HebrewLetters.switchSofiotStr(string);
+		} else {
+			return string;
+		}
+	}
+
+	public static LineReport returnBookInfo(String searchStringTitle, int countLines, LineHtmlReport lineHtmlReport) {
+		perekBookInfo pBookInstance;
+		try {
+			pBookInstance = findPerekBook(countLines);
+			String tempStr1 = "\u202B" + "\"" + Output.markText(searchStringTitle, frame.ColorClass.markupStyleHTML)
+					+ "\" " + "נמצא ב"
+					+ Output.markText(
+							StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
+									+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters(),
+							ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
+									% ColorClass.highlightStyleHTML.length]);
+			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
+			String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    "
+					+ lineHtmlReport.getLineHtml(ToraApp.isGui());
+			Output.printText(tempStr2);
+			String tooltip = Output.printSomePsukimHtml(countLines, Output.padLines);
+			Output.printText("טקסט נוסף", 3, tooltip);
+			if (ToraApp.isGui()) {
+				Output.printTree(countLines, tempStr2, false);
+			}
+			return new LineReport(new String[] { searchStringTitle, pBookInstance.getBookName(),
+					pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), lineHtmlReport.getLine() },
+					lineHtmlReport.getIndexes());
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	// This should be used to find a Book Name in Static Context
 	public static String[] getBookNames() {
 		return bookNames;
 	}
-	
-	//Return all the Parashot Names in Order of Appearance
+
+	// Return all the Parashot Names in Order of Appearance
 	public static String[] getParashaNames() {
 		return tablePerekParashot[0];
 	}
-	
-	// Find end of Line Count in Tora
-	public static int lookupLineEnd() {
-		return lookupLineNumberFromPerek(6,0);
+
+	private static int getBookNum(String str) throws NullPointerException {
+		//returns bookNum
+		int count = -1;
+		for (String name : bookNames) {
+			count++;
+			if (name.equals(str)) {
+				return count;
+			}
+		}
+		throw new NullPointerException(
+				"\"" + str + "\" is not one of the book names. run --book-names to see book names.");
+	}
+
+	private static int[] getPerekNum(String book, String str) throws NullPointerException {
+		//returns [bookNum,perekNum]
+		int bookNum = getBookNum(book);
+		ArrayList<String> pereks = getPerekArray(bookNum);
+		int count = -1;
+		for (String name : pereks) {
+			count++;
+			if (name.equals(str)) {
+				return new int[] { bookNum, count };
+			}
+		}
+		throw new NullPointerException("\"" + str + "\" is not one of the pereks in \"" + book
+				+ "\". Pereks in this book run from א to " + pereks.get(pereks.size() - 1));
+	}
+
+	private static int[] getPasukNum(String book, String perek, String str) throws NullPointerException {
+		//returns [bookNum,perekNum,pasukNum]
+		int[] nums = getPerekNum(book, perek);
+		int bookNum = nums[0];
+		int perekNum = nums[1];
+		ArrayList<String> pasuks = getPasukArray(bookNum, perekNum);
+		int count = -1;
+		for (String name : pasuks) {
+			count++;
+			if (name.equals(str)) {
+				return new int[] { bookNum, perekNum, count };
+			}
+		}
+		throw new NullPointerException("\"" + str + "\" is not one of the pasuks in \"" + book + " " + perek
+				+ "\". Pasuks in this perek run from א to " + pasuks.get(pasuks.size() - 1));
+	}
+
+	private static int getParashaNum(String str) throws NullPointerException {
+		//returns parashaNum
+		int count = -1;
+		for (String name : tablePerekParashot[0]) {
+			count++;
+			if (name.equals(str)) {
+				return count;
+			}
+		}
+		throw new NullPointerException(
+				"\"" + str + "\" is not one of the parasha names. run --parasha-names to see parasha names. \nUse quotations \"\" for parasha names that have spaces.");
 	}
 	
-	//Find Line Number of Start of Perek
-	public static int lookupLineNumberFromPerek(int bookNum, int perekNum) {
-		return lookupLineNumberFromPerek(bookNum,perekNum,0);
+	public static int getLineNumberFromParashaStrings(String parasha) throws NullPointerException {
+		int parashaNum = getParashaNum(parasha);
+		return lookupLineNumberFromParasha(parashaNum);
 	}
 	
-	//Find Line Number
-	public static int lookupLineNumberFromPerek(int bookNum, int perekNum, int pasukNum) {
-		if (bookNum==5) {
-			return Integer.parseInt(tablePerekBooks[bookNum][(tablePerekBooks[bookNum].length-1)]);
+	public static int getLineNumberFromBookStrings(String book, String perek, String pasuk) throws NullPointerException {
+		int[] nums;
+		int pasukNum = -1;
+		if ((pasuk != null) && (pasuk.length() > 0)) {
+			nums = getPasukNum(book, perek, pasuk);
+			pasukNum = nums[2];
 		} else {
-			return (Integer.parseInt(tablePerekBooks[bookNum+1][perekNum])+pasukNum);
+			nums = getPerekNum(book, perek);
+		}
+		int bookNum = nums[0];
+		int perekNum = nums[1];
+		if (pasukNum == -1) {
+			return lookupLineNumberFromPerek(bookNum, perekNum);
+		} else {
+			return lookupLineNumberFromPerek(bookNum, perekNum, pasukNum);
 		}
 	}
-	
+
+	// Find start of Line Count in Torah
+	public static int lookupLineStart() {
+		return lookupLineNumberFromPerek(0, 0,0);
+	}
+
+	// Find end of Line Count in Torah
+	public static int lookupLineEnd() {
+		return lookupLineNumberFromPerek(5, 0);
+	}
+
+	// Find Line Number of Start of Perek
+	public static int lookupLineNumberFromPerek(int bookNum, int perekNum) {
+		return lookupLineNumberFromPerek(bookNum, perekNum, 0);
+	}
+
+	// Find Line Number
+	public static int lookupLineNumberFromPerek(int bookNum, int perekNum, int pasukNum) {
+		if (bookNum == 5) {
+			return Integer.parseInt(tablePerekBooks[bookNum][(tablePerekBooks[bookNum].length - 1)]);
+		} else {
+			return (Integer.parseInt(tablePerekBooks[bookNum + 1][perekNum]) + pasukNum);
+		}
+	}
 
 	public static TorahPlaceClass checkStartBookParashaFromLineNum(int lineNum) {
-	  //return null if not start of book or parasha
-		//last book not checked, so last book is default (5)
-		int bookNum=5;
+		// return null if not start of book or parasha
+		// last book not checked, so last book is default (5)
+		int bookNum = 5;
 		lineNum--;
-		for (int i=1; i<6; i++) {
-			if (Integer.parseInt(tablePerekBooks[i][0])==lineNum) {
-				return new TorahPlaceClass(bookNames[i-1],true,true,true);
+		for (int i = 1; i < 6; i++) {
+			if (Integer.parseInt(tablePerekBooks[i][0]) == lineNum) {
+				return new TorahPlaceClass(bookNames[i - 1], true, true, true);
 			}
-			if (Integer.parseInt(tablePerekBooks[i][0])>lineNum) {
-				bookNum = i-1;
+			if (Integer.parseInt(tablePerekBooks[i][0]) > lineNum) {
+				bookNum = i - 1;
 				break;
 			}
 		}
-		for (int i=0; i<tablePerekParashot[0].length; i++) {
-			if (Integer.parseInt(tablePerekParashot[1][i])==lineNum) {
-				return new TorahPlaceClass(tablePerekParashot[0][i],false,true,true);
+		for (int i = 0; i < tablePerekParashot[0].length; i++) {
+			if (Integer.parseInt(tablePerekParashot[1][i]) == lineNum) {
+				return new TorahPlaceClass(tablePerekParashot[0][i], false, true, true);
 			}
-			if (Integer.parseInt(tablePerekParashot[1][i])>lineNum) {
+			if (Integer.parseInt(tablePerekParashot[1][i]) > lineNum) {
 				break;
 			}
 		}
 		// Name of Perek is not returned
-		for (int i=1; i<tablePerekBooks[bookNum].length; i++) {
-			if (Integer.parseInt(tablePerekBooks[bookNum][i])==lineNum) {
-				return new TorahPlaceClass(null,false,true,false);
+		for (int i = 1; i < tablePerekBooks[bookNum].length; i++) {
+			if (Integer.parseInt(tablePerekBooks[bookNum][i]) == lineNum) {
+				return new TorahPlaceClass(null, false, true, false);
 			}
-			if (Integer.parseInt(tablePerekBooks[bookNum][i])>lineNum) {
+			if (Integer.parseInt(tablePerekBooks[bookNum][i]) > lineNum) {
 				break;
 			}
 		}
-		return new TorahPlaceClass(null,false,false,false);
-	}
-	
-	//Find Book Perek Pasuk from Line Number
-	public static String lookupTorahPositionFromLineNumber(int lineNum) {
-		//last book not checked, so last book is default (5)
-		lineNum--;
-		int bookNum=5;
-		//all pereks are checked, this has been initialized arbitrarily
-		int perekNum=0;
-		int pasukNum=0;
-		for (int i=2; i<6; i++) {
-			if (Integer.parseInt(tablePerekBooks[i][0])>lineNum) {
-				bookNum = i-1;
-				break;
-			}
-		}
-		for (int i=1; i<tablePerekBooks[bookNum].length; i++) {
-			if (Integer.parseInt(tablePerekBooks[bookNum][i])>lineNum) {
-				perekNum = i-1;
-				break;
-			}
-		}
-		pasukNum = lineNum-Integer.parseInt(tablePerekBooks[bookNum][perekNum])+1;
-		perekNum++;
-		return perekBookInfo.findLetters(perekNum) + ":" +
-			perekBookInfo.findLetters(pasukNum);
+		return new TorahPlaceClass(null, false, false, false);
 	}
 
-	
-	//Find Parasha Name from Line Number
+	// Find Book Perek Pasuk from Line Number
+	public static String lookupTorahPositionFromLineNumber(int lineNum, Boolean withBookName) {
+		// last book not checked, so last book is default (5)
+		lineNum--;
+		int bookNum = 5;
+		// all pereks are checked, this has been initialized arbitrarily
+		int perekNum = 0;
+		int pasukNum = 0;
+		for (int i = 2; i < 6; i++) {
+			if (Integer.parseInt(tablePerekBooks[i][0]) > lineNum) {
+				bookNum = i - 1;
+				break;
+			}
+		}
+		for (int i = 1; i < tablePerekBooks[bookNum].length; i++) {
+			if (Integer.parseInt(tablePerekBooks[bookNum][i]) > lineNum) {
+				perekNum = i - 1;
+				break;
+			}
+		}
+		pasukNum = lineNum - Integer.parseInt(tablePerekBooks[bookNum][perekNum]) + 1;
+		perekNum++;
+		return ((withBookName) ? bookNames[bookNum - 1] + " " : "") + perekBookInfo.findLetters(perekNum) + ":"
+				+ perekBookInfo.findLetters(pasukNum);
+	}
+
+	// Find Parasha Name from Line Number
 	public static int lookupParashaIndexFromLine(int line) {
-		int index=0;
-		//System.out.println(line);
-		for (String s:tablePerekParashot[1]) {
-			if (line<=Integer.parseInt(s)) {
-				return (index-1);
+		int index = 0;
+		// System.out.println(line);
+		for (String s : tablePerekParashot[1]) {
+			if (line <= Integer.parseInt(s)) {
+				return (index - 1);
 			}
 			index++;
 		}
 		return -1;
 	}
-	
-	//Find Line Number
+
+	// Find Line Number
 	public static int lookupLineNumberFromParasha(int parasha) {
-		//System.out.println(tablePerekParashot[1][parasha]);
+		// System.out.println(tablePerekParashot[1][parasha]);
 		return Integer.parseInt(tablePerekParashot[1][parasha]);
 	}
-	
-	public static ArrayList<String> getPasukArray(int bookIndex,int perekIndex) {
+
+	public static ArrayList<String> getPasukArray(int bookIndex, int perekIndex) {
 		ArrayList<String> pasukArray = new ArrayList<String>();
-		String thisPasukCountLineCount = tablePerekBooks[bookIndex+1][perekIndex];
+		String thisPasukCountLineCount = tablePerekBooks[bookIndex + 1][perekIndex];
 		String nextPasukCountLineCount;
-		int perekCount=0;
-		if (tablePerekBooks[bookIndex+1].length>(perekIndex+1)) {
-			nextPasukCountLineCount = tablePerekBooks[bookIndex+1][perekIndex+1];
+		int perekCount = 0;
+		if (tablePerekBooks[bookIndex + 1].length > (perekIndex + 1)) {
+			nextPasukCountLineCount = tablePerekBooks[bookIndex + 1][perekIndex + 1];
 			if (nextPasukCountLineCount.equals(thisPasukCountLineCount)) {
-				nextPasukCountLineCount = tablePerekBooks[bookIndex+2][0];
+				nextPasukCountLineCount = tablePerekBooks[bookIndex + 2][0];
 			}
-			perekCount=Integer.parseInt(nextPasukCountLineCount)-Integer.parseInt(thisPasukCountLineCount);
+			perekCount = Integer.parseInt(nextPasukCountLineCount) - Integer.parseInt(thisPasukCountLineCount);
 		}
-		for (int i=1; i<=perekCount;i++) {
+		for (int i = 1; i <= perekCount; i++) {
 			pasukArray.add(perekBookInfo.findLetters(i));
 		}
 		return pasukArray;
 	}
-	
-	//Get array of Chapters for Book
+
+	// Get array of Chapters for Book
 	public static ArrayList<String> getPerekArray(int bookIndex) {
 		ArrayList<String> perekArray = new ArrayList<String>();
-		for (int i=0; i<pereksPerBook[bookIndex];i++) {
+		for (int i = 0; i < pereksPerBook[bookIndex]; i++) {
 			perekArray.add(tablePerekBooks[0][i]);
 		}
 		return perekArray;
 	}
-	
+
 	public static byte getGuiMode() {
 		return guiMode;
 	}
@@ -261,7 +425,7 @@ public class ToraApp {
 		}
 
 		public perekBookInfo(int bookNum, String pLetters, int pasukNum) {
-			if (bookNum==-1) {
+			if (bookNum == -1) {
 				bookNumber = 6;
 				bookName = "";
 				perekLetters = "שורה #";
@@ -282,7 +446,7 @@ public class ToraApp {
 		public int getBookNumber() {
 			return bookNumber;
 		}
-		
+
 		public String getPerekLetters() {
 			return perekLetters;
 		}
@@ -294,8 +458,8 @@ public class ToraApp {
 
 	public static perekBookInfo findPerekBook(int lineNum) throws NoSuchFieldException {
 		int oldI, oldJ;
-		if (Frame.getCheckBox_DifferentSearch()) {
-			return new perekBookInfo(-1,"",lineNum);
+		if (!Frame.isTorahSearch()) {
+			return new perekBookInfo(-1, "", lineNum);
 		}
 		if (!ExcelFunctions.tableLoaded) {
 			throw new NoSuchFieldException(
@@ -324,21 +488,17 @@ public class ToraApp {
 		}
 		return null;
 	}
-/*
-	public static void main(String[] args) throws IOException {
-		// findFirstLetters();
-		// findWords();
-		ToraApp.setGuiMode(ToraApp.id_guiMode_Console);
-		starter();
-		Console.menu();
-		Output.printText("Program Exited...");
+	/*
+	 * public static void main(String[] args) throws IOException { //
+	 * findFirstLetters(); // findWords();
+	 * ToraApp.setGuiMode(ToraApp.id_guiMode_Console); starter(); Console.menu();
+	 * Output.printText("Program Exited...");
+	 * 
+	 * // printText("One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve
+	 * // Thirteen Fourteen Fifteen Sixteen Seventeen Eighteen Nineteen Twenty //
+	 * TwentyOne TwentyTwo"); }
+	 */
 
-		// printText("One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve
-		// Thirteen Fourteen Fifteen Sixteen Seventeen Eighteen Nineteen Twenty
-		// TwentyOne TwentyTwo");
-	}
-*/
-	
 	public static char[] getHLetters() {
 		return hLetters;
 	}

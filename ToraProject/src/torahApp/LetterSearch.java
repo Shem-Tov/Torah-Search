@@ -11,10 +11,12 @@ import frame.Frame;
 import frame.Tree;
 import hebrewLetters.HebrewLetters;
 import ioManagement.ExcelFunctions;
+import ioManagement.LastSearchClass;
 import ioManagement.LineHtmlReport;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
 import ioManagement.Output;
+import ioManagement.ManageIO.fileMode;
 import stringFormat.StringAlignUtils;
 
 public class LetterSearch {
@@ -54,17 +56,27 @@ public class LetterSearch {
 		return foundMatch;
 	}
 
-	private Boolean containsOrderOfLetters(String line, String searchSTR) {
+	private Boolean containsOrderOfLetters(String line, String searchSTR, Boolean exactSpaces) {
 		Boolean found = true;
 		int oldIndex = 0;
 		int index = -1;
+		int countCh = -1;
 		for (char ch : searchSTR.toCharArray()) {
+			countCh++;
 			index = line.indexOf(ch, oldIndex);
 			if (index == -1) {
 				found = false;
 				break;
 			} else {
-				oldIndex = index;
+				// if exactSpaces, do if not a space and not first char
+				if ((exactSpaces) && (countCh > 0) && (ch != ' ')) {
+					if (line.indexOf(' ', oldIndex) < index) {
+						found = false;
+						break;
+					}
+					;
+				}
+				oldIndex = index + 1;
 			}
 		}
 		return found;
@@ -72,29 +84,61 @@ public class LetterSearch {
 
 	public void searchForLetters(Object[] args) {
 		ArrayList<LineReport> results = new ArrayList<LineReport>();
+		LastSearchClass searchRecord = new LastSearchClass();
 		// String[][] results=null;
 		BufferedReader inputStream = null;
-		String searchSTR;
-		String searchConvert;
+		String searchSTR, searchSTR2 = "";
+		String searchConvert, searchConvert2 = "";
 		// modePsukim - false = checks letters in words
 		// true = checks letters in psukim
-		boolean modePsukim = false;
+		int mode = 0;
+		// mode = 0 Words - Single
+		// mode = 1 Words - Multiple
+		// mode = 2 Psukim
 		int[] searchRange;
-		boolean bool_sofiot;
-		boolean bool_keepOrder = false;
-		boolean bool_firstLastLetters = false;
+		boolean bool_sofiot1 = false, bool_sofiot2 = false;
+		boolean bool_keepOrder1 = false, bool_keepOrder2 = false;
+		boolean bool_first1 = false, bool_last1 = false;
+		boolean bool_first2 = false, bool_last2 = false;
+		boolean bool_exact_spaces = false;
 		// FileWriter outputStream2 = null;
 		try {
 			if (args.length < 2) {
 				throw new IllegalArgumentException("Missing Arguments in LetterSearch.searchForLetters");
 			}
 			searchSTR = (String) args[0];
-			bool_sofiot = (args[1] != null) ? (Boolean) args[1] : true;
-			searchConvert = (!bool_sofiot) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
+			bool_sofiot1 = (args[1] != null) ? (Boolean) args[1] : true;
+			searchConvert = (!bool_sofiot1) ? HebrewLetters.switchSofiotStr(searchSTR) : searchSTR;
 			searchRange = (args[2] != null) ? (int[]) (args[2]) : (new int[] { 0, 0 });
-			modePsukim = (args[3] != null) ? (Boolean) args[3] : false;
-			bool_keepOrder = (args[4] != null) ? (Boolean) args[4] : false;
-			bool_firstLastLetters = (args[5] != null) ? (Boolean) args[5] : false;
+			mode = (args[3] != null) ? (int) args[3] : 0;
+			bool_keepOrder1 = (args[4] != null) ? (Boolean) args[4] : false;
+			bool_first1 = (args[5] != null) ? (Boolean) args[5] : false;
+			bool_last1 = (args[6] != null) ? (Boolean) args[6] : false;
+			bool_exact_spaces = (args[7] != null) ? (Boolean) args[7] : false;
+			if ((mode == 1) || (mode == 3)) {
+				searchSTR2 = (String) args[8];
+				bool_keepOrder2 = (args[9] != null) ? (Boolean) args[9] : false;
+				bool_first2 = (args[10] != null) ? (Boolean) args[10] : false;
+				bool_last2 = (args[11] != null) ? (Boolean) args[11] : false;
+				bool_sofiot2 = (args[12] != null) ? (Boolean) args[12] : true;
+				searchConvert2 = (!bool_sofiot2) ? HebrewLetters.switchSofiotStr(searchSTR2) : searchSTR2;
+				if (searchSTR2.contains(" ")) {
+					if (ToraApp.isGui()) {
+						frame.Frame.clearTextPane();
+					}
+					Output.printText("מילה 2 - לא ניתן לחפש עם רווחים", 1);
+					return;
+				}
+			}
+			if ((mode == 0) || (mode == 1)) {
+				if (searchSTR.contains(" ")) {
+					if (ToraApp.isGui()) {
+						frame.Frame.clearTextPane();
+					}
+					Output.printText("מילה 1 - לא ניתן לחפש עם רווחים", 1);
+					return;
+				}
+			}
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...", 1);
 			return;
@@ -104,11 +148,15 @@ public class LetterSearch {
 		}
 
 		Map<Character, Integer> searchMap = toMap(searchConvert);
+		Map<Character, Integer> searchMap2 = toMap(searchConvert2);
+		WordCounter wCounter = new WordCounter();
 		int countLines = 0;
 		int count = 0;
 
+		int countFileLines = -1;
+		fileMode fMode = Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line);
 		BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				fMode,true);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -125,139 +173,221 @@ public class LetterSearch {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "חיפוש אותיות"; 
+			String str = "\u202B" + "חיפוש אותיות";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
-			str = "\u202B" + "מחפש" + " \"" + searchSTR + "\"...";
+			str = "\u202B" + "מחפש" + " \"" + searchSTR + ((mode == 1) ? (" | " + searchSTR2) : "") + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			if (!ToraApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
-				Tree.getInstance().changeRootText(Output.markText(searchSTR, ColorClass.headerStyleHTML));
+				Tree.getInstance().changeRootText(Output.markText(searchSTR + ((mode == 1) ? (" | " + searchSTR2) : ""),
+						ColorClass.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 			}
 			// System.out.println(formatter.locale());
 			while ((line = inputStream.readLine()) != null) {
-				countLines++;
+				switch (fMode) {
+				case LastSearch:
+					countFileLines++;
+					countLines = LastSearchClass.getStoredLineNum(countFileLines);
+					break;
+				default:
+					countLines++;
+				}
+
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
+				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 
-				if (searchSTR.contains(" ")) {
-					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-						frame.Frame.clearTextPane();
-					}
-					Output.printText("לא ניתן לחפש עם רווחים", 1);
-					if (inputStream != null) {
-						inputStream.close();
-					}
-					return;
-				}
 				String[] splitStr;
-				if (modePsukim) {
+				switch (mode) {
+				case 2:
+				case 3:
 					splitStr = new String[1];
 					splitStr[0] = line.trim();
-				} else {
+					break;
+				default:
+					bool_exact_spaces = false;
 					splitStr = line.trim().split("\\s+");
 				}
-				for (String s : splitStr) {
+				for (int i = 0; i < splitStr.length; i++) {
+					String s1 = splitStr[i];
 					// Do your stuff here
 					String sConvert;
-					if (!bool_sofiot) {
-						sConvert = HebrewLetters.switchSofiotStr(s);
-					} else {
-						sConvert = s;
-					}
-					if ((bool_firstLastLetters) && ((searchConvert.charAt(0) != sConvert.charAt(0))
-							|| (!searchConvert.substring(searchConvert.length() - 1)
+					sConvert = ToraApp.getHebrew(s1, bool_sofiot1);
+					if (((bool_first1) && (searchConvert.charAt(0) != sConvert.charAt(0)))
+							|| ((bool_last1) && (!searchConvert.substring(searchConvert.length() - 1)
 									.equals(sConvert.substring(sConvert.length() - 1))))) {
 						continue;
 					}
-					if (((!bool_keepOrder) && (containsLetters(sConvert, searchMap)))
-							|| ((bool_keepOrder) && containsOrderOfLetters(sConvert, searchConvert))) {
-						count++;
-						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-							frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
-						}
+					// checks first last letters only of first text
+					// when mode is not 1 (word-multi)
+					if (((!bool_keepOrder1) && (containsLetters(sConvert, searchMap))) || ((bool_keepOrder1)
+							&& containsOrderOfLetters(sConvert, searchConvert, bool_exact_spaces))) {
+						// Do nothing because first and last letters do not match
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
-						if (modePsukim) {
-							ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
-							String tempStr1 = "\u202B" + "\""
-									+ Output.markText(searchSTR, frame.ColorClass.markupStyleHTML) + "\" " + "נמצא ב"
-									+ Output.markText(StringAlignUtils.padRight(pBookInstance.getBookName(), 6) + " "
-											+ pBookInstance.getPerekLetters() + ":" + pBookInstance.getPasukLetters(),
-											ColorClass.highlightStyleHTML[pBookInstance.getBookNumber()
-													% ColorClass.highlightStyleHTML.length]);
-							// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
-							String lineHtml;
-							LineHtmlReport lineHtmlReport = new LineHtmlReport(null, null);
-							if (bool_keepOrder) {
-								lineHtmlReport = Output.markTextOrderedLetters(searchSTR, line, bool_sofiot,
-										bool_firstLastLetters, frame.ColorClass.markupStyleHTML);
-								lineHtml = lineHtmlReport.getLineHtml();
+						switch (mode) {
+						case 0:
+							count++;
+							if (ToraApp.isGui()) {
+								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							}
+							wCounter.addWord(s1);
+							results.add(Output.printPasukInfo(countLines, s1, line, frame.ColorClass.markupStyleHTML,
+									bool_sofiot1, true));
+							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
+							break;
+						case 1:
+						case 3:
+							String[] splitStr2;
+							splitStr2 = line.trim().split("\\s+");
+							for (int j = 0; j < splitStr2.length; j++) {
+								String s2 = splitStr2[j];
+								// Do your stuff here
+								String sConvert2;
+								sConvert2 = ToraApp.getHebrew(s2, bool_sofiot2);
+								if (((bool_first2) && (searchConvert2.charAt(0) != sConvert2.charAt(0)))
+										|| ((bool_last2) && (!searchConvert2.substring(searchConvert2.length() - 1)
+												.equals(sConvert2.substring(sConvert2.length() - 1))))) {
+									continue;
+								}
+								if (((!bool_keepOrder2) && (containsLetters(sConvert2, searchMap2)))
+										|| ((bool_keepOrder2)
+												&& containsOrderOfLetters(sConvert2, searchConvert2, false))) {
+									count++;
+									if (ToraApp.isGui()) {
+										frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+									}
+									wCounter.addWord(s2);
+									switch (mode) {
+									case 1:
+										wCounter.addWord(s1);
+										results.add(Output.printPasukInfo(countLines, s1, line,
+												frame.ColorClass.markupStyleHTML, bool_sofiot1, true, bool_sofiot2,
+												s2));
+										searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
+										break;
+									case 3:
+										LineHtmlReport lineHtmlReport = new LineHtmlReport(null, null, null);
+										if (bool_keepOrder1) {
+											lineHtmlReport = Output.markTextOrderedLettersInPasuk(searchSTR, line,
+													bool_sofiot1, bool_first1, bool_last1,
+													frame.ColorClass.markupStyleHTML, j);
+										} else {
+											lineHtmlReport = Output.markTextUnOrderedLettersInPasuk(searchSTR, line,
+													bool_sofiot1, bool_first1, bool_last1,
+													frame.ColorClass.markupStyleHTML, j);
+										}
+										results.add(ToraApp.returnBookInfo(searchSTR, countLines, lineHtmlReport));
+										searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
+										break;
+									}
+
+								}
+							}
+							break;
+						case 2:
+							count++;
+							if (ToraApp.isGui()) {
+								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
+							}
+							LineHtmlReport lineHtmlReport = new LineHtmlReport(null, null, null);
+							if (bool_keepOrder1) {
+								lineHtmlReport = Output.markTextOrderedLettersInPasuk(searchSTR, line, bool_sofiot1,
+										bool_first1, bool_last1, frame.ColorClass.markupStyleHTML);
 							} else {
-								lineHtml = line;
+								lineHtmlReport = Output.markTextUnOrderedLettersInPasuk(searchSTR, line, bool_sofiot1,
+										bool_first1, bool_last1, frame.ColorClass.markupStyleHTML);
 							}
-							String tempStr2 = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtml;
-							Output.printText(tempStr2);
-							results.add(new LineReport(
-									new String[] { searchSTR, pBookInstance.getBookName(),
-											pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), line },
-									lineHtmlReport.getIndexes()));
-							String tooltip = Output.printSomePsukimHtml(countLines, Output.padLines);
-							Output.printText("טקסט נוסף", 3, tooltip);
-							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
-								Output.printTree(countLines, tempStr2, false);
-							}
-						} else {
-							results.add(Output.printPasukInfo(countLines, s, line, frame.ColorClass.markupStyleHTML,
-									bool_sofiot, true));
+							results.add(ToraApp.returnBookInfo(searchSTR, countLines, lineHtmlReport));
+							searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
+							break;
 						}
 					}
 				}
-
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
+				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
 			}
-			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+			if ((ToraApp.isGui())) {
 				Tree.getInstance().flushBuffer((count < 50));
 			}
+			String fileName ="";
+			if (fMode==fileMode.LastSearch) {
+				fileName += "CUSTOM_";
+			}
+			fileName += "LT_" + searchSTR.replace(' ', '_');
 			String Title = ("חיפוש אותיות במילים בתורה");
 			String Title2 = "";
 			String Title3 = "";
 			String Title4 = "";
-			String fileName = "LT_" + searchSTR.replace(' ', '_');
+			String Title5 = "";
+			String Title6 = "";
+			String Title7 = "";
+			String Title8 = "";
 			String sheet = "";
-			if (modePsukim) {
+			if (mode == 2) {
 				sheet += "פסוק";
 			} else {
 				sheet += "מילה";
 			}
-			if (bool_sofiot) {
-				sheet += "_" + "ף";
-				Title2 += "התחשבות בסופיות";
+			if (bool_sofiot1) {
+				sheet += "_" + "1ף";
+				Title2 += "התחשבות בסופיות 1";
 			}
-			if (bool_firstLastLetters) {
-				sheet += "_" + "רת";
-				Title3 += "התחשבות ראשי וסופי תיבות";
-
+			if (bool_first1) {
+				sheet += "_" + "1רת";
+				Title3 += "התחשבות ראש תיבה 1";
 			}
-			if (bool_keepOrder) {
-				sheet += "_" + "סדר";
-				Title4 += "שמירת סדר אותיות";
+			if (bool_last1) {
+				sheet += "_" + "1סת";
+				Title3 += "התחשבות סוף תיבה 1";
 			}
-
+			if (bool_keepOrder1) {
+				sheet += "_" + "1סדר";
+				Title4 += "שמירת סדר אותיות 1";
+			}
+			switch (mode) {
+			case 1:
+			case 3:
+				fileName += "_" + searchSTR2.replace(' ', '_');
+				if (bool_sofiot2) {
+					sheet += "_" + "2ף";
+					Title5 += "מילה 2 - התחשבות בסופיות";
+				}
+				if (bool_first2) {
+					sheet += "_" + "2רת";
+					Title6 += "2";
+				}
+				if (bool_last2) {
+					sheet += "_" + "2סת";
+					Title6 += "התחשבות סוף תיבה 2";
+				}
+				if (bool_keepOrder2) {
+					sheet += "_" + "2סדר";
+					Title7 += "מילה 2 - שמירת סדר אותיות";
+				}
+				break;
+			}
+			switch (mode) {
+			case 2:
+			case 3:
+				if (bool_exact_spaces) {
+					sheet += "_" + "רמ";
+					Title8 += "רווחים מדויקים בחיפוש פסוק";
+				}
+			}
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, searchSTR, Title2, Title3, Title4,
-						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, searchSTR, Title2, Title3, Title4, Title5,
+						Title6, Title7, Title8, ((ToraApp.isGui()) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
 
@@ -265,6 +395,8 @@ public class LetterSearch {
 			Output.printText("Error with at line " + countLines, 1);
 			e.printStackTrace();
 		} finally {
+			Output.printText("");
+			wCounter.printWords();
 			Output.printText("");
 			Output.printText(Output.markText(
 					"\u202B" + "נמצא " + "\"" + searchSTR + "\"" + "\u00A0" + String.valueOf(count) + " פעמים" + ".",

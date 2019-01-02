@@ -59,7 +59,7 @@ public class CountSearch {
 		int count = 0;
 
 		BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -73,7 +73,7 @@ public class CountSearch {
 			int searchSTRinLine2 = 0;
 			if ((!bool_wholeWords) && (searchConvert.contains(" "))) {
 				inputStream2 = ManageIO.getBufferedReader(
-						(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+						Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 				searchSTRinLine2 = searchConvert.length() - searchConvert.indexOf(' ');
 				// inputStream2.mark(640000);
 				line2 = inputStream2.readLine();
@@ -91,14 +91,14 @@ public class CountSearch {
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			if (!ToraApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
 				Tree.getInstance().changeRootText(Output.markText(searchSTR, ColorClass.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+			if (ToraApp.isGui()) {
 				frame.Frame.setLabel_countMatch("");
 				frame.SwingActivity.setFinalProgress(searchRange);
 			}
@@ -107,12 +107,12 @@ public class CountSearch {
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
+				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
-						if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+						if (ToraApp.isGui()) {
 							frame.Frame.clearTextPane();
 						}
 						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
@@ -177,12 +177,12 @@ public class CountSearch {
 						}
 					}
 				}
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
+				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
 			}
-			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+			if ((ToraApp.isGui())) {
 				Tree.getInstance().flushBuffer((count<50));
 			}
 		} catch (Exception e) {

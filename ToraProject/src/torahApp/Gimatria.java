@@ -10,8 +10,10 @@ import frame.ColorClass;
 import frame.Frame;
 import frame.Tree;
 import ioManagement.ExcelFunctions;
+import ioManagement.LastSearchClass;
 import ioManagement.LineReport;
 import ioManagement.ManageIO;
+import ioManagement.ManageIO.fileMode;
 import ioManagement.Output;
 import stringFormat.StringAlignUtils;
 
@@ -84,14 +86,17 @@ public class Gimatria {
 
 	public void searchGimatria(Object[] args) {
 		ArrayList<LineReport> results = new ArrayList<LineReport>();
+		LastSearchClass searchRecord = new LastSearchClass();
 		WordCounter wCounter = new WordCounter();
 		BufferedReader inputStream = null;
 		String searchSTR;
 		int[] searchRange;
 		boolean bool_wholeWords;
 		boolean bool_sofiot, bool_multi;
-		BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch())? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+
+		int countFileLines = -1;
+		fileMode fMode = Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line);
+		BufferedReader bReader = ManageIO.getBufferedReader(fMode, true);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -105,13 +110,13 @@ public class Gimatria {
 			bool_wholeWords = (Boolean) args[1];
 			bool_sofiot = (Boolean) args[2];
 			try {
-				searchRange = (args[3] != null) ?(int[])(args[3]) : (new int[] {0,0});
+				searchRange = (args[3] != null) ? (int[]) (args[3]) : (new int[] { 0, 0 });
 			} catch (ArrayIndexOutOfBoundsException e) {
-				searchRange = new int[] {0,0};
+				searchRange = new int[] { 0, 0 };
 			}
 			// checks multiple whole words
 			// only used if bool_wholeWords is true
-			bool_multi = (Boolean) args[4];
+			bool_multi = (args[4] != null) ? (Boolean) (args[4]) : false;
 
 		} catch (ClassCastException e) {
 			Output.printText("casting exception...");
@@ -145,7 +150,7 @@ public class Gimatria {
 			// \u202A - Left to Right Formatting
 			// \u202B - Right to Left Formatting
 			// \u202C - Pop Directional Formatting
-			String str = "\u202B" + "חיפוש גימטריה"; 
+			String str = "\u202B" + "חיפוש גימטריה";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			str = "\u202B" + "מחפש גימטריה " + " \"" + searchGmt + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
@@ -155,22 +160,29 @@ public class Gimatria {
 				Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.ColorClass.headerStyleHTML));
 			}
 			// Output.printText("");
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+			if (ToraApp.isGui()) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 				Output.printLine(Frame.lineHeaderSize);
-				Tree.getInstance().changeRootText(Output.markText(String.valueOf(searchGmt), ColorClass.headerStyleHTML));
+				Tree.getInstance()
+						.changeRootText(Output.markText(String.valueOf(searchGmt), ColorClass.headerStyleHTML));
 			} else {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			}
 			while ((line = inputStream.readLine()) != null) {
-				countLines++;
-				if ((searchRange[1]!=0) && 
-						((countLines<=searchRange[0]) ||
-								(countLines>searchRange[1]))) {
+				switch (fMode) {
+				case LastSearch:
+					countFileLines++;
+					countLines = LastSearchClass.getStoredLineNum(countFileLines);
+					break;
+				default:
+					countLines++;
+				}
+
+				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
+				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 				if (bool_wholeWords) {
@@ -178,30 +190,29 @@ public class Gimatria {
 					int startWordIndex = -1;
 					for (String s : splitStr) {
 						// Do your stuff here
-						String foundWords=s;
+						String foundWords = s;
 						startWordIndex++;
-						int counter=-1;
-						int countGimatria=0;
+						int counter = -1;
+						int countGimatria = 0;
 						do {
 							// finds multiple words in same pasuk, only if bool_multi is true
 							counter++;
-							String strtemp = splitStr[startWordIndex+counter];
+							String strtemp = splitStr[startWordIndex + counter];
 							countGimatria += calculateGimatria(strtemp, bool_sofiot);
-							if (counter>0) {
-								foundWords += " "+strtemp;
+							if (counter > 0) {
+								foundWords += " " + strtemp;
 							}
-						} while 
-							((countGimatria<searchGmt)
-									&& (bool_multi)
-									&& (counter+startWordIndex<splitStr.length-1));
-						if (searchGmt == countGimatria ) {
+						} while ((countGimatria < searchGmt) && (bool_multi)
+								&& (counter + startWordIndex < splitStr.length - 1));
+						if (searchGmt == countGimatria) {
 							count++;
-							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+							if (ToraApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							wCounter.addWord(foundWords);
-							results.add(Output.printPasukInfo(countLines, foundWords, line, frame.ColorClass.markupStyleHTML,
-									bool_sofiot, bool_wholeWords));
+							results.add(Output.printPasukInfo(countLines, foundWords, line,
+									frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
+							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 						}
 					}
 				} else {
@@ -214,25 +225,25 @@ public class Gimatria {
 						if (sumGimatria > searchGmt) {
 							while ((sumGimatria > searchGmt)
 									|| ((line.length() > lineCountStart) && (line.charAt(lineCountStart) == ' '))) {
-								sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart),
-										bool_sofiot);
+								sumGimatria -= calculateGimatriaLetter(line.charAt(lineCountStart), bool_sofiot);
 								lineCountStart += 1;
 							}
 						}
 						if ((sumGimatria == searchGmt)
 								&& ((line.length() > lineCountEnd) && (line.charAt(lineCountEnd) != ' '))) {
-							count ++;
-							if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+							count++;
+							if (ToraApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							String s = line.substring(lineCountStart, lineCountEnd);
 							wCounter.addWord(s);
 							results.add(Output.printPasukInfo(countLines, s, line, frame.ColorClass.markupStyleHTML,
 									bool_sofiot, bool_wholeWords));
+							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 						}
 					}
 				}
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
+				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					// break is redundant, because for loop will end anyway because maxDilug has
 					// changed to current loop index
@@ -244,26 +255,29 @@ public class Gimatria {
 			Output.printText("");
 			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
 			Output.printText("");
-			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
-				Tree.getInstance().flushBuffer((count<50));
+			if ((ToraApp.isGui())) {
+				Tree.getInstance().flushBuffer((count < 50));
 			}
-			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
+			if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 				Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 				// break is redundant, because for loop will end anyway because maxDilug has
 				// changed to current loop index
 			}
+			String fileName ="";
+			if (fMode==fileMode.LastSearch) {
+				fileName += "CUSTOM_";
+			}
+			fileName += String.valueOf(searchGmt);
 			String Title = ((bool_wholeWords) ? "גימטריה: מילים שלמות" : "גימטריה: צירוף אותיות");
-			String Title2="";
-			String fileName = String.valueOf(searchGmt);
+			String Title2 = "";
 			String sheet = ((bool_wholeWords) ? "מילים" : "אותיות");
 			if (bool_sofiot) {
-				sheet += "_"+"ף";
+				sheet += "_" + "ף";
 				Title2 += "התחשבות בסופיות";
 			}
 			if (count > 0) {
-				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, Title2,String.valueOf(searchGmt)
-						,((ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame)? Frame.get_searchRangeText():"")
-						);
+				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, Title2, String.valueOf(searchGmt),
+						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 			Output.printText("\u202B" + "סיים חיפוש");
 		} catch (Exception e) {

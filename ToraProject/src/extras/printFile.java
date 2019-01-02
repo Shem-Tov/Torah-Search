@@ -21,7 +21,8 @@ public class printFile {
 			bool_addInfo = true;
 		}
 		int countLines = 0;
-		BufferedReader br = ManageIO.getBufferedReader(ManageIO.fileMode.Line);
+		//change to false if you do not want to print lastSearch
+		BufferedReader br = ManageIO.getBufferedReader(ManageIO.fileMode.Line,true);
 		if (br == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -50,9 +51,9 @@ public class printFile {
 					}
 				}
 				Output.printText(
-						((bool_addInfo) ? ToraApp.lookupTorahPositionFromLineNumber(countLines) + " ":"")
+						((bool_addInfo) ? ToraApp.lookupTorahPositionFromLineNumber(countLines, false) + " ":"")
 						+ Output.markText(line, ColorClass.tooltipStyleHTML),4);
-				if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (frame.Frame.getMethodCancelRequest())) {
+				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק הדפסה באמצע", 1);
 					break;
 				}

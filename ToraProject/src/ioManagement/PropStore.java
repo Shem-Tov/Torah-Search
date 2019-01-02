@@ -17,15 +17,15 @@ public class PropStore {
 	private static final String fileName = ToraApp.resourceFolder + "config.properties";
 	public static Map<String, String> map = new HashMap<String, String>();
 	public static final String searchWord = "searchWord";
+	public static final String searchWord2 = "searchWord2";
 	public static final String bool_wholeWord = "bool_wholeWord";
 	public static final String searchGmt = "searchGmt";
 	public static final String bool_gimatriaSofiot = "bool_gimatriaSofiot";
 	public static final String bool_countPsukim = "count_psukim";
 	public static final String minDilug = "minDilug";
-	public static final String maxDilug = "maxDikug";
+	public static final String maxDilug = "maxDilug";
 	public static final String paddingDilug = "paddingDilug";
-	public static final String paddingSearchIndex = "paddingSearchIndex";
-	public static final String paddingSearchMulti = "paddingSearchMulti";
+	public static final String countSearchIndex = "countSearchIndex";
 	public static final String subTorahTablesFile = "subTorahTables";
 	public static final String subTorahLineFile = "subTorahLineFile";
 	public static final String subTorahLettersFile = "subTorahLettersFile";
@@ -38,8 +38,18 @@ public class PropStore {
 	public static final String bool_createExcel = "createExcel";
 	public static final String bool_createTree = "createTree";
 	public static final String bool_createDocument = "createDocument";
-	public static final String excelFolder = "excelFolder";
-	public static final String bool_letterOrder = "letterOrder";
+	public static final String dataFolder = "dataFolder";
+	public static final String bool_letterOrder1 = "letterOrder1";
+	public static final String bool_letterOrder2 = "letterOrder2";
+	public static final String bool_first1 = "first1";
+	public static final String bool_first2 = "first2";
+	public static final String bool_last1 = "last1";
+	public static final String bool_last2 = "last2";
+	public static final String mode_main_number = "mainMode";
+	public static final String mode_sub_letter = "subModeLetter";
+	public static final String mode_sub_search = "subModeSearch";
+	public static final String mode_sub_dilugim = "subModeDilugim";
+	public static final String bool_search_Multi = "searchMulti";
 	
 	public static void addNotNull(String key, String value) {
 		if (value != null) {

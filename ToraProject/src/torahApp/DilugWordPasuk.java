@@ -44,7 +44,7 @@ public class DilugWordPasuk {
 		int searchSTRcount = searchSTR.length();
 		ArrayList<String> arrayLines = new ArrayList<String>();
 		try (BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);) {
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);) {
 			// Recieves words of Pasuk
 			switch (mode) {
 			case 1:
@@ -149,7 +149,7 @@ public class DilugWordPasuk {
 		int countAll = 0;
 		// FileWriter outputStream2 = null;
 		BufferedReader bReader = ManageIO.getBufferedReader(
-				(Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different : ManageIO.fileMode.Line);
+				Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 		if (bReader == null) {
 			return;
 		}
@@ -212,7 +212,7 @@ public class DilugWordPasuk {
 			str = "\u202B" + "בין דילוג" + ToraApp.cSpace() + minDilug + " ו" + ToraApp.cSpace() + maxDilug + ".";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+			if (!ToraApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
 				Tree.getInstance().changeRootText(Output.markText(searchConvert, ColorClass.headerStyleHTML));
@@ -231,12 +231,11 @@ public class DilugWordPasuk {
 						}
 					}
 					ArrayList<LineReport> results = new ArrayList<LineReport>();
-					if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+					if (ToraApp.isGui()) {
 						frame.Frame.setLabel_dProgress("דילוג " + thisDilug);
 					}
-					inputStream = ManageIO
-							.getBufferedReader((Frame.getCheckBox_DifferentSearch()) ? ManageIO.fileMode.Different
-									: ManageIO.fileMode.Line);
+					inputStream = ManageIO.getBufferedReader(
+							Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),false);
 					inputStream.mark(markInt);
 					int countLines = 0; // counts line in Tora File
 					int wordIndex = 0;
@@ -269,7 +268,7 @@ public class DilugWordPasuk {
 								&& ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 							continue;
 						}
-						if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) && (countLines % 25 == 0)) {
+						if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 							frame.SwingActivity.getInstance().callProcess(countLines, thisDilug, minDilug, maxDilug);
 						}
 						String[] splitStr;
@@ -345,7 +344,7 @@ public class DilugWordPasuk {
 									if (searchIndex == searchConvert.length()) {
 										count++;
 										countAll++;
-										if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+										if (ToraApp.isGui()) {
 											frame.Frame.setLabel_countMatch("נמצא " + countAll + " פעמים");
 										}
 										if (count == 1) {
@@ -356,7 +355,7 @@ public class DilugWordPasuk {
 													frame.ColorClass.headerStyleHTML));
 
 											// Output.printText("");
-											if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Console) {
+											if (!ToraApp.isGui()) {
 												Output.printText(StringAlignUtils.padRight("", str.length() + 4)
 														.replace(' ', '-'));
 											} else {
@@ -419,7 +418,7 @@ public class DilugWordPasuk {
 														frame.ColorClass.markupStyleHTML);
 										Output.printText(treeString2);
 										treeString += treeString2;
-										if (ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) {
+										if (ToraApp.isGui()) {
 											Output.printTree(resArray.get(0).get(0)[0], treeString, true);
 										}
 										Output.printLine(1);
@@ -458,7 +457,7 @@ public class DilugWordPasuk {
 								}
 							}
 						}
-						if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)
+						if ((ToraApp.isGui())
 								&& (frame.Frame.getMethodCancelRequest())) {
 							maxDilug = thisDilug;
 							Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
@@ -513,12 +512,12 @@ public class DilugWordPasuk {
 
 					if (count > 0) {
 						ExcelFunctions.writeXLS(fileName, sheet, 2, Title, results, Title2, Title3, searchSTR,
-								((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText()
+								((ToraApp.isGui()) ? Frame.get_searchRangeText()
 										: ""));
 					}
 				}
 			}
-			if ((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame)) {
+			if ((ToraApp.isGui())) {
 				Tree.getInstance().flushBuffer((countAll < 50), true);
 			}
 			Output.printText("");

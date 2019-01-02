@@ -1,5 +1,4 @@
 package torahApp;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -16,7 +15,7 @@ public class WordCounter {
 		//Hashtable<String, Integer> map = new Hashtable<String, Integer>();
 	}
 	
-	public void printWords() throws IOException {
+	public void printWords() {
 		// Gets keys
 		Enumeration<String> e = map.keys();
         // Alphabetizes keys

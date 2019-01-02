@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
 import hebrewLetters.HebrewLetters;
+import ioManagement.Output;
 import ioManagement.PropStore;
 import stringFormat.CheckStrings;
 import stringFormat.StringAlignUtils;
+import torahApp.Gimatria;
 
 public class Menu {
 	static Scanner input = new Scanner(System.in);
@@ -17,8 +19,8 @@ public class Menu {
 		while (selection != 0) {
 			System.out.println("\nתפריט אפשרויות");
 			System.out.println("-------------------------");
-			for (Integer key : Methods.getArrayMethodTitle().keySet()) {
-				System.out.println(StringAlignUtils.padLeft(String.valueOf(key), 2) + " - " + Methods.getArrayMethodTitle().get(key));
+			for (Integer key : Methods.getArrayMethodTitles().keySet()) {
+				System.out.println(StringAlignUtils.padLeft(String.valueOf(key), 2) + " - " + Methods.getArrayMethodTitles().get(key));
 			}
 			System.out.println(StringAlignUtils.padLeft("0", 2) + " - יציאה");
 			System.out.println("---------------------------");
@@ -26,6 +28,7 @@ public class Menu {
 				selection = input.nextInt();
 				input.nextLine();
 				if (selection > 0) {
+					System.out.println(Methods.getArrayMethodTitleString(selection));
 					switch (selection) {
 					case Methods.id_searchWords:
 						args = menu_regular_search();
@@ -58,6 +61,9 @@ public class Menu {
 					}
 					try {
 						Methods.arrayMethods.get(selection).run(args);
+						System.out.println(Output.r2l()+"לחץ" +" ENTER "+"כדי להמשיך");
+						input.nextLine();
+						input.nextLine();
 					} catch (NullPointerException e) {
 						System.out.println("אין בחירה כזאת");
 					}
@@ -89,14 +95,18 @@ public class Menu {
 	}
 
 	public static Object[] menu_gimatria_search() {
-		Object[] args = new Object[3];
+		Object[] args = new Object[5];
 		String str;
 		do {
 			str = menu_getText("הקלד מילה בעברית או מספר לחיפוש", false);
 		} while (!HebrewLetters.checkHebrew(str) && !CheckStrings.isInteger(str));
 		args[0] = str;
-		args[1] = menu_getBoolean("חיפוש מילים שלמות?");
 		args[2] = menu_getBoolean("חישוב מיוחד לסופיות?");
+		System.out.println("המספר לחיפוש הוא:" + Gimatria.calculateGimatria(str, (boolean)args[2]));
+		args[1] = menu_getBoolean("חיפוש מילים שלמות?");
+		if ((Boolean) args[1]) {
+			args[4] = menu_getBoolean("לאפשר חיפוש עבור סכום כולל במספר מילים?");
+		}
 		return args;
 	}
 
@@ -123,12 +133,43 @@ public class Menu {
 	}
 
 	public static Object[] menu_letter_search() {
-		Object[] args = new Object[6];
-		args[0] = menu_getText("הקלד אותיות בעברית לחיפוש", true);
-		args[1] = menu_getBoolean("חישוב מיוחד לסופיות");
-		args[3] = !menu_getBoolean("לחייב הופעת אותיות במילה אחת (אם לא ההגבלה תהיה על הפסוק)?");
-		args[4] = menu_getBoolean("האם סדר האותיות חשוב?");
-		args[5] = menu_getBoolean("האם לחייב את האות הראשונה והאחרונה להתחיל ולסיים את המילה/פסוק?");
+		Object[] args = new Object[13];
+		MenuOptionClass mOptions = new MenuOptionClass(
+				"חיפוש מילה","חיפוש שני מילים","חיפוש פסוק",
+				"חיפוש פסוק ומילה");
+		args[3] = menu_getOption("בחירת סוג חיפוש אותיות", mOptions);
+		switch ((int)args[3]) {
+		case 0:
+		case 1:
+			args[0] = menu_getText("הקלד אותיות בעברית לחיפוש מילה", true);
+			args[1] = menu_getBoolean("חישוב מיוחד לסופיות למילה");
+			args[5] = menu_getBoolean("האם לחייב את האות הראשונה להתחיל את המילה?");
+			args[6] = menu_getBoolean("האם לחייב את האות האחרונה לסיים את המילה?");
+			break;
+		case 2:
+		case 3:
+			args[0] = menu_getText("הקלד אותיות בעברית לחיפוש בפסוק", true);
+			args[1] = menu_getBoolean("חישוב מיוחד לסופיות לפסוק");
+			args[5] = menu_getBoolean("האם לחייב את האות הראשונה להתחיל את הפסוק?");
+			args[6] = menu_getBoolean("האם לחייב את האות האחרונה לסיים את הפסוק?");
+			args[7] = menu_getBoolean("האם לחייב מספר רווחים מדויק בחיפוש בפסוק?");
+			break;
+		}
+		switch ((int)args[3]) {
+		case 0:
+		case 2:
+			args[4] = menu_getBoolean("האם סדר האותיות חשוב?");
+			break;
+		case 1:
+		case 3:
+			args[4] = menu_getBoolean("האם סדר האותיות חשוב?");
+			args[8] = menu_getText("הקלד אותיות בעברית לחיפוש מילה שניה", true);
+			args[12] = menu_getBoolean("חישוב מיוחד לסופיות למילה");
+			args[9] = menu_getBoolean("האם סדר האותיות חשוב?");
+			args[10] = menu_getBoolean("האם לחייב את האות הראשונה להתחיל את המילה?");
+			args[11] = menu_getBoolean("האם לחייב את האות האחרונה לסיים את המילה?");
+			break;
+		}
 		return args;
 	}
 
@@ -154,7 +195,7 @@ public class Menu {
 	public static String menu_getText(String message, Boolean forceHebrew) {
 		String str;
 		do {
-			System.out.println("\n" + message + ":");
+			System.out.println("\n"+ Output.r2l() + message + ":");
 			str = input.nextLine();
 		} while ((str.length() < 1) || ((forceHebrew) && !(HebrewLetters.checkHebrew(str))));
 		return str;
@@ -167,7 +208,7 @@ public class Menu {
 	public static int menu_getInteger(String message, int minimum) {
 		String str;
 		do {
-			System.out.println("\n(מספר) " + message + ":");
+			System.out.println("\n"+Output.r2l() +"(מספר) " + message + ":");
 			str = input.nextLine();
 		} while ((str.length() < 1) || !CheckStrings.isInteger(str)
 				|| ((minimum != -1) && ((Integer.parseInt(str)) < minimum)));
@@ -178,7 +219,7 @@ public class Menu {
 		Boolean bool = null;
 		char ch;
 		do {
-			System.out.println("\n" + message + " (כ)ן (ל)א:");
+			System.out.println("\n"+Output.r2l() + message + " (כ)ן (ל)א:");
 			ch = input.next().charAt(0);
 			switch (ch) {
 			case 'כ':
@@ -203,14 +244,14 @@ public class Menu {
 	public static int menu_getOption(String message,MenuOptionClass mOptions) {
 		int selection=0;
 		do {
-			System.out.println("\n"+message);
-			System.out.println("-------------------------");
+			System.out.println("\n"+Output.r2l()+message);
+			System.out.println(Output.r2l()+"-------------------------");
 			int i = 0;
 			for (String str : mOptions.getMessages()) {
 				i += 1;
 				System.out.println(StringAlignUtils.padLeft(String.valueOf(i), 2) + " - " + str);
 			}
-			System.out.println("---------------------------");
+			System.out.println(Output.r2l()+"---------------------------");
 			try {
 				selection = input.nextInt();
 				input.nextLine();
