@@ -1,6 +1,8 @@
 # Torah Search
 Tora Search | Torah Application
+
 חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים
+
 Search Torah | Dilugim | Gimatria
 
 Install
