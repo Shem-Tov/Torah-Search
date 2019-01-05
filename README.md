@@ -1,4 +1,4 @@
-# Torah-Search
+# Torah Search | Tora Search
 חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים
 Search Torah | Dilugim | Gimatria
 
