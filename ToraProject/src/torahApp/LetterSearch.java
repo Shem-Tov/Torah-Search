@@ -233,6 +233,7 @@ public class LetterSearch {
 						// Do nothing because first and last letters do not match
 						// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 						// fill results array
+						ArrayList<Integer[]> prevIndexes = null;
 						switch (mode) {
 						case 0:
 							count++;
@@ -240,8 +241,11 @@ public class LetterSearch {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							wCounter.addWord(s1);
-							results.add(Output.printPasukInfo(countLines, s1, line, frame.ColorClass.markupStyleHTML,
-									bool_sofiot1, true));
+							if (fMode==fileMode.LastSearch) {
+								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+							}
+							results.add(Output.printPasukInfoExtraIndexes(countLines, s1, line, frame.ColorClass.markupStyleHTML,
+									bool_sofiot1, true, prevIndexes));
 							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 							break;
 						case 1:
@@ -269,9 +273,12 @@ public class LetterSearch {
 									switch (mode) {
 									case 1:
 										wCounter.addWord(s1);
-										results.add(Output.printPasukInfo(countLines, s1, line,
+										if (fMode==fileMode.LastSearch) {
+											prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+										}
+										results.add(Output.printPasukInfoExtraIndexes(countLines, s1, line,
 												frame.ColorClass.markupStyleHTML, bool_sofiot1, true, bool_sofiot2,
-												s2));
+												s2,prevIndexes));
 										searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
 										break;
 									case 3:
@@ -285,7 +292,10 @@ public class LetterSearch {
 													bool_sofiot1, bool_first1, bool_last1,
 													frame.ColorClass.markupStyleHTML, j);
 										}
-										results.add(ToraApp.returnBookInfo(searchSTR, countLines, lineHtmlReport));
+										if (fMode==fileMode.LastSearch) {
+											prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+										}
+										results.add(ToraApp.returnBookInfoExtraIndexes(searchSTR, countLines, lineHtmlReport, prevIndexes));
 										searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
 										break;
 									}
@@ -306,7 +316,10 @@ public class LetterSearch {
 								lineHtmlReport = Output.markTextUnOrderedLettersInPasuk(searchSTR, line, bool_sofiot1,
 										bool_first1, bool_last1, frame.ColorClass.markupStyleHTML);
 							}
-							results.add(ToraApp.returnBookInfo(searchSTR, countLines, lineHtmlReport));
+							if (fMode==fileMode.LastSearch) {
+								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+							}
+							results.add(ToraApp.returnBookInfoExtraIndexes(searchSTR, countLines, lineHtmlReport, prevIndexes));
 							searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
 							break;
 						}

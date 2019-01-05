@@ -185,6 +185,7 @@ public class Gimatria {
 				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
+				ArrayList<Integer[]> prevIndexes = null;
 				if (bool_wholeWords) {
 					String[] splitStr = line.trim().split("\\s+");
 					int startWordIndex = -1;
@@ -209,9 +210,12 @@ public class Gimatria {
 							if (ToraApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
+							if (fMode==fileMode.LastSearch) {
+								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+							}
 							wCounter.addWord(foundWords);
-							results.add(Output.printPasukInfo(countLines, foundWords, line,
-									frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
+							results.add(Output.printPasukInfoExtraIndexes(countLines, foundWords, line,
+									frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords,prevIndexes));
 							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 						}
 					}
@@ -237,8 +241,11 @@ public class Gimatria {
 							}
 							String s = line.substring(lineCountStart, lineCountEnd);
 							wCounter.addWord(s);
-							results.add(Output.printPasukInfo(countLines, s, line, frame.ColorClass.markupStyleHTML,
-									bool_sofiot, bool_wholeWords));
+							if (fMode==fileMode.LastSearch) {
+								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+							}
+							results.add(Output.printPasukInfoExtraIndexes(countLines, s, line, frame.ColorClass.markupStyleHTML,
+									bool_sofiot, bool_wholeWords,prevIndexes));
 							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 						}
 					}

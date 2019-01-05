@@ -48,24 +48,24 @@ public class Output {
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
 			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords) {
-		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, -1, false, null);
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, -1, false, null, null);
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
 			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords,
 			Boolean bool_sofiot2,String searchSTR2) {
-		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2);
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2, null);
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
 			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords,
 			int index) {
-		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, index, false, null);
+		return markMatchesInLine(line, searchSTR, htmlFormat, bool_sofiot1, bool_wholeWords, index, false, null, null);
 	}
 
 	public static LineHtmlReport markMatchesInLine(String line, String searchSTR,
 			stringFormat.HtmlGenerator htmlFormat, Boolean bool_sofiot1, Boolean bool_wholeWords, int index,
-			Boolean bool_sofiot2, String searchSTR2) {
+			Boolean bool_sofiot2, String searchSTR2, ArrayList<Integer[]> addIndexes) {
 
 		// Does not mark, if in console mode
 		String lineHtml = "";
@@ -133,6 +133,10 @@ public class Output {
 			myIndex = indexes.get(index)[0];
 			indexes = new ArrayList<Integer[]>();
 			indexes.add(new Integer[] { myIndex, myIndex + searchConvert1.length() });
+		}
+		//combine indexes if addIndexes not null
+		if (addIndexes != null) {
+			indexes = mergeMarkIndexes(indexes, addIndexes);
 		}
 		// Search Word 2
 		int myIndex2;
@@ -486,21 +490,41 @@ public class Output {
 
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot1, Boolean bool_wholeWords) throws NoSuchFieldException {
-		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false,null);
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false,null,null);
 	}
 
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot1, Boolean bool_wholeWords, Boolean bool_sofiot2, String searchSTR2) throws NoSuchFieldException {
-		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2);
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2, null);
 	}
 
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot1, Boolean bool_wholeWords, int index) throws NoSuchFieldException {
-		return printPasukInfo(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false, null);
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false, null, null);
 	}
 	
 	public static LineReport printPasukInfo(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot1, Boolean bool_wholeWords, int index, Boolean bool_sofiot2, String searchSTR2) throws NoSuchFieldException {
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, index, bool_sofiot2, searchSTR2, null);
+	}
+	
+		public static LineReport printPasukInfoExtraIndexes(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot1, Boolean bool_wholeWords, ArrayList<Integer[]> indexes) throws NoSuchFieldException {
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false,null, indexes);
+	}
+
+	public static LineReport printPasukInfoExtraIndexes(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot1, Boolean bool_wholeWords, Boolean bool_sofiot2, String searchSTR2, ArrayList<Integer[]> indexes) throws NoSuchFieldException {
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, bool_sofiot2, searchSTR2, indexes);
+	}
+
+	public static LineReport printPasukInfoExtraIndexes(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot1, Boolean bool_wholeWords, int index, ArrayList<Integer[]> indexes) throws NoSuchFieldException {
+		return printPasukInfoExtraIndexes(countLines, searchSTR, line, markupStyle, bool_sofiot1, bool_wholeWords, -1, false, null, indexes);
+	}
+
+	public static LineReport printPasukInfoExtraIndexes(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
+			Boolean bool_sofiot1, Boolean bool_wholeWords, int index, Boolean bool_sofiot2, String searchSTR2,ArrayList<Integer[]> indexes) throws NoSuchFieldException {
 		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
 		LineHtmlReport lineHtmlReport = new LineHtmlReport("","", new ArrayList<Integer[]>());
 		try {
@@ -516,9 +540,9 @@ public class Output {
 			// Output.printText(StringAlignUtils.padRight(tempStr1, 32) + " = " + line);
 			if (searchSTR2 != null) {
 				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot1, bool_wholeWords, index,
-						bool_sofiot2, searchSTR2);
+						bool_sofiot2, searchSTR2, indexes);
 			} else {
-				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot1, bool_wholeWords, index);
+				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot1, bool_wholeWords, index, false, null, indexes);
 			}
 			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml(ToraApp.isGui());
 			printText(outputText, 0);

@@ -1,6 +1,7 @@
 package ioManagement;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,7 +41,9 @@ public class LastSearchClass {
 		} else {
 			ArrayList<Integer[]> indexes1 = lRecord.getMarkIndexes();
 			indexes1 = Output.mergeMarkIndexes(indexes1, indexes);
-			lastRecord.put(lineNum,new LastSearchRecord(lineNum, text, indexes1));
+			String newText = lRecord.getLineText();
+			String largeText = (newText.length()>text.length())? newText:text;
+			lastRecord.put(lineNum,new LastSearchRecord(lineNum, largeText, indexes1));
 		}
 	}
 	
@@ -62,12 +65,24 @@ public class LastSearchClass {
 	}
 	
 	public static int getStoredSize() {
-		return storedRecord.size();
+		if (storedRecord != null) {
+			return storedRecord.size();
+		} else {
+			return -1;
+		}
+	}
+	
+	public static ArrayList<Integer[]> getStoredLineIndexes(int index) {
+		return storedRecord.get(index).getMarkIndexes();
 	}
 	
 	public static final String lastSearchFolder_HardCoded = "etc/";
 	public static final String lastSearchFileExtension_HardCoded = ".tsa";
 
+	public static String getLastSearchFolder() {
+		return ExcelFunctions.getData_Folder_Location()+lastSearchFolder_HardCoded;
+	}
+	
 	public Boolean storeCurrent() {
 		try {
 			storedRecord = new ArrayList<LastSearchRecord>(lastRecord.values());
@@ -77,13 +92,12 @@ public class LastSearchClass {
 		}
 	}
 	
-	public void store(String fName) {
+	public static void store(File file) {
 		try {
-			//sortMap();
-			String fileName = ExcelFunctions.getData_Folder_Location()+lastSearchFolder_HardCoded+fName+lastSearchFileExtension_HardCoded;
-			FileOutputStream fos = new FileOutputStream(fileName);			
+			//String fileName = ExcelFunctions.getData_Folder_Location()+lastSearchFolder_HardCoded+fName+lastSearchFileExtension_HardCoded;
+			FileOutputStream fos = new FileOutputStream(file);			
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(lastRecord);
+			oos.writeObject(storedRecord);
 			oos.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -92,17 +106,17 @@ public class LastSearchClass {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void load(String fName) {
-		String fileName = ExcelFunctions.getData_Folder_Location()+lastSearchFolder_HardCoded+fName+lastSearchFileExtension_HardCoded;
+	public static void load(File file) {
+		//String fileName = ExcelFunctions.getData_Folder_Location()+lastSearchFolder_HardCoded+fName+lastSearchFileExtension_HardCoded;
 		try {
-			FileInputStream fis = new FileInputStream(fileName);
+			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			storedRecord = (ArrayList<LastSearchRecord>) ois.readObject();
 			ois.close();
 		} catch (IOException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			System.out.println("Could not find lastSearch file: "+fileName);
+			System.out.println("Could not find lastSearch file: "+file.getName());
 		}
 	}
 

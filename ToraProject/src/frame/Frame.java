@@ -6,10 +6,12 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.ComponentOrientation;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
@@ -35,6 +37,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import console.Console;
@@ -63,6 +66,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPopupMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JProgressBar;
 import javax.swing.JMenuBar;
 
@@ -140,6 +145,7 @@ public class Frame {
 	private static Boolean bool_letters_last2 = false;
 	private static Boolean bool_letters_exactSpaces = false;
 	private static Boolean bool_stored = false;
+	private static Boolean bool_canStore = false;
 	private static String savedString_padding_Dilug = "";
 	private static String savedString_searchSTR2 = "";
 	private static String savedString_countIndex = "";
@@ -589,6 +595,10 @@ public class Frame {
 		label_dProgress.setText(str);
 	}
 
+	public static void setBool_CanStore(Boolean bool) {
+		bool_canStore = bool;
+	}
+
 	public static void initValues() {
 		try {
 			comboBox_main.setSelectedIndex(Integer.parseInt(PropStore.map.get(PropStore.mode_main_number)));
@@ -935,7 +945,7 @@ public class Frame {
 		// frame_instance.frame.revalidate();
 		// menubar
 		comboBox_DifferentSearch.setBackground(ColorBG_textPane);
-		button_storeSearch.setBackground((bool_stored)? ColorBG_comboBox_main : ColorBG_textPane);
+		button_storeSearch.setBackground((bool_stored) ? ColorBG_comboBox_main : ColorBG_textPane);
 	}
 
 	private static void setBGColorMenu(Color c, Color c2, Color c3) {
@@ -1141,6 +1151,201 @@ public class Frame {
 		}
 	}
 
+	public static int getFontSize() {
+		return fontSize;
+	}
+
+	public static void setFontSize(int fontSize) {
+		Frame.fontSize = fontSize;
+	}
+
+	public static int getFontSizeBig() {
+		return fontSizeBig;
+	}
+
+	public static void setFontSizeBig(int fontSizeBig) {
+		Frame.fontSizeBig = fontSizeBig;
+	}
+
+	public static Boolean getCheckbox_createExcel() {
+		return checkbox_createExcel.isSelected();
+	}
+
+	public static Boolean getCheckbox_createTree() {
+		return checkbox_createTree.isSelected();
+	}
+
+	public static Boolean getCheckbox_createDocument() {
+		return checkbox_createDocument.isSelected();
+	}
+
+	public static Boolean getCheckbox_searchMultiple() {
+		return checkBox_searchMultiple.isSelected();
+	}
+
+	public static Boolean getCheckbox_letterOrder1() {
+		return checkBox_letterOrder1.isSelected();
+	}
+
+	public static Boolean getCheckbox_letterOrder2() {
+		return checkBox_letterOrder2.isSelected();
+	}
+
+	public static Boolean getCheckbox_first1() {
+		return checkBox_first1.isSelected();
+	}
+
+	public static Boolean getCheckbox_first2() {
+		return checkBox_first2.isSelected();
+	}
+
+	public static Boolean getCheckbox_last1() {
+		return checkBox_last1.isSelected();
+	}
+
+	public static void setTextPaneVisible(Boolean bool) {
+		textPane.setVisible(bool);
+	}
+
+	public static fileMode getComboBox_DifferentSearch(fileMode fMode) {
+		try {
+			switch (comboBox_DifferentSearch.getSelectedIndex()) {
+			case 0:
+				return fMode;
+			case 1:
+				return fileMode.LastSearch;
+			case 2:
+				return fileMode.Different;
+			}
+		} catch (Exception e) {
+			return fMode;
+		}
+		return fMode;
+	}
+
+	public static Boolean isTorahSearch() {
+		try {
+			switch (comboBox_DifferentSearch.getSelectedIndex()) {
+			case 0:
+				// Regular Torah Search
+			case 1:
+				// Torah Search from Last Search
+				return true;
+			}
+		} catch (Exception e) {
+			return true;
+		}
+		return false;
+	}
+
+	static void noDocumentMessage() {
+		clearTextPane();
+		Output.printText("התוכנה כרגע אינה מכינה דוחות", 1);
+		Output.printText("בכדי להפעיל אפשרות זו צריך לשנות את ההגדרה", 1);
+		Output.printText("בהגדרות -> להכין דוח", 1);
+	}
+
+	public static Boolean getCheckBox_Tooltip() {
+		return checkBox_TooltipOption.isSelected();
+	}
+
+	static int getTextHtmlSize() {
+		return textHtmlSize;
+	}
+
+	public static void setBool_placeInfo(Boolean bool) {
+		bool_placeInfo = bool;
+	}
+
+	public static void setBool_searchMultiple(Boolean bool) {
+		bool_searchMultiple = bool;
+	}
+
+	public static void setBool_gimatriaMultiple(Boolean bool) {
+		bool_gimatriaMultiple = bool;
+	}
+
+	public static void setBool_reverseDilug(Boolean bool) {
+		bool_dilugReversed = bool;
+	}
+
+	public static void setBool_letter_exactSpaces(Boolean bool) {
+		bool_letters_exactSpaces = bool;
+	}
+
+	public static void setBool_letter_last2(Boolean bool) {
+		bool_letters_last2 = bool;
+	}
+
+	public static void setString_countIndex(String str) {
+		savedString_countIndex = str;
+	}
+
+	public static void setString_padding_Dilug(String str) {
+		savedString_padding_Dilug = str;
+	}
+
+	public static void setString_searchSTR2(String str) {
+		savedString_searchSTR2 = str;
+	}
+
+	public static void setSaveMode_search(int num) {
+		savedMode_search = num;
+	}
+
+	public static void setSaveMode_letter(int num) {
+		savedMode_letter = num;
+	}
+
+	public static void setSaveMode_dilugim(int num) {
+		savedMode_dilugim = num;
+	}
+
+	public static void resetButton_storeSearch() {
+		bool_stored = false;
+		if (LastSearchClass.getStoredSize() == -1) {
+			button_storeSearch.setBackground(ColorBG_textPane);
+		} else {
+			button_storeSearch.setBackground(ColorBG_menu);
+		}
+	}
+
+	private static void changeLetterLayout() {
+		switch (comboBox_sub.getSelectedIndex()) {
+		case 1:
+		case 3:
+			subPanels.get(id_panel_padding).setVisible(true);
+			textField_padding.setText(savedString_searchSTR2);
+			subPanels.get(id_panel_letters2_1).setVisible(true);
+			subPanels.get(id_panel_countPsukim).setVisible(true);
+			checkBox_countPsukim.setSelected(bool_letters_last2);
+			subPanels.get(id_panel_letters2_3).setVisible(true);
+			subPanels.get(id_panel_searchMulti).setVisible(true);
+			checkBox_searchMultiple.setText(checkBox_searchMultiple_Letter_Sofiot);
+			break;
+		default:
+			subPanels.get(id_panel_padding).setVisible(false);
+			subPanels.get(id_panel_letters2_1).setVisible(false);
+			subPanels.get(id_panel_countPsukim).setVisible(false);
+			subPanels.get(id_panel_letters2_3).setVisible(false);
+			subPanels.get(id_panel_searchMulti).setVisible(false);
+		}
+		switch (comboBox_sub.getSelectedIndex()) {
+		case 0:
+		case 1:
+			label_textfield_Search.setText(strLabel_padding_LetterSearch);
+			subPanels.get(id_panel_wholeWord).setVisible(false);
+			break;
+		default:
+			label_textfield_Search.setText(strLabel_Search_LetterPasuk);
+			subPanels.get(id_panel_wholeWord).setVisible(true);
+			checkBox_wholeWord.setSelected(bool_letters_exactSpaces);
+			checkBox_wholeWord.setText(checkBox_wholeWord_Letter);
+			checkBox_wholeWord.setToolTipText(
+					Output.markText(checkBox_wholeWord_Letter_Tooltip, ColorClass.headerStyleHTML, true));
+		}
+	}
+
 	/**
 	 * Launch the application.
 	 */
@@ -1246,6 +1451,7 @@ public class Frame {
 		});
 		label_textfield_Search = new JLabel(strLabel_Search_Standard);
 		label_textfield_Search.setHorizontalAlignment(SwingConstants.RIGHT);
+		label_textfield_Search.setToolTipText(packHtml("%1 - יהוה"+"<br>"+"%2 - אלהים"));
 		subPanels.get(countPanels).add(label_textfield_Search);
 		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 		textField_Search = new JTextField();
@@ -1528,7 +1734,7 @@ public class Frame {
 		((JLabel) comboBox_DifferentSearch.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_DifferentSearch.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
 		comboBox_DifferentSearch.setFont(new Font("Miriam Mono CLM", Font.BOLD, getFontSizeBig()));
-		
+
 		button_storeSearch = new JButton("שמור חיפוש לזכרון");
 		button_storeSearch.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		button_storeSearch.setMaximumSize(new Dimension(200, 32767));
@@ -1953,18 +2159,102 @@ public class Frame {
 				dFrame.setVisible(true);
 			}
 		});
-		button_storeSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-				bool_stored = LastSearchClass.getInstance().storeCurrent();
-				} catch (NullPointerException e) {
-					
-				}
-				if (bool_stored) {
-					button_storeSearch.setBackground(ColorBG_comboBox_main);
+		button_storeSearch.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				if (SwingUtilities.isRightMouseButton(arg0)) {
+					JFileChooser chooser = new JFileChooser();
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					String extension = LastSearchClass.lastSearchFileExtension_HardCoded.substring(1); // remove dot (.)
+																										// from start
+					FileNameExtensionFilter extensionFilter = new FileNameExtensionFilter(
+							extension + " files (*." + extension + ")", extension);
+					// add filters
+					chooser.addChoosableFileFilter(extensionFilter);
+					chooser.setFileFilter(extensionFilter);
+					File folder = new File(LastSearchClass.getLastSearchFolder());
+					folder.mkdirs();
+					chooser.setCurrentDirectory(folder);
+					int result = chooser.showOpenDialog(null);
+
+					if (result == JFileChooser.APPROVE_OPTION) {
+						File file = chooser.getSelectedFile();
+						LastSearchClass.load(file);
+						comboBox_DifferentSearch.setSelectedIndex(1);
+					}
+				} else if (SwingUtilities.isLeftMouseButton(arg0)) {
+					if (bool_canStore) {
+						if (!bool_stored) {
+							try {
+								bool_stored = LastSearchClass.getInstance().storeCurrent();
+								comboBox_DifferentSearch.setSelectedIndex(1);
+							} catch (NullPointerException e) {
+
+							}
+							if (bool_stored) {
+								button_storeSearch.setBackground(ColorBG_comboBox_main);
+							}
+						} else {
+							JFileChooser chooser = new JFileChooser();
+							chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+							String extension = LastSearchClass.lastSearchFileExtension_HardCoded.substring(1); // remove
+																												// dot
+																												// (.)
+																												// from
+																												// start
+							FileNameExtensionFilter extensionFilter = new FileNameExtensionFilter(
+									extension + " files (*." + extension + ")", extension);
+							// add filters
+							chooser.addChoosableFileFilter(extensionFilter);
+							chooser.setFileFilter(extensionFilter);
+							File folder = new File(LastSearchClass.getLastSearchFolder());
+							folder.mkdirs();
+							chooser.setCurrentDirectory(folder);
+							int result = chooser.showSaveDialog(null);
+
+							if (result == JFileChooser.APPROVE_OPTION) {
+								File file = chooser.getSelectedFile();
+								if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase(extension)) {
+									// filename is OK as-is
+								} else {
+									// file = new File(file.toString() + "."+extension); // append .xml if
+									// "foo.jpg.xml" is OK
+									file = new File(file.getParentFile(),
+											FilenameUtils.getBaseName(file.getName()) + "." + extension); // ALTERNATIVELY:
+								}
+								LastSearchClass.store(file);
+							}
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "ניתן לשמור רק חיפוש רגיל / אותיות / גימטריה", "הודעה",
+								JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}
-		});		
+		});
+
 		checkBox_searchRange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (checkBox_searchRange.isSelected()) {
@@ -1980,196 +2270,6 @@ public class Frame {
 		setBGColorPanel(customBGColor);
 		setBGColorMenu(ColorBG_menu, ColorBG_menu2, ColorBG_menu3);
 		changeLayout(comboBox_main.getSelectedItem().toString());
-	}
-
-	public static int getFontSize() {
-		return fontSize;
-	}
-
-	public static void setFontSize(int fontSize) {
-		Frame.fontSize = fontSize;
-	}
-
-	public static int getFontSizeBig() {
-		return fontSizeBig;
-	}
-
-	public static void setFontSizeBig(int fontSizeBig) {
-		Frame.fontSizeBig = fontSizeBig;
-	}
-
-	public static Boolean getCheckbox_createExcel() {
-		return checkbox_createExcel.isSelected();
-	}
-
-	public static Boolean getCheckbox_createTree() {
-		return checkbox_createTree.isSelected();
-	}
-
-	public static Boolean getCheckbox_createDocument() {
-		return checkbox_createDocument.isSelected();
-	}
-
-	public static Boolean getCheckbox_searchMultiple() {
-		return checkBox_searchMultiple.isSelected();
-	}
-
-	public static Boolean getCheckbox_letterOrder1() {
-		return checkBox_letterOrder1.isSelected();
-	}
-
-	public static Boolean getCheckbox_letterOrder2() {
-		return checkBox_letterOrder2.isSelected();
-	}
-
-	public static Boolean getCheckbox_first1() {
-		return checkBox_first1.isSelected();
-	}
-
-	public static Boolean getCheckbox_first2() {
-		return checkBox_first2.isSelected();
-	}
-
-	public static Boolean getCheckbox_last1() {
-		return checkBox_last1.isSelected();
-	}
-
-	public static void setTextPaneVisible(Boolean bool) {
-		textPane.setVisible(bool);
-	}
-
-	public static fileMode getComboBox_DifferentSearch(fileMode fMode) {
-		try {
-			switch (comboBox_DifferentSearch.getSelectedIndex()) {
-			case 0:
-				return fMode;
-			case 1:
-				return fileMode.LastSearch;
-			case 2:
-				return fileMode.Different;
-			}
-		} catch (Exception e) {
-			return fMode;
-		}
-		return fMode;
-	}
-
-	public static Boolean isTorahSearch() {
-		try {
-			switch (comboBox_DifferentSearch.getSelectedIndex()) {
-			case 0:
-				// Regular Torah Search
-			case 1:
-				// Torah Search from Last Search
-				return true;
-			}
-		} catch (Exception e) {
-			return true;
-		}
-		return false;
-	}
-
-	static void noDocumentMessage() {
-		clearTextPane();
-		Output.printText("התוכנה כרגע אינה מכינה דוחות", 1);
-		Output.printText("בכדי להפעיל אפשרות זו צריך לשנות את ההגדרה", 1);
-		Output.printText("בהגדרות -> להכין דוח", 1);
-	}
-
-	public static Boolean getCheckBox_Tooltip() {
-		return checkBox_TooltipOption.isSelected();
-	}
-
-	static int getTextHtmlSize() {
-		return textHtmlSize;
-	}
-
-	public static void setBool_placeInfo(Boolean bool) {
-		bool_placeInfo = bool;
-	}
-
-	public static void setBool_searchMultiple(Boolean bool) {
-		bool_searchMultiple = bool;
-	}
-
-	public static void setBool_gimatriaMultiple(Boolean bool) {
-		bool_gimatriaMultiple = bool;
-	}
-
-	public static void setBool_reverseDilug(Boolean bool) {
-		bool_dilugReversed = bool;
-	}
-
-	public static void setBool_letter_exactSpaces(Boolean bool) {
-		bool_letters_exactSpaces = bool;
-	}
-
-	public static void setBool_letter_last2(Boolean bool) {
-		bool_letters_last2 = bool;
-	}
-
-	public static void setString_countIndex(String str) {
-		savedString_countIndex = str;
-	}
-
-	public static void setString_padding_Dilug(String str) {
-		savedString_padding_Dilug = str;
-	}
-
-	public static void setString_searchSTR2(String str) {
-		savedString_searchSTR2 = str;
-	}
-
-	public static void setSaveMode_search(int num) {
-		savedMode_search = num;
-	}
-
-	public static void setSaveMode_letter(int num) {
-		savedMode_letter = num;
-	}
-
-	public static void setSaveMode_dilugim(int num) {
-		savedMode_dilugim = num;
-	}
-
-	public static void resetButton_storeSearch() {
-		button_storeSearch.setBackground(ColorBG_textPane);
-	}
-	
-	private static void changeLetterLayout() {
-		switch (comboBox_sub.getSelectedIndex()) {
-		case 1:
-		case 3:
-			subPanels.get(id_panel_padding).setVisible(true);
-			textField_padding.setText(savedString_searchSTR2);
-			subPanels.get(id_panel_letters2_1).setVisible(true);
-			subPanels.get(id_panel_countPsukim).setVisible(true);
-			checkBox_countPsukim.setSelected(bool_letters_last2);
-			subPanels.get(id_panel_letters2_3).setVisible(true);
-			subPanels.get(id_panel_searchMulti).setVisible(true);
-			checkBox_searchMultiple.setText(checkBox_searchMultiple_Letter_Sofiot);
-			break;
-		default:
-			subPanels.get(id_panel_padding).setVisible(false);
-			subPanels.get(id_panel_letters2_1).setVisible(false);
-			subPanels.get(id_panel_countPsukim).setVisible(false);
-			subPanels.get(id_panel_letters2_3).setVisible(false);
-			subPanels.get(id_panel_searchMulti).setVisible(false);
-		}
-		switch (comboBox_sub.getSelectedIndex()) {
-		case 0:
-		case 1:
-			label_textfield_Search.setText(strLabel_padding_LetterSearch);
-			subPanels.get(id_panel_wholeWord).setVisible(false);
-			break;
-		default:
-			label_textfield_Search.setText(strLabel_Search_LetterPasuk);
-			subPanels.get(id_panel_wholeWord).setVisible(true);
-			checkBox_wholeWord.setSelected(bool_letters_exactSpaces);
-			checkBox_wholeWord.setText(checkBox_wholeWord_Letter);
-			checkBox_wholeWord.setToolTipText(
-					Output.markText(checkBox_wholeWord_Letter_Tooltip, ColorClass.headerStyleHTML, true));
-		}
 	}
 
 }

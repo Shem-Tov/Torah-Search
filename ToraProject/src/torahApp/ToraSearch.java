@@ -78,8 +78,7 @@ public class ToraSearch {
 
 		int countFileLines = -1;
 		fileMode fMode = Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line);
-		BufferedReader bReader = ManageIO.getBufferedReader(
-				fMode,true);
+		BufferedReader bReader = ManageIO.getBufferedReader(fMode, true);
 		if (bReader == null) {
 			Output.printText("לא הצליח לפתוח קובץ תורה", 1);
 			return;
@@ -91,9 +90,9 @@ public class ToraSearch {
 			String line = "";
 			String line2 = "";
 			int searchSTRinLine2 = 0;
-			if ((!bool_wholeWords) && (searchConvert.contains(" "))) {
-				inputStream2 = ManageIO.getBufferedReader(
-						Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),true);
+			if ((!bool_wholeWords) && (searchConvert.contains(" ") && (fMode != fileMode.LastSearch))) {
+				inputStream2 = ManageIO.getBufferedReader(Frame.getComboBox_DifferentSearch(ManageIO.fileMode.Line),
+						true);
 				searchSTRinLine2 = searchConvert.length() - searchConvert.indexOf(' ');
 				// inputStream2.mark(640000);
 				line2 = inputStream2.readLine();
@@ -146,6 +145,7 @@ public class ToraSearch {
 				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
+				ArrayList<Integer[]> prevIndexes = null;
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
 						if (ToraApp.isGui()) {
@@ -181,23 +181,25 @@ public class ToraSearch {
 							}
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
-
+							if (fMode==fileMode.LastSearch) {
+								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+							}
 							if (bool_multiSearch) {
 								if ((found1) && (found2)) {
-									results.add(Output.printPasukInfo(countLines, searchSTR, line,
+									results.add(Output.printPasukInfoExtraIndexes(countLines, searchSTR, line,
 											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords, bool_sofiot,
-											searchSTR2));
+											searchSTR2,prevIndexes));
 								} else if (found1) {
-									results.add(Output.printPasukInfo(countLines, searchSTR, line,
-											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
+									results.add(Output.printPasukInfoExtraIndexes(countLines, searchSTR, line,
+											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords,prevIndexes));
 								} else { // then (found2)
-									results.add(Output.printPasukInfo(countLines, searchSTR2, line,
-											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
+									results.add(Output.printPasukInfoExtraIndexes(countLines, searchSTR2, line,
+											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords,prevIndexes));
 								}
 								break;
 							} else {
-								results.add(Output.printPasukInfo(countLines, searchSTR, line,
-										frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords));
+								results.add(Output.printPasukInfoExtraIndexes(countLines, searchSTR, line,
+										frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords,prevIndexes));
 							}
 							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 						}
@@ -246,9 +248,12 @@ public class ToraSearch {
 							countPsukim++;
 							// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 							// fill results array
-							results.add(Output.printPasukInfo(countLines, (found1) ? searchSTR : searchSTR2,
+							if (fMode==fileMode.LastSearch) {
+								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+							}
+							results.add(Output.printPasukInfoExtraIndexes(countLines, (found1) ? searchSTR : searchSTR2,
 									((foundInLine2) ? (line + " " + line2) : line), frame.ColorClass.markupStyleHTML,
-									bool_sofiot, bool_wholeWords));
+									bool_sofiot, bool_wholeWords, prevIndexes));
 							searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 						} else if ((combineConvertedLines.contains(searchConvert2))) {
 							if ((searchConvert2.contains(searchConvert)) || (searchConvert.contains(searchConvert2))) {
@@ -270,11 +275,14 @@ public class ToraSearch {
 									countPsukim++;
 									// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 									// fill results array
-									results.add(Output.printPasukInfo(countLines, searchSTR,
+									if (fMode==fileMode.LastSearch) {
+										prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+									}
+									results.add(Output.printPasukInfoExtraIndexes(countLines, searchSTR,
 											((foundInLine2) ? (line + " " + line2) : line),
 											frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords, bool_sofiot,
-											searchSTR2));
-									searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
+											searchSTR2, prevIndexes));
+									searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 								}
 							} else {
 								boolean foundInLine2 = false;
@@ -291,11 +299,14 @@ public class ToraSearch {
 								countPsukim++;
 								// printPasukInfo gets the Pasuk Info, prints to screen and sends back array to
 								// fill results array
-								results.add(Output.printPasukInfo(countLines, searchSTR,
+								if (fMode==fileMode.LastSearch) {
+									prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
+								}
+								results.add(Output.printPasukInfoExtraIndexes(countLines, searchSTR,
 										((foundInLine2) ? (line + " " + line2) : line),
 										frame.ColorClass.markupStyleHTML, bool_sofiot, bool_wholeWords, bool_sofiot,
-										searchSTR2));
-								searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
+										searchSTR2,prevIndexes));
+								searchRecord.add(countLines, results.get(results.size() - 1).getResults().get(0));
 							}
 						}
 					}
@@ -308,8 +319,8 @@ public class ToraSearch {
 			if ((ToraApp.isGui())) {
 				Tree.getInstance().flushBuffer((count < 50));
 			}
-			String fileName ="";
-			if (fMode==fileMode.LastSearch) {
+			String fileName = "";
+			if (fMode == fileMode.LastSearch) {
 				fileName += "CUSTOM_";
 			}
 			fileName += searchSTR.replace(' ', '_');

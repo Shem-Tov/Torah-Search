@@ -129,6 +129,10 @@ public class ToraApp {
 	}
 
 	public static LineReport returnBookInfo(String searchStringTitle, int countLines, LineHtmlReport lineHtmlReport) {
+		return returnBookInfoExtraIndexes(searchStringTitle, countLines, lineHtmlReport, null);
+	}
+	
+	public static LineReport returnBookInfoExtraIndexes(String searchStringTitle, int countLines, LineHtmlReport lineHtmlReport, ArrayList<Integer[]> addIndexes) {
 		perekBookInfo pBookInstance;
 		try {
 			pBookInstance = findPerekBook(countLines);
@@ -148,9 +152,13 @@ public class ToraApp {
 			if (ToraApp.isGui()) {
 				Output.printTree(countLines, tempStr2, false);
 			}
+			ArrayList<Integer[]> indexes = lineHtmlReport.getIndexes();
+			if (addIndexes != null) {
+				indexes = Output.mergeMarkIndexes(addIndexes, indexes);
+			}
 			return new LineReport(new String[] { searchStringTitle, pBookInstance.getBookName(),
 					pBookInstance.getPerekLetters(), pBookInstance.getPasukLetters(), lineHtmlReport.getLine() },
-					lineHtmlReport.getIndexes());
+					indexes);
 		} catch (NoSuchFieldException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
