@@ -3,7 +3,7 @@ Tora Search | Torah Application | Hebrew Bible | Old Testament | Bible Text | Se
 
 חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים
 
-Search Torah | Dilugim | Gimatria
+Search Torah | Dilugim | Gimatria | Letter Search | Multiple Filters
 
 Install
 1) Download and Install OpenJDK-11 from their website.
