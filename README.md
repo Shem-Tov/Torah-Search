@@ -5,6 +5,8 @@ Tora Search | Torah Application | Hebrew Bible | Old Testament | Bible Text | Se
 
 Search Torah | Dilugim | Gimatria | Letter Search | Multiple Filters
 
+Can be run with and without the Graphic Interface.
+
 Install
 1) Download and Install OpenJDK-11 from their website.
 2) Download TorahApp04.jar from this Repository and run.
