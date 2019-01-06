@@ -1,5 +1,5 @@
 # Torah Search
-Tora Search | Torah Application
+Tora Search | Torah Application | Hebrew Bible | Old Testament | Bible Text | Search Bible | Free Bible Program | Free Search Bible Progam
 
 חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים
 
