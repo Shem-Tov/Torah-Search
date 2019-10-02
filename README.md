@@ -1,11 +1,11 @@
 # Torah Search
 Tora Search | Torah Application | Hebrew Bible | Old Testament | Bible Text | Search Bible | Free Bible Program | Free Search Bible Program
 
-MetaData
-חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים / חיפושים בתורה 
+MetaData -
+ | חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים / חיפושים בתורה 
 תורה | חומש | Chumash | Humash | Pentatuach | Pentatuah | Old Testament | Bible | Genesis | Exodus | Leviticus |
-Numbers | Deuteronomy | Bereshit | Bereshis | Shmot | Shmos | Shemot | Shemos | VaYikra | BaMidbar | Dvarim | Devarim
-בראשית | שמות | ויקרא | במדבר | דברים
+Numbers | Deuteronomy | Bereshit | Bereshis | Shmot | Shmos | Shemot | Shemos | VaYikra | BaMidbar | Dvarim | Devarim |
+בראשית | שמות | ויקרא | במדבר | דברים 
 Search Torah | Dilugim | Gimatria | Letter Search | Multiple Filters
 
 By
