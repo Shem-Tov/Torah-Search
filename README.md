@@ -1,9 +1,11 @@
 # Torah Search
 Tora Search | Torah Application | Hebrew Bible | Old Testament | Bible Text | Search Bible | Free Bible Program | Free Search Bible Progam
 
-חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים
+חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים / חיפושים בתורה 
 
 Search Torah | Dilugim | Gimatria | Letter Search | Multiple Filters
+
+Adam Shem-Tov | אדם שם-טוב
 
 Can be run with and without the Graphic Interface.
 
