@@ -3,8 +3,9 @@ Tora Search | Torah Application | Hebrew Bible | Old Testament | Bible Text | Se
 
 MetaData -
 חיפוש מילים בתורה / חיפוש גימטריות / חיפוש בדילוגים / חיפושים בתורה 
-תורה | חומש | Chumash | Humash | Pentatuach | Pentatuah | Old Testament | Bible | Genesis | Exodus | Leviticus |
-Numbers | Deuteronomy | Bereshit | Bereshis | Shmot | Shmos | Shemot | Shemos | VaYikra | BaMidbar | Dvarim | Devarim
+תורה | חומש | Chumash | Humash | Pentateuch | Pentateuh | Pentatuach | Pentatuah | Old Testament | Bible |  
+Genesis | Exodus | Leviticus | Numbers | Deuteronomy |
+Bereshit | Bereshis | Shmot | Shmos | Shemot | Shemos | VaYikra | BaMidbar | Dvarim | Devarim
 בראשית | שמות | ויקרא | במדבר | דברים 
 Search Torah | Dilugim | Gimatria | Letter Search | Multiple Filters
 
