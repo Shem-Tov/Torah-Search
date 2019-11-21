@@ -124,13 +124,13 @@ public class ReportTorahCount {
 			str += "...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (!ToraApp.isGui()) {
+			if (!TorahApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 			}
@@ -139,7 +139,7 @@ public class ReportTorahCount {
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
+				if ((TorahApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 				String[] splitStr;
@@ -221,7 +221,7 @@ public class ReportTorahCount {
 					lineHighestGimatriaSofiot[0] = countLines;
 					lineHighestGimatriaSofiot[1] = sumLineGimatriaSofiot;
 				}
-				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
+				if ((TorahApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
@@ -238,7 +238,7 @@ public class ReportTorahCount {
 					+ " font-weight:bold" + "\"";
 			// String tdstyle2 =" style = \"padding-top: 8px; padding-bottom: 8px;\"";
 			String tdstyle = " style = \"padding: 8px; padding-left: 8px; padding-right: 8px;\"";
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				Frame.clearTextPane();
 				Output.printText("");
 				Output.printText(Output.markText("טווח:", ColorClass.headerStyleHTML)
@@ -271,7 +271,7 @@ public class ReportTorahCount {
 			// str.append("<TR"+style+"><td"+tdstyle+">" + "" + "</td><Th>" + "" +
 			// "</Th></TR>");
 			str.append("</TABLE>");
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				Output.printText(str.toString());
 			} else {
 				System.out.println();
@@ -319,7 +319,7 @@ public class ReportTorahCount {
 						+ ">" + Letters[i] + "</Th></TR>");
 			}
 			str.append("</TABLE>");
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				Output.printText(str.toString());
 			} else {
 				System.out.println();				
@@ -335,77 +335,77 @@ public class ReportTorahCount {
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_header) + ">פסוק</TH><TH"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_header) + ">מספר</TH>"
 					+ "</TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineLeastWords[0]) + "</td><td>"
-					+ "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(lineLeastWords[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineLeastWords[0]) + "</td><td>"
+					+ "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(lineLeastWords[0], true) + "</td><td>"
 					+ lineLeastWords[1] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר מילים הנמוך ביותר בפסוק" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineMostWords[0]) + "</td><td>"
-					+ "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(lineMostWords[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineMostWords[0]) + "</td><td>"
+					+ "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(lineMostWords[0], true) + "</td><td>"
 					+ lineMostWords[1] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר מילים הגבוה ביותר בפסוק" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineLeastLetters[0]) + "</td><td>"
-					+ "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(lineLeastLetters[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineLeastLetters[0]) + "</td><td>"
+					+ "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(lineLeastLetters[0], true) + "</td><td>"
 					+ lineLeastLetters[1] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר אותיות הנמוך ביותר בפסוק" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineMostLetters[0]) + "</td><td>"
-					+ "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(lineMostLetters[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineMostLetters[0]) + "</td><td>"
+					+ "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(lineMostLetters[0], true) + "</td><td>"
 					+ lineMostLetters[1] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר אותיות הגבוה ביותר בפסוק" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(wordLeastLetters[0]) + "</td><td>"
-					+ ToraApp.getTorahWord(wordLeastLetters[0], wordLeastLetters[1]) + "</td><td>"
-					+ ToraApp.lookupTorahPositionFromLineNumber(wordLeastLetters[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(wordLeastLetters[0]) + "</td><td>"
+					+ TorahApp.getTorahWord(wordLeastLetters[0], wordLeastLetters[1]) + "</td><td>"
+					+ TorahApp.lookupTorahPositionFromLineNumber(wordLeastLetters[0], true) + "</td><td>"
 					+ wordLeastLetters[2] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר אותיות הנמוך ביותר במילה" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(wordMostLetters[0]) + "</td><td>"
-					+ ToraApp.getTorahWord(wordMostLetters[0], wordMostLetters[1]) + "</td><td>"
-					+ ToraApp.lookupTorahPositionFromLineNumber(wordMostLetters[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(wordMostLetters[0]) + "</td><td>"
+					+ TorahApp.getTorahWord(wordMostLetters[0], wordMostLetters[1]) + "</td><td>"
+					+ TorahApp.lookupTorahPositionFromLineNumber(wordMostLetters[0], true) + "</td><td>"
 					+ wordMostLetters[2] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר אותיות הגבוה ביותר במילה" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineLowestGimatria[0])
-					+ "</td><td>" + "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(lineLowestGimatria[0], true)
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineLowestGimatria[0])
+					+ "</td><td>" + "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(lineLowestGimatria[0], true)
 					+ "</td><td>" + lineLowestGimatria[1] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר גימטריה הנמוך ביותר בפסוק" + "</Th></TR>");
 			str.append(
-					"<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineHighestGimatria[0]) + "</td><td>"
-							+ "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(lineHighestGimatria[0], true)
+					"<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineHighestGimatria[0]) + "</td><td>"
+							+ "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(lineHighestGimatria[0], true)
 							+ "</td><td>" + lineHighestGimatria[1] + "</td><Th"
 							+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 							+ "מספר גימטריה הגבוה ביותר בפסוק" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(lineHighestGimatriaSofiot[0])
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(lineHighestGimatriaSofiot[0])
 					+ "</td><td>" + "</td><td>"
-					+ ToraApp.lookupTorahPositionFromLineNumber(lineHighestGimatriaSofiot[0], true) + "</td><td>"
+					+ TorahApp.lookupTorahPositionFromLineNumber(lineHighestGimatriaSofiot[0], true) + "</td><td>"
 					+ lineHighestGimatriaSofiot[1] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר גימטריה הגבוה ביותר בפסוק עם חישוב שונה לסופיות" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(wordLowestGimatria[0])
-					+ "</td><td>" + ToraApp.getTorahWord(wordLowestGimatria[0], wordLowestGimatria[1]) + "</td><td>"
-					+ ToraApp.lookupTorahPositionFromLineNumber(wordLowestGimatria[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(wordLowestGimatria[0])
+					+ "</td><td>" + TorahApp.getTorahWord(wordLowestGimatria[0], wordLowestGimatria[1]) + "</td><td>"
+					+ TorahApp.lookupTorahPositionFromLineNumber(wordLowestGimatria[0], true) + "</td><td>"
 					+ wordLowestGimatria[2] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר גימטריה הנמוך ביותר במילה" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(wordHighestGimatria[0])
-					+ "</td><td>" + ToraApp.getTorahWord(wordHighestGimatria[0], wordHighestGimatria[1]) + "</td><td>"
-					+ ToraApp.lookupTorahPositionFromLineNumber(wordHighestGimatria[0], true) + "</td><td>"
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(wordHighestGimatria[0])
+					+ "</td><td>" + TorahApp.getTorahWord(wordHighestGimatria[0], wordHighestGimatria[1]) + "</td><td>"
+					+ TorahApp.lookupTorahPositionFromLineNumber(wordHighestGimatria[0], true) + "</td><td>"
 					+ wordHighestGimatria[2] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר גימטריה הגבוה ביותר במילה" + "</Th></TR>");
-			str.append("<TR" + style + "><td" + tdstyle + ">" + ToraApp.getTorahLine(wordHighestGimatriaSofiot[0])
-					+ "</td><td>" + ToraApp.getTorahWord(wordHighestGimatriaSofiot[0], wordHighestGimatriaSofiot[1])
-					+ "</td><td>" + ToraApp.lookupTorahPositionFromLineNumber(wordHighestGimatriaSofiot[0], true)
+			str.append("<TR" + style + "><td" + tdstyle + ">" + TorahApp.getTorahLine(wordHighestGimatriaSofiot[0])
+					+ "</td><td>" + TorahApp.getTorahWord(wordHighestGimatriaSofiot[0], wordHighestGimatriaSofiot[1])
+					+ "</td><td>" + TorahApp.lookupTorahPositionFromLineNumber(wordHighestGimatriaSofiot[0], true)
 					+ "</td><td>" + wordHighestGimatriaSofiot[2] + "</td><Th"
 					+ HtmlGenerator.createFontSizeColorStyle(fontSizeBig, HtmlGenerator.mode_markup) + ">"
 					+ "מספר גימטריה הגבוה ביותר במילה עם חישוב שונה לסופיות" + "</Th></TR>");
 			// str.append("<TR"+style+"><td"+tdstyle+">" + "" + "</td><Th>" + "" +
 			// "</Th></TR>");
 			str.append("</TABLE>");
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				Output.printText(str.toString());
 				Output.printText("");
 				Output.printText(Output.markText("\u202B" + "סיים דוח", frame.ColorClass.footerStyleHTML));

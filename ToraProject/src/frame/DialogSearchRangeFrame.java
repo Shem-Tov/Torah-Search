@@ -16,7 +16,7 @@ import javax.swing.border.EmptyBorder;
 
 import console.Methods;
 import ioManagement.ExcelFunctions;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -78,14 +78,14 @@ public class DialogSearchRangeFrame extends JFrame {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void relistComboPerek(JComboBox cb, int bookNum) {
-		DefaultComboBoxModel<String> model = new DefaultComboBoxModel((ToraApp.getPerekArray(bookNum).toArray()));
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel((TorahApp.getPerekArray(bookNum).toArray()));
 		cb.setModel(model);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void relistComboPasuk(JComboBox cb, int bookNum, int perekNum) {
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel(
-				(ToraApp.getPasukArray(bookNum, perekNum).toArray()));
+				(TorahApp.getPasukArray(bookNum, perekNum).toArray()));
 		cb.setModel(model);
 	}
 
@@ -95,7 +95,7 @@ public class DialogSearchRangeFrame extends JFrame {
 	public static void main(String[] args) {
 		try {
 			if (!ExcelFunctions.tableLoaded) {
-				ToraApp.starter();
+				TorahApp.starter();
 			}
 			DialogSearchRangeFrame dialog = getInstance(false);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -147,7 +147,7 @@ public class DialogSearchRangeFrame extends JFrame {
 		grid2Panel.add(cBox_Perek1);
 
 		cBox_Book1 = new JComboBox<String>();
-		cBox_Book1.setModel(new DefaultComboBoxModel(ToraApp.getBookNames()));
+		cBox_Book1.setModel(new DefaultComboBoxModel(TorahApp.getBookNames()));
 		cBox_Book1.addItem(CB_string_end);
 		cBox_Book1.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		((JLabel) cBox_Book1.getRenderer()).setHorizontalAlignment(JLabel.RIGHT);
@@ -174,7 +174,7 @@ public class DialogSearchRangeFrame extends JFrame {
 		grid2Panel.add(cBox_Perek2);
 
 		cBox_Book2 = new JComboBox<String>();
-		cBox_Book2.setModel(new DefaultComboBoxModel(ToraApp.getBookNames()));
+		cBox_Book2.setModel(new DefaultComboBoxModel(TorahApp.getBookNames()));
 		cBox_Book2.addItem(CB_string_end);
 		cBox_Book2.setFont(new Font("Miriam Mono CLM", Font.BOLD, 16));
 		((JLabel) cBox_Book2.getRenderer()).setHorizontalAlignment(JLabel.RIGHT);
@@ -261,11 +261,11 @@ public class DialogSearchRangeFrame extends JFrame {
 					cBox_Perek1.setVisible(false);
 					if (!setRange)
 						cBox_Pasuk1.setVisible(false);
-					cBox_Book1.setModel(new DefaultComboBoxModel(ToraApp.getParashaNames()));
+					cBox_Book1.setModel(new DefaultComboBoxModel(TorahApp.getParashaNames()));
 				} else {
 					cb.setText(label_Perek);
 					cBox_Perek1.setVisible(true);
-					cBox_Book1.setModel(new DefaultComboBoxModel(ToraApp.getBookNames()));
+					cBox_Book1.setModel(new DefaultComboBoxModel(TorahApp.getBookNames()));
 					cBox_Book1.addItem(CB_string_end);
 					relistComboPerek(cBox_Perek1, cBox_Book1.getSelectedIndex());
 					if (!setRange) {
@@ -282,16 +282,16 @@ public class DialogSearchRangeFrame extends JFrame {
 					cb.setText(label_Parasha);
 					cBox_Perek2.setVisible(false);
 					cBox_Pasuk2.setVisible(false);
-					cBox_Book2.setModel(new DefaultComboBoxModel(ToraApp.getParashaNames()));
+					cBox_Book2.setModel(new DefaultComboBoxModel(TorahApp.getParashaNames()));
 				} else {
 					cb.setText(label_Perek);
 					cBox_Perek2.setVisible(true);
-					cBox_Book2.setModel(new DefaultComboBoxModel(ToraApp.getBookNames()));
+					cBox_Book2.setModel(new DefaultComboBoxModel(TorahApp.getBookNames()));
 					cBox_Book2.addItem(CB_string_end);
 					relistComboPerek(cBox_Perek2, cBox_Book2.getSelectedIndex());
 					if (!setRange) {
 						cBox_Pasuk2.setVisible(true);
-						relistComboPasuk(cBox_Pasuk2, cBox_Book2.getSelectedIndex(), cBox_Perek1.getSelectedIndex());
+						relistComboPasuk(cBox_Pasuk2, cBox_Book2.getSelectedIndex(), cBox_Perek2.getSelectedIndex());
 					}
 				}
 			}
@@ -329,20 +329,20 @@ public class DialogSearchRangeFrame extends JFrame {
 					int start = 0, end = 0;
 					String strRange1 = "", strRange2 = "";
 					if (checkBox_label1.isSelected()) {
-						start = ToraApp.lookupLineNumberFromParasha(cBox_Book1.getSelectedIndex());
+						start = TorahApp.lookupLineNumberFromParasha(cBox_Book1.getSelectedIndex());
 						strRange1 = "פר' " + cBox_Book1.getSelectedItem().toString();
 					} else {
-						start = ToraApp.lookupLineNumberFromPerek(cBox_Book1.getSelectedIndex(),
+						start = TorahApp.lookupLineNumberFromPerek(cBox_Book1.getSelectedIndex(),
 								cBox_Perek1.getSelectedIndex());
 						strRange1 = cBox_Book1.getSelectedItem().toString() + " "
 								+ cBox_Perek1.getSelectedItem().toString();
 					}
 					if (checkBox_label2.isSelected()) {
-						end = ToraApp.lookupLineNumberFromParasha(cBox_Book2.getSelectedIndex());
+						end = TorahApp.lookupLineNumberFromParasha(cBox_Book2.getSelectedIndex());
 						// Missing the Book, will be added conditionally below
 						strRange2 = "פר' " + cBox_Book2.getSelectedItem().toString();
 					} else {
-						end = ToraApp.lookupLineNumberFromPerek(cBox_Book2.getSelectedIndex(),
+						end = TorahApp.lookupLineNumberFromPerek(cBox_Book2.getSelectedIndex(),
 								cBox_Perek2.getSelectedIndex());
 						if (cBox_Book2.getSelectedIndex() < 5) {
 							strRange2 = cBox_Perek2.getSelectedItem().toString();
@@ -371,7 +371,7 @@ public class DialogSearchRangeFrame extends JFrame {
 							}
 						}
 						strHTML += strRange2 + "</html>";
-						if (ToraApp.isGui()) {
+						if (TorahApp.isGui()) {
 							Frame.setSearchRange(start, end, str, strHTML);
 						}
 						dispose();
@@ -380,22 +380,22 @@ public class DialogSearchRangeFrame extends JFrame {
 					int start = 0, end = 0;
 					String startStr = "", endStr = "",end2Str ="";
 					if (checkBox_label1.isSelected()) {
-						start = ToraApp.lookupLineNumberFromParasha(cBox_Book1.getSelectedIndex());
+						start = TorahApp.lookupLineNumberFromParasha(cBox_Book1.getSelectedIndex());
 						startStr = "פרשת " + cBox_Book1.getSelectedItem().toString();
 					} else {
-						start = ToraApp.lookupLineNumberFromPerek(cBox_Book1.getSelectedIndex(),
+						start = TorahApp.lookupLineNumberFromPerek(cBox_Book1.getSelectedIndex(),
 								cBox_Perek1.getSelectedIndex(),cBox_Pasuk1.getSelectedIndex());
 								startStr = cBox_Book1.getSelectedItem().toString() + " "
 										+ cBox_Perek1.getSelectedItem().toString() + ":" 
 										+ cBox_Pasuk1.getSelectedItem().toString();
 					}
 					if (checkBox_label2.isSelected()) {
-						end = ToraApp.lookupLineNumberFromParasha(cBox_Book2.getSelectedIndex());
+						end = TorahApp.lookupLineNumberFromParasha(cBox_Book2.getSelectedIndex());
 						endStr = "פרשת " + cBox_Book2.getSelectedItem().toString();
 						end2Str = " (לא כולל)";
 						// Missing the Book, will be added conditionally below
 					} else {
-						end = ToraApp.lookupLineNumberFromPerek(cBox_Book2.getSelectedIndex(),
+						end = TorahApp.lookupLineNumberFromPerek(cBox_Book2.getSelectedIndex(),
 								cBox_Perek2.getSelectedIndex(),cBox_Pasuk2.getSelectedIndex());
 						if (cBox_Book2.getSelectedIndex()==5) {
 							endStr = "הסוף";

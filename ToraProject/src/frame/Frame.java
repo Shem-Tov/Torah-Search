@@ -1,5 +1,5 @@
 package frame;
-
+//button_search.add  line #1989
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.GridLayout;
@@ -19,12 +19,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import java.awt.Insets;
 import java.awt.Point;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -49,7 +51,7 @@ import ioManagement.Output;
 import ioManagement.PropStore;
 import stringFormat.HtmlGenerator;
 import stringFormat.OtherHtml;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -71,7 +73,11 @@ import java.awt.event.MouseListener;
 import javax.swing.JProgressBar;
 import javax.swing.JMenuBar;
 
-public class Frame {
+public class Frame extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Frame frame_instance;
 
 	public static Frame getInstance() {
@@ -201,9 +207,10 @@ public class Frame {
 
 	private static Boolean methodCancelRequest = false;
 	private static Boolean methodRunning = false;
+	private static String[] name_Replace1 = { "יהוה", "ה'" };
 
-	private JFrame frame;
 	private static ArrayList<JPanel> subPanels = new ArrayList<JPanel>();
+	private static JSplitPane splitPane;
 	private static JPanel panel, subPanelProgressLabels, panelGroup;
 	private static JButton button_search;
 	private static JButton button_defaultSettings;
@@ -234,7 +241,7 @@ public class Frame {
 	static JTextPane textPane;
 	// static JTable table;
 	private static Tree tree;
-	private static JScrollPane scrollPane;
+	private static JScrollPane scrollPane, scrollPanelPane;
 	private static JTabbedPane tabbedPane;
 	private static HTMLDocument doc = new HTMLDocument();
 	private static HTMLEditorKit kit = new HTMLEditorKit();
@@ -289,7 +296,8 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					ClipboardClass.setSysClipboardText(textPane.getSelectedText());
+					ClipboardClass.setSysClipboardText(
+							textPane.getSelectedText().replace(name_Replace1[0], name_Replace1[1]));
 				}
 			});
 			add(anItem);
@@ -298,9 +306,9 @@ public class Frame {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					DialogFindWordFrame dFrame = DialogFindWordFrame.getInstance(textPane, true);
-					Point p = frame.getLocation();
-					dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
-							(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
+					Point p = frame_instance.getLocation();
+					dFrame.setLocation((int) (p.getX() + frame_instance.getWidth() - dFrame.getWidth()),
+							(int) (p.getY() + frame_instance.getHeight() - dFrame.getHeight()));
 					dFrame.setVisible(true);
 				}
 			});
@@ -319,7 +327,7 @@ public class Frame {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					HighLighter.getInstance(textPane, true).scrollWords();
-					frame.repaint();
+					frame_instance.repaint();
 				}
 			});
 			add(anItem);
@@ -346,7 +354,8 @@ public class Frame {
 			anItem.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent event) {
-					ClipboardClass.setSysClipboardText(textPane2.getSelectedText());
+					ClipboardClass.setSysClipboardText(
+							textPane2.getSelectedText().replace(name_Replace1[0], name_Replace1[1]));
 				}
 			});
 			add(anItem);
@@ -355,9 +364,9 @@ public class Frame {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					DialogFindWordFrame dFrame = DialogFindWordFrame.getInstance(textPane2, false);
-					Point p = frame.getLocation();
-					dFrame.setLocation((int) (p.getX() + frame.getWidth() - dFrame.getWidth()),
-							(int) (p.getY() + frame.getHeight() - dFrame.getHeight()));
+					Point p = frame_instance.getLocation();
+					dFrame.setLocation((int) (p.getX() + frame_instance.getWidth() - dFrame.getWidth()),
+							(int) (p.getY() + frame_instance.getHeight() - dFrame.getHeight()));
 					dFrame.setVisible(true);
 				}
 			});
@@ -376,7 +385,7 @@ public class Frame {
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					HighLighter.getInstance(textPane2, false).scrollWords();
-					frame.repaint();
+					frame_instance.repaint();
 				}
 			});
 			add(anItem);
@@ -409,7 +418,26 @@ public class Frame {
 					for (TreePath t : treePaths) {
 						str += OtherHtml.html2text(t.toString());
 					}
-					ClipboardClass.setSysClipboardText(str);
+					ClipboardClass.setSysClipboardText(str.replace(name_Replace1[0], name_Replace1[1]));
+				}
+			});
+			add(anItem);
+		}
+	}
+
+	class PopUpTopMenu extends JPopupMenu {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		JMenuItem anItem;
+
+		public PopUpTopMenu() {
+			anItem = new JMenuItem("שמור גודל חלונות");
+			anItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					saveFrameSize();
 				}
 			});
 			add(anItem);
@@ -429,6 +457,23 @@ public class Frame {
 
 		private void doPop(MouseEvent e) {
 			PopUpTree menu = new PopUpTree();
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
+	class PopClickTopMenuListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		private void doPop(MouseEvent e) {
+			PopUpTopMenu menu = new PopUpTopMenu();
 			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
@@ -599,7 +644,7 @@ public class Frame {
 		bool_canStore = bool;
 	}
 
-	public static void initValues() {
+	public void initValues() {
 		try {
 			comboBox_main.setSelectedIndex(Integer.parseInt(PropStore.map.get(PropStore.mode_main_number)));
 		} catch (Exception e) {
@@ -628,13 +673,13 @@ public class Frame {
 		setString_padding_Dilug(PropStore.map.get(PropStore.paddingDilug));
 		textField_dilugMin.setText(PropStore.map.get(PropStore.minDilug));
 		textField_dilugMax.setText(PropStore.map.get(PropStore.maxDilug));
-		ToraApp.subTorahTableFile = PropStore.map.get(PropStore.subTorahTablesFile);
-		ToraApp.subTorahLineFile = PropStore.map.get(PropStore.subTorahLineFile);
-		ToraApp.subTorahLetterFile = PropStore.map.get(PropStore.subTorahLettersFile);
-		ToraApp.differentSearchFile = PropStore.map.get(PropStore.differentSearchFile);
-		if ((ToraApp.differentSearchFile != null) && (ToraApp.differentSearchFile.length() > 0)) {
+		TorahApp.subTorahTableFile = PropStore.map.get(PropStore.subTorahTablesFile);
+		TorahApp.subTorahLineFile = PropStore.map.get(PropStore.subTorahLineFile);
+		TorahApp.subTorahLetterFile = PropStore.map.get(PropStore.subTorahLettersFile);
+		TorahApp.differentSearchFile = PropStore.map.get(PropStore.differentSearchFile);
+		if ((TorahApp.differentSearchFile != null) && (TorahApp.differentSearchFile.length() > 0)) {
 			comboBox_DifferentSearch
-					.setToolTipText(Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML, true));
+					.setToolTipText(Output.markText(TorahApp.differentSearchFile, ColorClass.headerStyleHTML, true));
 		} else {
 			comboBox_DifferentSearch.setToolTipText(Output.markText(
 					"להגדרת קובץ לחיפוש -> הגדרות<br> -> קבצים -> קובץ אחר לחיפוש", ColorClass.headerStyleHTML, true));
@@ -703,6 +748,18 @@ public class Frame {
 		checkBox_TooltipOption.setSelected(Boolean.parseBoolean(PropStore.map.get(PropStore.bool_TorahTooltip)));
 		textPane.setVisible(checkbox_createDocument.isSelected());
 		tree.setVisible(checkbox_createTree.isSelected());
+		try {
+			int height = Integer.parseInt(PropStore.map.get(PropStore.frameHeight));
+			int width = Integer.parseInt(PropStore.map.get(PropStore.frameWidth));
+			int splitLocation = Integer.parseInt(PropStore.map.get(PropStore.splitPaneDivide));
+			this.setSize(width, height);
+			splitPane.setDividerLocation(splitLocation);
+			// System.out.println("Width : "+width+" - Actual: "+this.getSize().width);
+			// System.out.println("Height: "+height+" - Actual: "+this.getSize().height);
+			// System.out.println("Split Location: "+splitLocation+" - Actual:
+			// "+splitPane.getDividerLocation());
+		} catch (Exception e) {
+		}
 	}
 
 	public static void saveValues() {
@@ -729,9 +786,9 @@ public class Frame {
 		PropStore.addNotNull(PropStore.paddingDilug, savedString_padding_Dilug);
 		PropStore.addNotNull(PropStore.countSearchIndex, savedString_countIndex);
 		PropStore.addNotNull(PropStore.searchWord2, savedString_searchSTR2);
-		PropStore.addNotNull(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
-		PropStore.addNotNull(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
-		PropStore.addNotNull(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
+		PropStore.addNotNull(PropStore.subTorahTablesFile, TorahApp.subTorahTableFile);
+		PropStore.addNotNull(PropStore.subTorahLineFile, TorahApp.subTorahLineFile);
+		PropStore.addNotNull(PropStore.subTorahLettersFile, TorahApp.subTorahLetterFile);
 		PropStore.addNotNull(PropStore.bgColor, String.valueOf(customBGColor.getRGB()));
 		PropStore.addNotNull(PropStore.mainHtmlColor, String.valueOf(new Color(ColorClass.color_mainStyleHTML[0],
 				ColorClass.color_mainStyleHTML[1], ColorClass.color_mainStyleHTML[2]).getRGB()));
@@ -751,6 +808,14 @@ public class Frame {
 		PropStore.addNotNull(PropStore.bool_last1, String.valueOf(checkBox_last1.isSelected()));
 		PropStore.addNotNull(PropStore.bool_last2, String.valueOf(bool_letters_last2));
 		PropStore.addNotNull(PropStore.bool_TorahTooltip, String.valueOf(checkBox_TooltipOption.isSelected()));
+		PropStore.store();
+	}
+
+	private static void saveFrameSize() {
+		PropStore.addNotNull(PropStore.fontSize, String.valueOf(getFontSize()));
+		PropStore.addNotNull(PropStore.frameHeight, String.valueOf(frame_instance.getBounds().height));
+		PropStore.addNotNull(PropStore.frameWidth, String.valueOf(frame_instance.getBounds().width));
+		PropStore.addNotNull(PropStore.splitPaneDivide, String.valueOf(splitPane.getDividerLocation()));
 		PropStore.store();
 	}
 
@@ -910,15 +975,6 @@ public class Frame {
 				.setToolTipText(Output.markText(checkBox_firstlast2_Letters_Tooltip, ColorClass.headerStyleHTML, true));
 		checkBox_last1
 				.setToolTipText(Output.markText(checkBox_firstlast1_Letters_Tooltip, ColorClass.headerStyleHTML, true));
-//		thisFrame.frame.setMinimumSize(new Dimension(550, 520));
-		if (frame_instance != null) {
-			frame_instance.frame.setMinimumSize(new Dimension((int) (300 + 250 * ((float) getFontSize() / 16)),
-					(int) (300 + 220 * ((float) getFontSize() / 16))));
-			// frame_instance.frame.getSize();
-
-			// frame_instance.frame.repaint();
-			// frame_instance.frame.revalidate();
-		}
 	}
 
 	private static void setBGColorPanel(Color c) {
@@ -1149,6 +1205,9 @@ public class Frame {
 			checkBox_searchMultiple.setSelected(bool_placeInfo);
 			break;
 		}
+//		panel.setPreferredSize(panel.getPreferredSize());
+		panel.validate();
+		panel.repaint();
 	}
 
 	public static int getFontSize() {
@@ -1355,13 +1414,13 @@ public class Frame {
 				try {
 					// Setup Method Array
 					// and Create Table for Torah Lookup
-					ToraApp.starter();
+					TorahApp.starter();
 					// Checks and runs console commands,
 					// and returns Boolean to determine
 					// if should start GUI.
 					if (Console.checkCommands(args)) {
 						Frame window = Frame.getInstance();
-						window.frame.setVisible(true);
+						window.setVisible(true);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1378,7 +1437,7 @@ public class Frame {
 	 */
 	public Frame() throws IOException, BadLocationException {
 		initialize();
-		frame.addComponentListener(new ComponentAdapter() {
+		this.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent componentEvent) {
 				panelWidth = (int) (scrollPane.getWidth() / 10);
 				// do stuff
@@ -1394,17 +1453,16 @@ public class Frame {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 	private void initialize() throws IOException, BadLocationException {
-		ToraApp.setGuiMode(ToraApp.id_guiMode_Frame);
-		frame = new JFrame();
+		TorahApp.setGuiMode(TorahApp.id_guiMode_Frame);
 		ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
-		frame.setTitle("חיפוש בתורה");
-		frame.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
-		frame.setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
-		frame.setBounds(100, 100, 1600, 887);
-		frame.setMinimumSize(new Dimension(550, 520));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-		frame.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		this.setTitle("חיפוש בתורה");
+		this.getContentPane().setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
+		this.setFont(new Font("Miriam Mono CLM", Font.PLAIN, getFontSize()));
+		this.setBounds(100, 100, 1000, 687);
+		this.setMinimumSize(new Dimension(200, 200));
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.getContentPane().setLayout(new BorderLayout(0, 0));
+		this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
 		comboBox_main = new JComboBox();
 		// menuPanel.add(comboBox_main);
@@ -1417,7 +1475,19 @@ public class Frame {
 		((JLabel) comboBox_main.getRenderer()).setHorizontalTextPosition(SwingConstants.RIGHT);
 		((JLabel) comboBox_main.getRenderer()).setHorizontalAlignment(SwingConstants.RIGHT);
 
-		panel = new JPanel();
+		panel = new JPanel() {
+			@Override
+			public Dimension getPreferredSize() {
+				// This is not professional
+				// but it works, for now.
+				// This makes sure the vertical scroll
+				// bar shows, but the height is not
+				// calculated.
+				// For some reason the panel height shows 0
+				// without this.
+				return new Dimension(0, 600);
+			}
+		};
 		GridLayout subPanelGrid1_1 = new GridLayout(1, 1, 1, 1);
 		GridLayout subPanelGrid1_2 = new GridLayout(1, 2, 1, 1);
 		GridLayout subPanelGrid2_1 = new GridLayout(2, 1, 1, 1);
@@ -1426,7 +1496,8 @@ public class Frame {
 		panel.setPreferredSize(new Dimension(300, 10));
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		frame.getContentPane().add(panel, BorderLayout.EAST);
+
+		// frame.getContentPane().add(panel, BorderLayout.EAST);
 		int countPanels = 0;
 
 		comboBox_sub = new JComboBox();
@@ -1451,11 +1522,11 @@ public class Frame {
 		});
 		label_textfield_Search = new JLabel(strLabel_Search_Standard);
 		label_textfield_Search.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_textfield_Search.setToolTipText(packHtml("%1 - יהוה"+"<br>"+"%2 - אלהים"));
+		label_textfield_Search.setToolTipText(packHtml("%1 - יהוה" + "<br>" + "%2 - אלהים"));
 		subPanels.get(countPanels).add(label_textfield_Search);
 		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 		textField_Search = new JTextField();
-		textField_Search.setMinimumSize(new Dimension(150, 25));
+		// textField_Search.setMinimumSize(new Dimension(150, 25));
 		textField_Search.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_Search.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		subPanels.get(countPanels++).add(textField_Search);
@@ -1471,7 +1542,7 @@ public class Frame {
 		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 
 		textField_dilugMin = new JTextField();
-		textField_dilugMin.setMinimumSize(new Dimension(150, 25));
+		// textField_dilugMin.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMin.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_dilugMin.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		subPanels.get(countPanels).add(textField_dilugMin);
@@ -1483,7 +1554,7 @@ public class Frame {
 		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 
 		textField_dilugMax = new JTextField();
-		textField_dilugMax.setMinimumSize(new Dimension(150, 25));
+		// textField_dilugMax.setMinimumSize(new Dimension(150, 25));
 		textField_dilugMax.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_dilugMax.setColumns(10);
 		textField_dilugMax.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -1555,7 +1626,7 @@ public class Frame {
 		// subPanels.get(countPanels).add(Box.createHorizontalGlue());
 		textField_padding = new JTextField();
 		textField_padding.setText((String) null);
-		textField_padding.setMinimumSize(new Dimension(150, 25));
+		// textField_padding.setMinimumSize(new Dimension(150, 25));
 		textField_padding.setHorizontalAlignment(SwingConstants.RIGHT);
 		textField_padding.setColumns(10);
 		textField_padding.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -1606,8 +1677,21 @@ public class Frame {
 		// JScrollPane scrollTable = new JScrollPane(table);
 		// tabbedPane.addTab("טבלה", scrollTable);
 
-		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-
+		// frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		scrollPanelPane = new JScrollPane(panel);
+		scrollPanelPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPanelPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		// scrollPanelPane.setVerticalScrollBar(new JScrollBar(JScrollBar.VERTICAL));
+		// scrollPanelPane.setHorizontalScrollBar(new
+		// JScrollBar(JScrollBar.HORIZONTAL));
+		// scrollPanelPane.getVerticalScrollBar().setUnitIncrement(7);
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, scrollPanelPane);
+		splitPane.setOneTouchExpandable(false);
+		splitPane.setContinuousLayout(true);
+		Dimension minimumSize = new Dimension(150, 150);
+		tabbedPane.setMinimumSize(minimumSize);
+		panel.setMinimumSize(minimumSize);
+		this.getContentPane().add(splitPane, BorderLayout.CENTER);
 		button_search = new JButton("חפש");
 
 		checkBox_first2 = new JCheckBox(checkBox_first2_Letters);
@@ -1658,7 +1742,7 @@ public class Frame {
 		subPanels.get(countPanels++).add(checkBox_searchMultiple);
 		// Change countPsukim checkbox text when changing selected state
 		progressBar = new JProgressBar();
-		progressBar.setMinimumSize(new Dimension(150, 30));
+		// progressBar.setMinimumSize(new Dimension(150, 30));
 		progressBar.setVisible(false);
 
 		button_searchRange = new JButton("טווח חיפוש");
@@ -1704,13 +1788,12 @@ public class Frame {
 		panelGroup = new JPanel();
 		for (JPanel thisPanel : subPanels) {
 			thisPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-
 			panelGroup.add(thisPanel);
 		}
 		panel.add(panelGroup);
 		// panelGroup.setBorder(new EmptyBorder(20, 20, 20, 20));
 		menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		this.setJMenuBar(menuBar);
 		menuBar.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuSettings = new JMenu("הגדרות");
 		menuSettings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -1747,6 +1830,8 @@ public class Frame {
 		menuBar.add(button_storeSearch);
 		menuBar.add(comboBox_DifferentSearch);
 		menuBar.add(comboBox_main);
+		menuBar.addMouseListener(new PopClickTopMenuListener());
+
 		menuItem_bgColor = new JMenuItem("צבע רקע");
 		menuItem_bgColor.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		menuItem_bgColor.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -2012,12 +2097,12 @@ public class Frame {
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-					ToraApp.subTorahTableFile = chooser.getSelectedFile().getAbsolutePath();
+					TorahApp.subTorahTableFile = chooser.getSelectedFile().getAbsolutePath();
 					// There are identical calls like this, one here the another in
 					// ToraApp.starter()
-					ToraApp.tablePerekBooks = ExcelFunctions
-							.readBookTableXLS(new String[] { ToraApp.subTorahTableFile }, 0, 0, 1, 6, 53);
-					PropStore.map.put(PropStore.subTorahTablesFile, ToraApp.subTorahTableFile);
+					TorahApp.tablePerekBooks = ExcelFunctions
+							.readBookTableXLS(new String[] { TorahApp.subTorahTableFile }, 0, 0, 1, 6, 53);
+					PropStore.map.put(PropStore.subTorahTablesFile, TorahApp.subTorahTableFile);
 					PropStore.store();
 				}
 			}
@@ -2034,10 +2119,10 @@ public class Frame {
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-					ToraApp.subTorahLineFile = chooser.getSelectedFile().getAbsolutePath();
+					TorahApp.subTorahLineFile = chooser.getSelectedFile().getAbsolutePath();
 					// There are identical calls like this, one here the another in
 					// ToraApp.starter()
-					PropStore.map.put(PropStore.subTorahLineFile, ToraApp.subTorahLineFile);
+					PropStore.map.put(PropStore.subTorahLineFile, TorahApp.subTorahLineFile);
 					PropStore.store();
 				}
 			}
@@ -2054,10 +2139,10 @@ public class Frame {
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-					ToraApp.subTorahLetterFile = chooser.getSelectedFile().getAbsolutePath();
+					TorahApp.subTorahLetterFile = chooser.getSelectedFile().getAbsolutePath();
 					// There are identical calls like this, one here the another in
 					// ToraApp.starter()
-					PropStore.map.put(PropStore.subTorahLettersFile, ToraApp.subTorahLetterFile);
+					PropStore.map.put(PropStore.subTorahLettersFile, TorahApp.subTorahLetterFile);
 					PropStore.store();
 				}
 			}
@@ -2074,12 +2159,12 @@ public class Frame {
 				int returnVal = chooser.showOpenDialog((Component) event.getSource());
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					System.out.println("You chose to open this file: " + chooser.getSelectedFile().getAbsolutePath());
-					ToraApp.differentSearchFile = chooser.getSelectedFile().getAbsolutePath();
+					TorahApp.differentSearchFile = chooser.getSelectedFile().getAbsolutePath();
 					comboBox_DifferentSearch.setToolTipText(
-							Output.markText(ToraApp.differentSearchFile, ColorClass.headerStyleHTML, true));
+							Output.markText(TorahApp.differentSearchFile, ColorClass.headerStyleHTML, true));
 					// There are identical calls like this, one here the another in
 					// ToraApp.starter()
-					PropStore.map.put(PropStore.differentSearchFile, ToraApp.differentSearchFile);
+					PropStore.map.put(PropStore.differentSearchFile, TorahApp.differentSearchFile);
 					PropStore.store();
 				}
 			}

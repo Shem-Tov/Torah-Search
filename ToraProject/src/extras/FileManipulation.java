@@ -10,7 +10,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import ioManagement.Output;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class FileManipulation {
 	static final Integer ONE = 1;
@@ -96,9 +96,9 @@ public class FileManipulation {
 				line2 = br2.readLine();
 				if (Math.abs(line2.length() - line.length()) > diff) {
 					countErrors++;
-					ToraApp.perekBookInfo pBookInstance;
+					TorahApp.perekBookInfo pBookInstance;
 					try {
-						pBookInstance = ToraApp.findPerekBook(lineCount);
+						pBookInstance = TorahApp.findPerekBook(lineCount);
 						String tempStr1 = pBookInstance.getBookName() + " " + pBookInstance.getPerekLetters() + ":"
 								+ pBookInstance.getPasukLetters();
 						System.out.println("Line Number: " + lineCount + " - Line Lengths: " + line.length() + " and "
@@ -157,10 +157,10 @@ public class FileManipulation {
 							return;
 						}
 						lastError = true;
-						ToraApp.perekBookInfo pBookInstance;
+						TorahApp.perekBookInfo pBookInstance;
 						try {
 							countErrors++;
-							pBookInstance = ToraApp.findPerekBook(linecount);
+							pBookInstance = TorahApp.findPerekBook(linecount);
 							String tempStr1 = pBookInstance.getBookName() + " " + pBookInstance.getPerekLetters() + ":"
 									+ pBookInstance.getPasukLetters();
 							System.out.println("Letters " + (char) c + " and " + (char) d + " are different. Line is: "
@@ -204,7 +204,7 @@ public class FileManipulation {
 	public static void main(String[] args) {
 		// readTextFile("/Lines_3.txt");
 		try {
-			ToraApp.starter();
+			TorahApp.starter();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

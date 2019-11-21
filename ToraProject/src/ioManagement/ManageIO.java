@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.io.UnsupportedEncodingException;
 
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class ManageIO {
 
@@ -29,7 +29,7 @@ public class ManageIO {
 			}
 			if ((file == null) || (!file.exists())) {
 				// throw new IOException("Could not find file for TorahLetters");
-				if (ToraApp.isGui()) {
+				if (TorahApp.isGui()) {
 					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
@@ -51,15 +51,15 @@ public class ManageIO {
 			}
 			//no break;
 		case Line:
-			fileName1 = ToraApp.ToraLineFile;
-			fileName2 = ToraApp.subTorahLineFile;
+			fileName1 = TorahApp.TorahLineFile;
+			fileName2 = TorahApp.subTorahLineFile;
 			break;
 		case NoTevot:
-			fileName1 = ToraApp.ToraLetterFile;
-			fileName2 = ToraApp.subTorahLetterFile;
+			fileName1 = TorahApp.TorahLetterFile;
+			fileName2 = TorahApp.subTorahLetterFile;
 			break;
 		case Different:
-			fileName2 = ToraApp.differentSearchFile;
+			fileName2 = TorahApp.differentSearchFile;
 			break;
 		}
 
@@ -67,8 +67,32 @@ public class ManageIO {
 			if (fileName1.equals("")) {
 				throw new Exception();
 			}
+			
+			/*
+			  public static void load(File f) throws IOException {
+				    FileInputStream fis = new FileInputStream(f);
+				    FileChannel fc = fis.getChannel();
+
+				    MappedByteBuffer mmb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+				   
+				    byte[] buffer = new byte[(int)fc.size()];
+				    mmb.get(buffer);
+				   
+				    fis.close();
+
+				    BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buffer)));
+
+				    for (String line = in.readLine(); line != null; line = in.readLine()) {
+				      // do your processing here...
+				    }
+
+				    in.close();
+				  }
+			*/
+			
+			
 			bReader = new BufferedReader(
-					new InputStreamReader(ToraApp.class.getClassLoader().getResourceAsStream(fileName1),"UTF8"));
+					new InputStreamReader(TorahApp.class.getClassLoader().getResourceAsStream(fileName1),"UTF8"));
 		} catch (Exception e) {
 			try {
 				File file = new File(fileName2);
@@ -76,7 +100,7 @@ public class ManageIO {
 			} catch (NullPointerException | FileNotFoundException | UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
-				if (ToraApp.isGui()) {
+				if (TorahApp.isGui()) {
 					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);
@@ -112,7 +136,7 @@ public class ManageIO {
 		PushbackReader bReader = null;
 		try {
 			bReader = new PushbackReader(
-					new InputStreamReader(ToraApp.class.getClassLoader().getResourceAsStream(fileName1)));
+					new InputStreamReader(TorahApp.class.getClassLoader().getResourceAsStream(fileName1)));
 		} catch (Exception e) {
 			try {
 				File file = new File(fileName2);
@@ -120,7 +144,7 @@ public class ManageIO {
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
-				if (ToraApp.isGui()) {
+				if (TorahApp.isGui()) {
 					frame.Frame.clearTextPane();
 				}
 				Output.printText("Could not find file for TorahLetters", 1);

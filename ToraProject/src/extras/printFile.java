@@ -5,7 +5,7 @@ import java.io.IOException;
 import frame.ColorClass;
 import ioManagement.ManageIO;
 import ioManagement.Output;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 import torahApp.TorahPlaceClass;
 
 public class printFile {
@@ -41,7 +41,7 @@ public class printFile {
 					continue;
 				}
 				if (bool_addInfo) {
-					TorahPlaceClass TorahPlace = ToraApp.checkStartBookParashaFromLineNum(countLines);
+					TorahPlaceClass TorahPlace = TorahApp.checkStartBookParashaFromLineNum(countLines);
 					if (TorahPlace.getName() != null) {
 						Output.printLine(2,4);
 						Output.printText(TorahPlace.getName(),4);
@@ -51,9 +51,9 @@ public class printFile {
 					}
 				}
 				Output.printText(
-						((bool_addInfo) ? ToraApp.lookupTorahPositionFromLineNumber(countLines, false) + " ":"")
+						((bool_addInfo) ? TorahApp.lookupTorahPositionFromLineNumber(countLines, false) + " ":"")
 						+ Output.markText(line, ColorClass.tooltipStyleHTML),4);
-				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
+				if ((TorahApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק הדפסה באמצע", 1);
 					break;
 				}

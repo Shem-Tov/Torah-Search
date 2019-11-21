@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class PropStore {
-	private static final String fileName = ToraApp.resourceFolder + "config.properties";
+	private static final String fileName = TorahApp.resourceFolder + "config.properties";
 	public static Map<String, String> map = new HashMap<String, String>();
 	public static final String searchWord = "searchWord";
 	public static final String searchWord2 = "searchWord2";
@@ -31,7 +31,6 @@ public class PropStore {
 	public static final String subTorahLettersFile = "subTorahLettersFile";
 	public static final String differentSearchFile = "differentSearchFile";
 	public static final String bool_TorahTooltip = "bool_TorahTooltip";
-	public static final String fontSize = "fontSize";
 	public static final String bgColor = "bgColor";
 	public static final String mainHtmlColor = "mainHtmlColor";
 	public static final String markupHtmlColor = "markupHtmlColor";
@@ -50,6 +49,10 @@ public class PropStore {
 	public static final String mode_sub_search = "subModeSearch";
 	public static final String mode_sub_dilugim = "subModeDilugim";
 	public static final String bool_search_Multi = "searchMulti";
+	public static final String fontSize = "fontSize";
+	public static final String frameHeight = "frameHeight";
+	public static final String frameWidth = "frameWidth";
+	public static final String splitPaneDivide = "splitPaneDivide";
 	
 	public static void addNotNull(String key, String value) {
 		if (value != null) {

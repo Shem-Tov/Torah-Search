@@ -12,7 +12,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class Tree extends JTree {
 	public static Tree getInstance() {
@@ -123,9 +123,9 @@ public class Tree extends JTree {
 				addNode((isDilug) ? thisDilugNode : null, thisParasha, dataBuffer);
 				dataBuffer = new ArrayList<String>();
 			}
-			int childIndex = ToraApp.lookupParashaIndexFromLine(lineChild);
-			String parent = ToraApp.tablePerekParashot[0][childIndex];
-			nextParashaIndex = Integer.parseInt(ToraApp.tablePerekParashot[1][childIndex + 1]);
+			int childIndex = TorahApp.lookupParashaIndexFromLine(lineChild);
+			String parent = TorahApp.tablePerekParashot[0][childIndex];
+			nextParashaIndex = Integer.parseInt(TorahApp.tablePerekParashot[1][childIndex + 1]);
 			thisParasha = parent;
 			String str = "";
 			if (isDilug) {

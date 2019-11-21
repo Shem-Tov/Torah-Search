@@ -14,7 +14,7 @@ import stringFormat.HtmlGenerator;
 import stringFormat.StringAlignUtils;
 import stringFormat.StringAlignUtils.Alignment;
 import torahApp.LetterCounter;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class Output {
 	public final static int padLines =2;
@@ -38,11 +38,11 @@ public class Output {
 			e.printStackTrace();
 		}
 
-		if (!ToraApp.isGui()) {
+		if (!TorahApp.isGui()) {
 			return new TorahLine(line, null);
 		}
 		//remove first index
-		indexes = (ArrayList<Integer[]>) indexes.subList(1,indexes.size());
+		indexes = new ArrayList<Integer[]>( indexes.subList(1,indexes.size()));
 		return new TorahLine(line, createLineHtml(line, indexes, htmlFormat));
 	}
 
@@ -69,13 +69,13 @@ public class Output {
 
 		// Does not mark, if in console mode
 		String lineHtml = "";
-		String lineConvert1=ToraApp.getHebrew(line, bool_sofiot1);
-		String searchConvert1=ToraApp.getHebrew(searchSTR, bool_sofiot1);
+		String lineConvert1=TorahApp.getHebrew(line, bool_sofiot1);
+		String searchConvert1=TorahApp.getHebrew(searchSTR, bool_sofiot1);
 		String searchConvert2 = "";
 		String lineConvert2 = "";
 		if (searchSTR2 != null) {
-				searchConvert2 = ToraApp.getHebrew(searchSTR2, bool_sofiot2);
-				lineConvert2 = ToraApp.getHebrew(line, bool_sofiot2);
+				searchConvert2 = TorahApp.getHebrew(searchSTR2, bool_sofiot2);
+				lineConvert2 = TorahApp.getHebrew(line, bool_sofiot2);
 		}
 		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
 		ArrayList<Integer[]> indexes2 = new ArrayList<Integer[]>();
@@ -326,7 +326,7 @@ public class Output {
 
 	public static String markText(String str, HtmlGenerator markupStyle, Boolean htmlTag) {
 		// Does not mark, if in console mode
-		if (!ToraApp.isGui()) {
+		if (!TorahApp.isGui()) {
 			return str;
 		}
 		String html = (markupStyle.getHtml(0) + str + markupStyle.getHtml(1));
@@ -340,8 +340,8 @@ public class Output {
 			Boolean first, Boolean last, stringFormat.HtmlGenerator htmlFormat, int... wordsIndex) {
 		//searchSTR - will find letters ordered but scattered, and will mark first appearance
 		//wordsIndex - other words that should be marked.
-		String lineConvert = ToraApp.getHebrew(line, bool_sofiot);
-		String searchConvert = ToraApp.getHebrew(searchSTR, bool_sofiot);
+		String lineConvert = TorahApp.getHebrew(line, bool_sofiot);
+		String searchConvert = TorahApp.getHebrew(searchSTR, bool_sofiot);
 		int oldIndex = 0;
 		ArrayList<Integer[]> indexes = new ArrayList<Integer[]>();
 		int indexCounter = 0;
@@ -380,8 +380,8 @@ public class Output {
 			Boolean first, Boolean last, stringFormat.HtmlGenerator htmlFormat, int... wordsIndex) {
 		//searchSTR - will find letters unOrdered but scattered, and will mark first appearance
 		//wordsIndex - other words that should be marked.
-		String lineConvert = ToraApp.getHebrew(line, bool_sofiot);
-		String searchConvert = ToraApp.getHebrew(searchSTR, bool_sofiot);
+		String lineConvert = TorahApp.getHebrew(line, bool_sofiot);
+		String searchConvert = TorahApp.getHebrew(searchSTR, bool_sofiot);
 		//find scattered unOrdered letters
 		//create letterMap
 		LetterCounter lCounter = new LetterCounter();
@@ -434,7 +434,7 @@ public class Output {
 	}
 	
 	public static String printSomePsukimHtml(int lineNum, int padLines) {
-		if (!ToraApp.isGui() || !Frame.getCheckBox_Tooltip()) {
+		if (!TorahApp.isGui() || !Frame.getCheckBox_Tooltip()) {
 			return "";
 		}
 		String line = "";
@@ -478,7 +478,7 @@ public class Output {
 
 	public static String markTextBounds(String str, int startMark, int finishMark, HtmlGenerator markupStyle) {
 		// Does not mark, if in console mode
-		if (!ToraApp.isGui()) {
+		if (!TorahApp.isGui()) {
 			return str;
 		}
 		String[] strArray = new String[] { "", "", "" };
@@ -525,7 +525,7 @@ public class Output {
 
 	public static LineReport printPasukInfoExtraIndexes(int countLines, String searchSTR, String line, HtmlGenerator markupStyle,
 			Boolean bool_sofiot1, Boolean bool_wholeWords, int index, Boolean bool_sofiot2, String searchSTR2,ArrayList<Integer[]> indexes) throws NoSuchFieldException {
-		ToraApp.perekBookInfo pBookInstance = ToraApp.findPerekBook(countLines);
+		TorahApp.perekBookInfo pBookInstance = TorahApp.findPerekBook(countLines);
 		LineHtmlReport lineHtmlReport = new LineHtmlReport("","", new ArrayList<Integer[]>());
 		try {
 			String tempStr1 = "\u202B" + "\"" + markText(searchSTR, markupStyle) + "\" ";
@@ -544,13 +544,13 @@ public class Output {
 			} else {
 				lineHtmlReport = markMatchesInLine(line, searchSTR, markupStyle, bool_sofiot1, bool_wholeWords, index, false, null, indexes);
 			}
-			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml(ToraApp.isGui());
+			String outputText = StringAlignUtils.padRight(tempStr1, 32) + " =    " + lineHtmlReport.getLineHtml(TorahApp.isGui());
 			printText(outputText, 0);
 			String tooltip = printSomePsukimHtml(countLines, padLines);
 			printText("טקסט נוסף",3,tooltip);
 			// printText(String.valueOf(countLines),3);
 			printLine(1);
-			if (ToraApp.getGuiMode()==ToraApp.id_guiMode_Frame) {
+			if (TorahApp.getGuiMode()==TorahApp.id_guiMode_Frame) {
 				printTree(countLines, outputText, false);
 			}
 		} catch (Exception e) {
@@ -577,7 +577,7 @@ public class Output {
 		// mode 0 - TextPane
 		// mode 4 - TorahPane
 		String line = getLine(size, color);
-		if (ToraApp.isGui()) {
+		if (TorahApp.isGui()) {
 			Frame.appendText(line, (byte) mode);
 		}
 	}
@@ -650,8 +650,8 @@ public class Output {
 		// mode 2 = silence on GUI
 		// mode 3 = label
 		// mode 4 = print Torah
-		switch (ToraApp.getGuiMode()) {
-		case ToraApp.id_guiMode_Frame: // GUI Mode
+		switch (TorahApp.getGuiMode()) {
+		case TorahApp.id_guiMode_Frame: // GUI Mode
 			switch (mode) {
 			case 0:
 			case 1:

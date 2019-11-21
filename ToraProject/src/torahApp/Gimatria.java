@@ -160,7 +160,7 @@ public class Gimatria {
 				Output.printText("\u202B" + Output.markText("חיפוש צירופי אותיות", frame.ColorClass.headerStyleHTML));
 			}
 			// Output.printText("");
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				frame.Frame.setLabel_countMatch("נמצא " + "0" + " פעמים");
 				frame.SwingActivity.setFinalProgress(searchRange);
 				Output.printLine(Frame.lineHeaderSize);
@@ -182,7 +182,7 @@ public class Gimatria {
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
+				if ((TorahApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 				ArrayList<Integer[]> prevIndexes = null;
@@ -207,7 +207,7 @@ public class Gimatria {
 								&& (counter + startWordIndex < splitStr.length - 1));
 						if (searchGmt == countGimatria) {
 							count++;
-							if (ToraApp.isGui()) {
+							if (TorahApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							if (fMode==fileMode.LastSearch) {
@@ -236,7 +236,7 @@ public class Gimatria {
 						if ((sumGimatria == searchGmt)
 								&& ((line.length() > lineCountEnd) && (line.charAt(lineCountEnd) != ' '))) {
 							count++;
-							if (ToraApp.isGui()) {
+							if (TorahApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							String s = line.substring(lineCountStart, lineCountEnd);
@@ -250,7 +250,7 @@ public class Gimatria {
 						}
 					}
 				}
-				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
+				if ((TorahApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					// break is redundant, because for loop will end anyway because maxDilug has
 					// changed to current loop index
@@ -262,10 +262,10 @@ public class Gimatria {
 			Output.printText("");
 			Output.printText("\u202B" + "נמצא " + "\"" + searchGmt + "\"" + "\u00A0" + count + " פעמים.");
 			Output.printText("");
-			if ((ToraApp.isGui())) {
+			if ((TorahApp.isGui())) {
 				Tree.getInstance().flushBuffer((count < 50));
 			}
-			if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
+			if ((TorahApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 				Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 				// break is redundant, because for loop will end anyway because maxDilug has
 				// changed to current loop index
@@ -284,7 +284,7 @@ public class Gimatria {
 			}
 			if (count > 0) {
 				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, Title2, String.valueOf(searchGmt),
-						((ToraApp.getGuiMode() == ToraApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
+						((TorahApp.getGuiMode() == TorahApp.id_guiMode_Frame) ? Frame.get_searchRangeText() : ""));
 			}
 			Output.printText("\u202B" + "סיים חיפוש");
 		} catch (Exception e) {

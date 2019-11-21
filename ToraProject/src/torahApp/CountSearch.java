@@ -91,14 +91,14 @@ public class CountSearch {
 			str = "\u202B" + ((bool_wholeWords) ? "חיפוש מילים שלמות" : "חיפוש צירופי אותיות");
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (!ToraApp.isGui()) {
+			if (!TorahApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
 				Tree.getInstance().changeRootText(Output.markText(searchSTR, ColorClass.headerStyleHTML));
 				Output.printLine(Frame.lineHeaderSize);
 			}
 			// System.out.println(formatter.locale());
-			if (ToraApp.isGui()) {
+			if (TorahApp.isGui()) {
 				frame.Frame.setLabel_countMatch("");
 				frame.SwingActivity.setFinalProgress(searchRange);
 			}
@@ -107,12 +107,12 @@ public class CountSearch {
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
+				if ((TorahApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 				if (bool_wholeWords) {
 					if (searchSTR.contains(" ")) {
-						if (ToraApp.isGui()) {
+						if (TorahApp.isGui()) {
 							frame.Frame.clearTextPane();
 						}
 						Output.printText("לא ניתן לעשות חיפוש לפי מילים ליותר ממילה אחת, תעשו חיפוש לפי אותיות", 1);
@@ -177,12 +177,12 @@ public class CountSearch {
 						}
 					}
 				}
-				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
+				if ((TorahApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
 			}
-			if ((ToraApp.isGui())) {
+			if ((TorahApp.isGui())) {
 				Tree.getInstance().flushBuffer((count<50));
 			}
 		} catch (Exception e) {

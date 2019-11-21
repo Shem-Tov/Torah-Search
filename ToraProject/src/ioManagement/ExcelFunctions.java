@@ -13,7 +13,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,7 +78,7 @@ public class ExcelFunctions {
 			}
 		}
 
-		if ((ToraApp.isGui()) && (!frame.Frame.getCheckbox_createExcel())) {
+		if ((TorahApp.isGui()) && (!frame.Frame.getCheckbox_createExcel())) {
 			return;
 		}
 		// mode=0 regular search sofiot considered
@@ -409,7 +409,7 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
-				if (ToraApp.isGui()) {
+				if (TorahApp.isGui()) {
 					frame.Frame.clearTextPane();
 					frame.Frame.setButtonEnabled(true);
 				}
@@ -417,7 +417,7 @@ public class ExcelFunctions {
 				break;
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
-					if (ToraApp.isGui()) {
+					if (TorahApp.isGui()) {
 						frame.Frame.clearTextPane();
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);
@@ -486,7 +486,7 @@ public class ExcelFunctions {
 					}
 				}
 				tableLoaded = true;
-				if (ToraApp.isGui()) {
+				if (TorahApp.isGui()) {
 					frame.Frame.clearTextPane();
 					frame.Frame.setButtonEnabled(true);
 				}
@@ -494,7 +494,7 @@ public class ExcelFunctions {
 				break;
 			} catch (IOException | NullPointerException e) {
 				if (dloop == inputFiles.length - 1) {
-					if (ToraApp.isGui()) {
+					if (TorahApp.isGui()) {
 						frame.Frame.clearTextPane();
 					}
 					Output.printText("Error importing from EXCEL Sheet", 1);

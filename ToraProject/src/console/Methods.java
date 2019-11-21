@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import extras.extraFunctions;
+import extras.ExtraFunctions;
 import torahApp.CountSearch;
 import torahApp.DilugWordPasuk;
 import torahApp.Dilugim;
 import torahApp.Gimatria;
 import torahApp.LetterSearch;
 import torahApp.ReportTorahCount;
-import torahApp.ToraSearch;
+import torahApp.TorahSearch;
 
 public class Methods {
 	public interface MethodRunner {
@@ -38,7 +38,7 @@ public class Methods {
 		arrayMethods.put(id_searchWords,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				ToraSearch tora = ToraSearch.getInstance();
+				TorahSearch tora = TorahSearch.getInstance();
 				tora.searchWords(args);
 			}
 		});
@@ -114,13 +114,13 @@ public class Methods {
 		arrayMethods.put(998,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				extraFunctions.findWords();
+				ExtraFunctions.findWords();
 			}
 		});
 		arrayMethods.put(999,new MethodRunner() {
 			@Override
 			public void run(Object... args) throws IOException {
-				extraFunctions.findFirstLetters();
+				ExtraFunctions.findFirstLetters();
 			}
 		});
 	}

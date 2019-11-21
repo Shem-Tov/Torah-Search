@@ -4,6 +4,43 @@ public class HebrewLetters {
 	private static char[] letters = { 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע',
 			'פ', 'צ', 'ק', 'ר', 'ש', 'ת','ך', 'ם', 'ן', 'ף', 'ץ' };
 	
+	private static char[][] hebrewLetters = { { ' ', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט' },
+			{ ' ', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ' }, { ' ', 'ק', 'ר', 'ש', 'ת' } };
+
+	public static String removeVowels(String hebString){
+	    String newString = "";
+	    for(int j=0; j<hebString.length() ; j++) {
+	        //char c = hebString.charAt(j);
+	        if(hebString.charAt(j)<1425 || hebString.charAt(j)>1479)
+	            newString = newString + hebString.charAt(j);
+	    }
+	    return newString;
+	}
+
+	public static String findHebrewLetters(int num) {
+		String str = "";
+		if (num >= 1000) {
+			str += (Character.toString(hebrewLetters[0][num / 1000])).replaceAll("\\s+", "") + "'";
+			num = (num % 1000);
+		}
+		while (num >= 100) {
+			str += (Character.toString(hebrewLetters[2][Math.min(num, 400) / 100])).replaceAll("\\s+", "");
+			num -= Math.min((num - (num % 100)), 400);
+		}
+		switch (num) {
+		case 15:
+			str += "טו";
+			break;
+		case 16:
+			str += "טז";
+			break;
+		default:
+			str += (Character.toString(hebrewLetters[1][num / 10]).replaceAll("\\s+", "")
+					+ Character.toString(hebrewLetters[0][num % 10])).replaceAll("\\s+", "");
+		}
+		return str;
+	}
+
 	public static Boolean checkHebrew(String str) {
 		Boolean finalBool = true;
 		// OK to be empty

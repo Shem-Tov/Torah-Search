@@ -123,7 +123,7 @@ public class LetterSearch {
 				bool_sofiot2 = (args[12] != null) ? (Boolean) args[12] : true;
 				searchConvert2 = (!bool_sofiot2) ? HebrewLetters.switchSofiotStr(searchSTR2) : searchSTR2;
 				if (searchSTR2.contains(" ")) {
-					if (ToraApp.isGui()) {
+					if (TorahApp.isGui()) {
 						frame.Frame.clearTextPane();
 					}
 					Output.printText("מילה 2 - לא ניתן לחפש עם רווחים", 1);
@@ -132,7 +132,7 @@ public class LetterSearch {
 			}
 			if ((mode == 0) || (mode == 1)) {
 				if (searchSTR.contains(" ")) {
-					if (ToraApp.isGui()) {
+					if (TorahApp.isGui()) {
 						frame.Frame.clearTextPane();
 					}
 					Output.printText("מילה 1 - לא ניתן לחפש עם רווחים", 1);
@@ -178,7 +178,7 @@ public class LetterSearch {
 			str = "\u202B" + "מחפש" + " \"" + searchSTR + ((mode == 1) ? (" | " + searchSTR2) : "") + "\"...";
 			Output.printText(Output.markText(str, frame.ColorClass.headerStyleHTML));
 			// Output.printText("");
-			if (!ToraApp.isGui()) {
+			if (!TorahApp.isGui()) {
 				Output.printText(StringAlignUtils.padRight("", str.length() + 4).replace(' ', '-'));
 			} else {
 				Tree.getInstance().changeRootText(Output.markText(searchSTR + ((mode == 1) ? (" | " + searchSTR2) : ""),
@@ -201,7 +201,7 @@ public class LetterSearch {
 				if ((searchRange[1] != 0) && ((countLines <= searchRange[0]) || (countLines > searchRange[1]))) {
 					continue;
 				}
-				if ((ToraApp.isGui()) && (countLines % 25 == 0)) {
+				if ((TorahApp.isGui()) && (countLines % 25 == 0)) {
 					frame.SwingActivity.getInstance().callProcess(countLines);
 				}
 
@@ -220,7 +220,7 @@ public class LetterSearch {
 					String s1 = splitStr[i];
 					// Do your stuff here
 					String sConvert;
-					sConvert = ToraApp.getHebrew(s1, bool_sofiot1);
+					sConvert = TorahApp.getHebrew(s1, bool_sofiot1);
 					if (((bool_first1) && (searchConvert.charAt(0) != sConvert.charAt(0)))
 							|| ((bool_last1) && (!searchConvert.substring(searchConvert.length() - 1)
 									.equals(sConvert.substring(sConvert.length() - 1))))) {
@@ -237,7 +237,7 @@ public class LetterSearch {
 						switch (mode) {
 						case 0:
 							count++;
-							if (ToraApp.isGui()) {
+							if (TorahApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							wCounter.addWord(s1);
@@ -256,7 +256,7 @@ public class LetterSearch {
 								String s2 = splitStr2[j];
 								// Do your stuff here
 								String sConvert2;
-								sConvert2 = ToraApp.getHebrew(s2, bool_sofiot2);
+								sConvert2 = TorahApp.getHebrew(s2, bool_sofiot2);
 								if (((bool_first2) && (searchConvert2.charAt(0) != sConvert2.charAt(0)))
 										|| ((bool_last2) && (!searchConvert2.substring(searchConvert2.length() - 1)
 												.equals(sConvert2.substring(sConvert2.length() - 1))))) {
@@ -266,7 +266,7 @@ public class LetterSearch {
 										|| ((bool_keepOrder2)
 												&& containsOrderOfLetters(sConvert2, searchConvert2, false))) {
 									count++;
-									if (ToraApp.isGui()) {
+									if (TorahApp.isGui()) {
 										frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 									}
 									wCounter.addWord(s2);
@@ -295,7 +295,7 @@ public class LetterSearch {
 										if (fMode==fileMode.LastSearch) {
 											prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
 										}
-										results.add(ToraApp.returnBookInfoExtraIndexes(searchSTR, countLines, lineHtmlReport, prevIndexes));
+										results.add(TorahApp.returnBookInfoExtraIndexes(searchSTR, countLines, lineHtmlReport, prevIndexes));
 										searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
 										break;
 									}
@@ -305,7 +305,7 @@ public class LetterSearch {
 							break;
 						case 2:
 							count++;
-							if (ToraApp.isGui()) {
+							if (TorahApp.isGui()) {
 								frame.Frame.setLabel_countMatch("נמצא " + count + " פעמים");
 							}
 							LineHtmlReport lineHtmlReport = new LineHtmlReport(null, null, null);
@@ -319,18 +319,18 @@ public class LetterSearch {
 							if (fMode==fileMode.LastSearch) {
 								prevIndexes = LastSearchClass.getStoredLineIndexes(countFileLines);
 							}
-							results.add(ToraApp.returnBookInfoExtraIndexes(searchSTR, countLines, lineHtmlReport, prevIndexes));
+							results.add(TorahApp.returnBookInfoExtraIndexes(searchSTR, countLines, lineHtmlReport, prevIndexes));
 							searchRecord.add(countLines,results.get(results.size()-1).getResults().get(0));
 							break;
 						}
 					}
 				}
-				if ((ToraApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
+				if ((TorahApp.isGui()) && (frame.Frame.getMethodCancelRequest())) {
 					Output.printText("\u202B" + "המשתמש הפסיק חיפוש באמצע", 1);
 					break;
 				}
 			}
-			if ((ToraApp.isGui())) {
+			if ((TorahApp.isGui())) {
 				Tree.getInstance().flushBuffer((count < 50));
 			}
 			String fileName ="";
@@ -400,7 +400,7 @@ public class LetterSearch {
 			}
 			if (count > 0) {
 				ExcelFunctions.writeXLS(fileName, sheet, 3, Title, results, searchSTR, Title2, Title3, Title4, Title5,
-						Title6, Title7, Title8, ((ToraApp.isGui()) ? Frame.get_searchRangeText() : ""));
+						Title6, Title7, Title8, ((TorahApp.isGui()) ? Frame.get_searchRangeText() : ""));
 			}
 		} catch (
 

@@ -1,0 +1,118 @@
+package extras;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+
+
+public class CountTorahXLS {
+
+	private static final String EXCEL_FILE_LOCATION = "./Tables/";
+	private static final String EXCEL_FILE_EXTENSION = ".xls";
+
+	public static void writeXLS(String fileName, ArrayList<ArrayList<Integer>> results, Integer ignore) {
+
+		String sheetName = "countLettersInLines";
+		HSSFWorkbook workbook = null;
+		HSSFSheet sheet = null;
+		File file = null;
+		String fileNameExtended = EXCEL_FILE_LOCATION + fileName + EXCEL_FILE_EXTENSION;
+		try {
+			new File(EXCEL_FILE_LOCATION).mkdirs();
+			file = new File(fileNameExtended);
+			if (file.exists()) {
+				FileInputStream excelFile = new FileInputStream(file);
+				workbook = new HSSFWorkbook(excelFile);
+			} else {
+				workbook = new HSSFWorkbook();
+				// HSSFSheet sheet = workbook.createSheet("Sample sheet1");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		sheet = workbook.getSheet(sheetName);
+		if (sheet != null) {
+			int index = workbook.getSheetIndex(sheetName);
+			workbook.removeSheetAt(index);
+		}
+		sheet = workbook.createSheet(sheetName);
+		HSSFFont txtFont = workbook.createFont();
+		HSSFFont txtFontTitle = workbook.createFont();
+		HSSFFont txtFontHeader = workbook.createFont();
+		txtFont.setFontName("Nachlieli CLM");
+		txtFont.setFontHeightInPoints((short) 16);
+		txtFontTitle.setFontName("Nachlieli CLM");
+		txtFontTitle.setBold(true);
+		txtFontTitle.setFontHeightInPoints((short) 20);
+		txtFontTitle.setColor(IndexedColors.PLUM.getIndex());
+		txtFontHeader.setFontName("Nachlieli CLM");
+		txtFontHeader.setBold(true);
+		txtFontHeader.setFontHeightInPoints((short) 18);
+		txtFontHeader.setColor(IndexedColors.BLUE_GREY.getIndex());
+		CellStyle style = workbook.createCellStyle(); // Create new style
+		style.setFont(txtFont);
+		style.setAlignment(HorizontalAlignment.RIGHT);
+
+		sheet.setDefaultRowHeightInPoints(36);
+		// CellStyle fontStyle = workbook.createCellStyle();
+		// fontStyle.setFont(txtFont);
+		sheet.setRightToLeft(true);
+		CellStyle styleTitle = workbook.createCellStyle(); // Create new style
+		styleTitle.setWrapText(true); // Set wordwrap
+		styleTitle.setFont(txtFontTitle);
+		styleTitle.setAlignment(HorizontalAlignment.RIGHT);
+		CellStyle styleHeader = workbook.createCellStyle(); // Create new style
+		styleHeader.setFont(txtFontHeader);
+		styleHeader.setAlignment(HorizontalAlignment.RIGHT);
+		int rowNum = 0;
+		System.out.println("Creating excel "+fileNameExtended+" : Sheet - "+ sheetName);
+
+		Row row = null;
+		Cell cell = null;
+
+		for (ArrayList<Integer> c : results) {
+			row = sheet.createRow(rowNum++);
+			for (int i = 0; i < c.size(); i++) {
+				cell = row.createCell(i);
+				cell.setCellStyle(style);
+				if ((ignore == null) || (ignore != c.get(i))) {
+					cell.setCellValue(c.get(i));
+				}
+			}
+		}
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(1);
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(fileNameExtended);
+			workbook.write(outputStream);
+			workbook.close();
+			outputStream.close();
+		} catch (
+
+		FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Done");
+	}
+
+	public static void main(String[] args) {
+	}
+}

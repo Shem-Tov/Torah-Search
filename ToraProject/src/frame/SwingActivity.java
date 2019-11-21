@@ -14,7 +14,7 @@ import ioManagement.LastSearchClass;
 import ioManagement.ManageIO;
 import ioManagement.ManageIO.fileMode;
 import ioManagement.Output;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class SwingActivity extends SwingWorker<Void, Integer> {
 
@@ -64,8 +64,8 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 	@Override
 	protected Void doInBackground() {
 		// TODO Auto-generated method stub
-		String searchSTR1 = Frame.getTextField_Search().replaceAll("%1", "יהוה").replaceAll("%2","אלהים");
-		String searchSTR2 = Frame.getTextField_padding().replaceAll("%1", "יהוה").replaceAll("%2","אלהים");;
+		String searchSTR1 = Frame.getTextField_Search().replaceAll("%1", "יהוה").replaceAll("%2","אלהים").trim();
+		String searchSTR2 = Frame.getTextField_padding().replaceAll("%1", "יהוה").replaceAll("%2","אלהים").trim();
 		String mainComboString = Frame.getComboBox_main();
 		Boolean differentSearch = !Frame.isTorahSearch();
 		if (mainComboString != Frame.combo_strTorahPrint) {
@@ -84,7 +84,7 @@ public class SwingActivity extends SwingWorker<Void, Integer> {
 			}
 			if ((!mainComboString.equals(Frame.combo_strGimatriaCalculate)) && (differentSearch)) {
 				Output.printText("החיפוש לא נעשה בספר תורה", 1);
-				Output.printText("חיפוש נעשה מקובץ - " + ToraApp.differentSearchFile, 1);
+				Output.printText("חיפוש נעשה מקובץ - " + TorahApp.differentSearchFile, 1);
 				Output.printText("אם ברצונך לחפש בתורה -> תשנה \"קובץ משתמש\" לתורה ", 1);
 			}
 			if (Frame.getComboBox_DifferentSearch(null) == fileMode.LastSearch) {

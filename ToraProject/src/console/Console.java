@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import hebrewLetters.HebrewLetters;
 import stringFormat.CheckStrings;
-import torahApp.ToraApp;
+import torahApp.TorahApp;
 
 public class Console {
 	public static String formatLine = "-1";
@@ -49,7 +49,7 @@ public class Console {
 				case "-book-names":
 				case "--book-names":
 					isGui = false;
-					String[] bNames = ToraApp.getBookNames();
+					String[] bNames = TorahApp.getBookNames();
 					System.out.println();
 					System.out.println("The book names");
 					System.out.println("--------------");
@@ -63,7 +63,7 @@ public class Console {
 				case "-parasha-names":
 				case "--parasha-names":
 					isGui = false;
-					String[] pNames = ToraApp.getParashaNames();
+					String[] pNames = TorahApp.getParashaNames();
 					System.out.println();
 					System.out.println("The parasha names");
 					System.out.println("-----------------");
@@ -379,11 +379,11 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -395,11 +395,11 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -411,7 +411,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -420,7 +420,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -428,7 +428,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -436,7 +436,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -503,11 +503,11 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -519,11 +519,11 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -535,7 +535,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -544,7 +544,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -552,7 +552,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -560,7 +560,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -711,11 +711,11 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -727,11 +727,11 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -743,7 +743,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[5] = range;
 								}
@@ -752,7 +752,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[5] = range;
 								}
@@ -760,7 +760,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[5] = range;
 								}
@@ -768,7 +768,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[5] = range;
 								}
@@ -899,11 +899,11 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -915,11 +915,11 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -931,7 +931,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[2] = range;
 								}
@@ -940,7 +940,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[2] = range;
 								}
@@ -948,7 +948,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[2] = range;
 								}
@@ -956,7 +956,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[2] = range;
 								}
@@ -1022,11 +1022,11 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -1038,11 +1038,11 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -1054,7 +1054,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -1063,7 +1063,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -1071,7 +1071,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -1079,7 +1079,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[3] = range;
 								}
@@ -1132,11 +1132,11 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -1148,11 +1148,11 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									shouldSkip += 2;
 								}
@@ -1164,7 +1164,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[0] = range;
 								}
@@ -1173,7 +1173,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[0] = range;
 								}
@@ -1181,7 +1181,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[0] = range;
 								}
@@ -1189,7 +1189,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[0] = range;
 								}
@@ -1234,12 +1234,12 @@ public class Console {
 							case "-start-range-book":
 							case "--start-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									rangeStr[0] = args[1 + argsCount] + " " + args[2 + argsCount] + ":" + args[3 + argsCount];
 									shouldSkip += 3;
 								} else {
-									range[0] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[0] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									rangeStr[0] = args[1 + argsCount] + " " + args[2 + argsCount] + ":" + "א";
 									shouldSkip += 2;
@@ -1253,13 +1253,13 @@ public class Console {
 							case "-end-range-book":
 							case "--end-range-book":
 								if (HebrewLetters.checkHebrew(args[3 + argsCount].charAt(0) + "")) {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], args[3 + argsCount]);
 									rangeStr[1] = args[1 + argsCount] + " " + args[2 + argsCount] + ":" + args[3 + argsCount];
 									rangeStr[2] = "(לא כולל)";
 									shouldSkip += 3;
 								} else {
-									range[1] = ToraApp.getLineNumberFromBookStrings(args[1 + argsCount],
+									range[1] = TorahApp.getLineNumberFromBookStrings(args[1 + argsCount],
 											args[2 + argsCount], null);
 									rangeStr[1] = args[1 + argsCount] + " " + args[2 + argsCount] + ":" + "א";
 									rangeStr[2] = "(לא כולל)";
@@ -1274,7 +1274,7 @@ public class Console {
 							case "-start-range-parasha":
 							case "--start-range-parasha":
 								shouldSkip += 1;
-								range[0] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[0] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								rangeStr[0] = "פרשת " + args[1 + argsCount];
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[0] = range;
@@ -1285,7 +1285,7 @@ public class Console {
 							case "-end-range-parasha":
 							case "--end-range-parasha":
 								shouldSkip += 1;
-								range[1] = ToraApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
+								range[1] = TorahApp.getLineNumberFromParashaStrings(args[1 + argsCount]);
 								rangeStr[1] = "פרשת " + args[1 + argsCount];
 								rangeStr[2] = "(לא כולל)";
 								if ((range[0] != -1) && (range[1] != -1)) {
@@ -1296,7 +1296,7 @@ public class Console {
 							case "-r-start":
 							case "-range-start":
 							case "--range-start":
-								range[0] = ToraApp.lookupLineStart();
+								range[0] = TorahApp.lookupLineStart();
 								rangeStr[0] = "בראשית א:א";											
 								if ((range[0] != -1) && (range[1] != -1)) {
 									args2[0] = range;
@@ -1306,7 +1306,7 @@ public class Console {
 							case "-r-end":
 							case "-range-end":
 							case "--range-end":
-								range[1] = ToraApp.lookupLineEnd();
+								range[1] = TorahApp.lookupLineEnd();
 								rangeStr[1] = "הסוף";
 								rangeStr[2] = "";
 								if ((range[0] != -1) && (range[1] != -1)) {
